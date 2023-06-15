@@ -1,10 +1,10 @@
 baseURL: https://icitybear.github.io
 # baseURL: https://icitybear.github.io  # 绑定的域名
 languageCode: zh-cn # en-us
-title: citybear's Blog
+title: citybear
 theme: PaperMod # 主题名字，和themes文件夹下的一致
 
-enableInlineShortcodes: true
+enableInlineShortcodes: true #允许内联短码
 enableEmoji: true # 允许使用 Emoji 表情，建议 true
 enableRobotsTXT: true # 允许爬虫抓取到搜索引擎，建议 true
 
@@ -17,13 +17,13 @@ buildExpired: false
 # googleAnalytics: UA-123-45 # 谷歌统计
 # Copyright: citybear
 
-paginate: 15    # 首页每页显示的文章数
+paginate: 15    # 每页显示的文章数
 
 minify:
     disableXML: true
     # minifyOutput: true
 
-permalinks:
+permalinks: #浏览器链接显示方式
   post: "/:title/"
   # post: "/:year/:month/:day/:title/"
 
@@ -38,49 +38,47 @@ languages:
       profileMode:
         enabled: true
         title: (〃'▽'〃)
-        subtitle: "🧨学而时习之，不亦说乎？有朋自远方来，不亦乐乎？<br/>👏🏼欢迎光临素履(citybear)的博客<br/>👇联系方式"
-        imageUrl: "img/Q.gif" # 首页图片
+        subtitle: "🧨学而时习之，不亦说乎？有朋自远方来，不亦乐乎？<br/>👏🏼欢迎光临素履(Sulv)的博客<br/>👇联系方式"
+        imageUrl: "img/Q.gif" #图片放在static/img/Q.gif
         imageTitle: 
         imageWidth: 150
         imageHeight: 150
         # 首页展示按钮url
         buttons:
-          - name: 🧱 建站
-            url: posts/blog
-          - name: 👨🏻‍💻 技术
+          - name: 👨🏻‍💻技术
             url: posts/tech
-          - name: 📕 阅读
+          - name: 📕阅读
             url: posts/read
-          - name: 🏖 生活
+          - name: 🏖生活
             url: posts/life
       menu:
         main:
           - identifier: search
-            name: 🔍 搜索
+            name: 🔍搜索
             url: search
             weight: 1
           - identifier: home
-            name: 🏠 主页
+            name: 🏠主页
             url: /
             weight: 2
           - identifier: posts
-            name: 📚 文章
+            name: 📚文章
             url: posts
             weight: 3
-          - identifier: tags
-            name: 🧩 标签
-            url: tags
-            weight: 15
           - identifier: archives
-            name: ⏱️ 时间轴
+            name: ⏱️时间轴
             url: archives/
             weight: 20
+          - identifier: tags
+            name: 🔖标签
+            url: tags
+            weight: 40
           - identifier: about
-            name: 🙋🏻‍♂️ 关于
+            name: 🙋🏻‍♂️关于
             url: about
             weight: 50
           - identifier: links
-            name: 🤝 友链
+            name: 🤝友链
             url: links
             weight: 60
 
@@ -95,8 +93,6 @@ params:
     description: "这是一个自学者的博客......"
     author: citybear
     # author: ["Me", "You"] # multiple authors
-
-  
     defaultTheme: auto  # defaultTheme: light or  dark 
     disableThemeToggle: false
     DateFormat: "2022-12-01"
@@ -143,12 +139,13 @@ params:
     #     Text: "Suggest Changes" # edit text
     #     appendFilePath: true # to append file path to Edit link
 
-    # label:
-    #     text: "Home"
-    #     icon: icon.png
-    #     iconHeight: 35
+    label:
+      text: "Blog"
+      #icon: "img/Q.gif"
+      icon: "https://www.sulvblog.cn/Q.gif"
+      iconHeight: 35
 
-    # analytics:
+    # analytics:  #谷歌分析
     #     google:
     #         SiteVerificationTag: "XYZabc"
 
