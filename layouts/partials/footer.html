@@ -3,13 +3,33 @@
     {{- if site.Copyright }}
     <span>{{ site.Copyright | markdownify }}</span>
     {{- else }}
-    <span>&copy; {{ now.Year }} <a href="{{ "" | absLangURL }}">{{ site.Title }}</a></span>
-    {{- end }}
+    <!-- 网站底部备案号等 -->
     <span>
+        Copyright
+        &copy;
+        {{ .Site.Params.StartYear }}-{{ now.Year }}
+        <a href="{{ "" | absLangURL }}" style="color:#939393;">{{ .Site.Title }}</a>
+        All Rights Reserved
+    </span>
+    <a href="https://beian.miit.gov.cn/" target="_blank" style="color:#939393;">{{ .Site.Params.FilingNo }}</a>&nbsp;
+    <span>
+        <a target="_blank" href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=null"
+           style="display:inline-block;text-decoration:none;height:20px;color:#939393;">
+            <img src="{{ .Site.Params.PublicSecurityIconLink }}" style="float:left;margin: 0px 5px 0px 0px;"/>
+            {{ .Site.Params.PublicNetworkSecurity }}
+        </a>
+    </span>
+    <!-- 显示访问计数统计 fa-user 图标样式 -->
+    <span id="busuanzi_container">
+        <span class="fa fa-user"></span> <span id="busuanzi_value_site_uv"></span>
+        <span class="fa fa-eye"></span> <span id="busuanzi_value_site_pv"></span>
+    </span>
+    {{- end }}
+    <!-- <span>
         Powered by
         <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
         <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
-    </span>
+    </span> -->
 </footer>
 {{- end }}
 

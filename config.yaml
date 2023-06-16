@@ -170,15 +170,16 @@ params:
         minMatchCharLength: 0
         keys: ["title", "permalink", "summary"]
 
+    StartYear: 2020 # 底部开始年份
+    FilingNo: 粤ICP备xx号 # 底部备案号
+    PublicSecurityIconLink: /img/beian.png # 填自己的公安图标链接,可用绝对路径，相对路径如 img/beian.png
+    PublicNetworkSecurity: 粤公网安备 # 底部公网安备号
+
     # twikoo评论
     twikoo:
       version: 1.6.16 # 填写twikoo版本号
       # id:  # 填写自己的twikoo id
       # region:  # 环境地域，默认为 ap-shanghai，如果您的环境地域不是上海，需传此参数，请看twikoo官方文档
-
-
-    # 国内自己添加底部的备案
-    # PublicSecurityIconLink: img/beian.png # 填自己的公安图标链接,可用绝对路径，相对路径如 img/beian.png
 
 
 taxonomies:
