@@ -176,7 +176,6 @@ params:
     PublicNetworkSecurity: 粤公网安备 # 底部公网安备号
 
     #post_meta所需要的自定义字段
-    DateFormat: "2023-06-16"
     ShowWordCounts: true
     ShowReadingTime: true
     ShowLastMod: true
