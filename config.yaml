@@ -95,8 +95,8 @@ params:
     # author: ["Me", "You"] # multiple authors
     defaultTheme: auto  # defaultTheme: light or  dark 
     disableThemeToggle: false
-    DateFormat: "01 Jan 2006"
-    # DateFormat: "2022-12-01" #2022-12-01 这个格式会报错
+    DateFormat: "2006-01-02" # 时间格式go语音格式化字符串
+    timezone: UTC+8
     ShowShareButtons: true
     ShowReadingTime: true
     # disableSpecialistPost: true

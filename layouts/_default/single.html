@@ -15,7 +15,7 @@
     {{- if not (.Param "hideMeta") }}
     <div class="post-meta">
       {{- partial "post_meta.html" . -}} <!--在这里引用头部信息-->
-      <!-- 列表页 相关信息 -->
+      <!-- 列表页 追加计数相关信息 -->
       <span style="opacity: 0.8;">
         <span id="post_meta_style_7">
             &nbsp;&nbsp;
@@ -62,6 +62,7 @@
             </span>
         </span>
       </span>
+      
       {{- partial "translation_list.html" . -}}
       {{- partial "edit_post.html" . -}}
       {{- partial "post_canonical.html" . -}}
