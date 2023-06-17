@@ -20,14 +20,17 @@ hidemeta: false # 是否隐藏文章的元信息，如发布日期、作者等
 disableShare: true # 底部不显示分享栏
 showbreadcrumbs: true #顶部显示当前路径
 cover:
-    image: "" #图片路径：posts/tech/文章1/picture.png
-    caption: "" #图片底部描述
+    image: "posts/tech/test/go2.png" #图片路径：posts/tech/文章1/picture.png
+    caption: "测试封面图" #图片底部描述
     alt: ""
     relative: false
 
 # reward: true # 打赏
 mermaid: true #是否开启mermaid
 ---
+## 图片
+文章内容的直接图片
+![](go2.png)
 
 ## 目录1
 普通问题

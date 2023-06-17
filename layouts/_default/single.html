@@ -70,7 +70,10 @@
     {{- end }}
   </header>
   {{- $isHidden := .Params.cover.hidden | default site.Params.cover.hiddenInSingle | default site.Params.cover.hidden }}
-  {{- partial "cover.html" (dict "cxt" . "IsHome" false "isHidden" $isHidden) }}
+  
+  <!-- 注释:列表文章封面调用的是经过修改的图片cover1.html样式entry-cover1，而文章里面顶部的图片调用的是未经修改的图片cover.html的样式entry-cover -->
+  <!-- {{- partial "cover.html" (dict "cxt" . "IsHome" false "isHidden" $isHidden) }} -->
+  {{- partial "cover1.html" (dict "cxt" . "IsHome" false "isHidden" $isHidden) }}
   <!--调用toc侧边目录-->
   {{- if (.Param "ShowToc") }}
   {{- partial "toc.html" . }}
