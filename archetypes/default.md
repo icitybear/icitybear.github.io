@@ -13,8 +13,8 @@ description: "" #描述 每个文章内容前面的展示描述
 weight: # 输入1可以顶置文章，用来给文章展示排序，不填就默认按时间排序
 slug: ""
 draft: false # 是否为草稿
-comments: true #是否展示评论
-showToc: true # 显示目录
+comments: true #是否展示评论 有自带的扩展成twikoo
+showToc: true # 显示目录 文章侧边栏toc目录
 TocOpen: true # 自动展开目录
 hidemeta: false # 是否隐藏文章的元信息，如发布日期、作者等
 disableShare: true # 底部不显示分享栏
@@ -25,7 +25,6 @@ cover:
     alt: ""
     relative: false
 
-# comments: true # 本页面是否显示评论
 # reward: true # 打赏
-# mermaid: true #是否开启mermaid
+mermaid: true #自己加的是否开启mermaid
 ---

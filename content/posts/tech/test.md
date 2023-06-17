@@ -1,15 +1,15 @@
 ---
 title: "Test" #标题
-date: 2023-06-16T22:34:01+08:00 #创建时间
-lastmod: 2023-06-16T22:34:01+08:00 #更新时间
+date: 2023-06-15T11:08:38+08:00 #创建时间
+lastmod: 2023-06-15T11:08:38+08:00 #更新时间
 author: ["citybear"] #作者
 categories: # 没有分类界面可以不填写
 - 
 tags: # 标签
--
+- demo
 keywords: 
 - 
-description: "citybear的个人博客，php，golang，微服务" #描述
+description: "" #描述 每个文章内容前面的展示描述
 weight: # 输入1可以顶置文章，用来给文章展示排序，不填就默认按时间排序
 slug: ""
 draft: false # 是否为草稿
@@ -25,9 +25,20 @@ cover:
     alt: ""
     relative: false
 
-# comments: true # 本页面是否显示评论
 # reward: true # 打赏
-# mermaid: true #是否开启mermaid
+mermaid: true #是否开启mermaid
 ---
 
-ceshi
+## 目录1
+普通问题
+
+## 目录2
+
+<div align="center">
+
+{{<mermaid>}}
+    flowchart LR
+        A --> B & C --> D
+{{</mermaid>}}   
+
+</div>

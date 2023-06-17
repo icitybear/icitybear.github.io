@@ -7,6 +7,11 @@
 <!-- http://ibruce.info/2015/04/04/busuanzi/ 安装脚本 -->
 <script src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
 
+<!-- mermaid作图js -->
+{{ if (.Params.mermaid) }}
+<script defer src="https://cdn.jsdelivr.net/npm/mermaid@10.2.3/dist/mermaid.min.js"></script>
+{{ end }}
+
 <!-- 百度分析 -->
 <script>
 var _hmt = _hmt || [];
