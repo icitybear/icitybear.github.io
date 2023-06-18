@@ -1,0 +1,19 @@
+/*****主页背景图start******/
+/* 这里的相对目录 指的是相对于当前文件css 发布后的public */
+.list {
+    background-image: url("") !important;
+    /* 照片不重复出现 */
+    background-repeat: no-repeat;
+    /* 照片大小 */
+    background-size: 100% 100%;
+    /* 右侧滚动时照片固定大小 */
+    background-attachment: fixed;
+}
+
+.dark.list {
+    background-image: url("") !important;
+    background-repeat: no-repeat;
+    background-size: 100% 100%;
+    background-attachment: fixed;
+}
+/*****主页背景图end******/
