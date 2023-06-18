@@ -87,6 +87,37 @@
   </div>
   {{- end }}
 
+  <!--自定义增加的打赏按钮-->
+  {{- if .Param "reward" }}
+  <div class="post-reward">
+      <div style="padding: 0 0 0 0; margin: 0 0 0 0; width: 100%; font-size:16px; text-align: center;">
+          <div id="QR" style="opacity: 0;">
+              <div id="wechat" style="display: inline-block">
+                  <a class="fancybox" rel="group">
+                      <img id="wechat_qr" src="{{ .Site.Params.WechatPay | absURL }}" alt="wechat_pay"></a>
+                  <p>微信</p>
+              </div>
+              <div id="alipay" style="display: inline-block">
+                  <a class="fancybox" rel="group">
+                      <img id="alipay_qr" src="{{ .Site.Params.Alipay | absURL }}" alt="alipay"></a>
+                  <p>支付宝</p>
+              </div>
+          </div>
+          <button id="rewardButton"
+                  onclick="
+              var qr = document.getElementById('QR');
+              if (qr.style.opacity === '0') {
+                  qr.style.opacity='1';
+              } else {
+                  qr.style.opacity='0'
+              }"
+          >
+              <span>🧧 鼓励</span>
+          </button>
+      </div>
+  </div>
+  {{- end }}
+  
   <footer class="post-footer">
     {{- $tags := .Language.Params.Taxonomies.tag | default "tags" }}
     <ul class="post-tags">

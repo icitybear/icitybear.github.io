@@ -187,6 +187,12 @@ params:
       id: 'https://twikoo-two-alpha.vercel.app/' # 填写自己的twikoo id
       region: 'ap-shanghai' # 环境地域，默认为 ap-shanghai，如果您的环境地域不是上海，需传此参数，请看twikoo官方文档
 
+    # 打赏功能
+    Reward: true #打赏是否开启
+    # 可用绝对和相对地址，相对地址的图片需放在static/img下，打赏微信支付宝图片地址，
+    # 填写格式为img/wechat_pay.png
+    WechatPay: img/wechat.png
+    Alipay: img/wechat.png
 
 taxonomies:
     category: categories
