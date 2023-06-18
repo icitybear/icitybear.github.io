@@ -32,6 +32,41 @@ mermaid: true #是否开启mermaid
 文章内容的直接图片
 ![](go2.png)
 
+[百度](http://wwww.baidu.com)一下，你就知道！
+
++ 我是无序列表项一
++ 我是无序列表项二
+
+1. 我是有序列表项一
+2. 我是有序列表项二
+
+`<font color="red">红色</font>`
+
+# 测试代码块 使用高亮模板
+{{< highlight python >}}
+print("hello, world!")
+return
+{{< /highlight >}}
+
+代码块通常缩进四个空格或一个制表符，列表项里就8个
+
+{{< highlight html >}}
+<table>
+<tr>
+    <th rowspan="2">姓名</th>
+    <th>小明</th>
+    <th>如花</th>
+    <th>王尼玛</th>
+</tr>
+</table>
+{{< /highlight >}}
+
+
+## 不使用高亮块
+
+    print("hello, world!")
+    return
+
 ## 目录1
 普通问题
 

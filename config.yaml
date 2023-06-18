@@ -156,6 +156,7 @@ params:
         favicon32x32: "img/Q.gif"
         apple_touch_icon: "Q.gif" #大图
         safari_pinned_tab: "Q.gif"
+        disableFingerprinting: true # 禁用指纹css失效
 
     # cover:
     #     hidden: true # hide everywhere but not in structured data
@@ -194,6 +195,8 @@ params:
     WechatPay: img/wechat.png
     Alipay: img/wechat.png
 
+    extendCodeBackground: false # 代码块是否自动横向展开
+    
 taxonomies:
     category: categories
     tag: tags
@@ -205,12 +208,12 @@ markup:
             unsafe: true # HUGO 默认转义 Markdown 文件中的 HTML 代码，如需开启的话
     highlight:
         # anchorLineNos: true
-        codeFences: true  
+        codeFences: true
         guessSyntax: true
-        lineNos: true
-        # noClasses: false
-        # style: monokai
-        style: darcula
+        # lineNos: true #显示行号会导致样式混乱 因为多了<code></code> js混乱了
+        noClasses: true
+        tabWidth: 4
+        style: monokai
 
         # codeFences：代码围栏功能，这个功能一般都要设为 true 的，不然很难看，就是干巴巴的-代码文字，没有颜色。
         # guessSyntax：猜测语法，这个功能建议设置为 true, 如果你没有设置要显示的语言则会自动匹配。

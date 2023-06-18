@@ -153,15 +153,16 @@
 <script>
     document.querySelectorAll('pre > code').forEach((codeblock) => {
         const container = codeblock.parentNode.parentNode;
+        // 如果没有打开高亮（使用highlight语法）这里是post_content
 
-        const copybutton = document.createElement('button');
+        const copybutton = document.createElement('button'); //复制的按钮
         copybutton.classList.add('copy-code');
-        copybutton.innerHTML = '{{- i18n "code_copy" | default "copy" }}';
+        copybutton.innerText = '{{- i18n "code_copy" | default "copy" }}';
 
         function copyingDone() {
-            copybutton.innerHTML = '{{- i18n "code_copied" | default "copied!" }}';
+            copybutton.innerText = '{{- i18n "code_copied" | default "copied!" }}';
             setTimeout(() => {
-                copybutton.innerHTML = '{{- i18n "code_copy" | default "copy" }}';
+                copybutton.innerText = '{{- i18n "code_copy" | default "copy" }}';
             }, 2000);
         }
 
@@ -190,17 +191,63 @@
             selection.removeRange(range);
         });
 
+        // 新增自定义代码块的样式
+        let language = codeblock.className.replaceAll("language-", "")
+        let macTool = document.createElement("div")
+        let macTool1 = document.createElement("div")
+        let macTool2 = document.createElement("div")
+        let macTool3 = document.createElement("div")
+        let languageType = document.createElement("div")
+        languageType.innerText = language // 自己写的语言类型
+
+        macTool.setAttribute('class', 'mac-tool')
+        macTool1.setAttribute('class', 'mac bb1')
+        macTool2.setAttribute('class', 'mac bb2')
+        macTool3.setAttribute('class', 'mac bb3')
+        languageType.setAttribute('class', 'language-type')
+        macTool.appendChild(macTool1)
+        macTool.appendChild(macTool2)
+        macTool.appendChild(macTool3)
+        macTool.appendChild(languageType)
+
+        // 开启显示行号时  highlight模板滚动条只滚动了数字
         if (container.classList.contains("highlight")) {
+            console.log('使用高亮模板');
             container.appendChild(copybutton);
+            container.appendChild(macTool);
         } else if (container.parentNode.firstChild == container) {
-            // td containing LineNos
+            // td containing LineNos 使用了行号lineNos true 行数不用加macTool
+            console.log('td 使用了行号 行数');
         } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
-            // table containing LineNos and code
+            // table containing LineNos and code  显示了行号 table里 子节点加下
+            console.log('table 使用了行号 代码内容');
             codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+            // tag: 修复了作者的样式bug
+            container.parentNode.parentNode.parentNode.appendChild(macTool);
+
         } else {
+            console.log('未使用高亮模板');
+            // tag: 修复了作者的样式bug
             // code blocks not having highlight as parent class
             codeblock.parentNode.appendChild(copybutton);
+            
+            codeblock.parentNode.appendChild(macTool);
         }
     });
+</script>
+{{- end }}
+
+{{- if .Site.Params.extendCodeBackground }}
+<script>
+    // 如果是开启行号显示 lineNos 那么js滚动也要处理
+    $("code[class^=language]").on("mouseover", function () {
+        if (this.clientWidth < this.scrollWidth) {
+            $(this).css("width", "135%")
+            $(this).css("border-top-right-radius", "var(--radius)")
+        }
+    }).on("mouseout", function () {
+        $(this).css("width", "100%")
+        $(this).css("border-top-right-radius", "unset")
+    })
 </script>
 {{- end }}
