@@ -45,3 +45,9 @@ mermaid: true #是否开启mermaid
 {{</mermaid>}}   
 
 </div>
+
+## bilibili视频
+{{< bilibili BV1xW4y1a7NK >}} 
+
+## 自己博客内链接
+{{< innerlink src="posts/tech/test1.md" >}}  
