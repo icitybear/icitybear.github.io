@@ -93,6 +93,31 @@ Read https://github.com/adityatelange/hugo-PaperMod/wiki/FAQs#bundling-custom-cs
 
 /*****toc目录end*****/
 
+/*****主页背景图start******/
+.list {
+    background-image: url("") !important;
+    /* 照片不重复出现 */
+    background-repeat: no-repeat;
+    /* 照片大小 */
+    background-size: 100% 100%;
+    /* 右侧滚动时照片固定大小 */
+    background-attachment: fixed;
+}
+
+.dark.list {
+    background-image: url("") !important;
+    background-repeat: no-repeat;
+    background-size: 100% 100%;
+    background-attachment: fixed;
+}
+/*****主页背景图end******/
+
+/****twikoo评论start****/
+.tk-comments-container {
+    font-size: 15px;
+}
+/**twikoo评论end**/
+
 /****友情链接页面start****/
 .friendurl {
     text-decoration: none !important;
