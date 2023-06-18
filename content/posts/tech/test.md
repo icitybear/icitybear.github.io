@@ -51,3 +51,21 @@ mermaid: true #是否开启mermaid
 
 ## 自己博客内链接
 {{< innerlink src="posts/tech/test1.md" >}}  
+
+## 相册样式 galleries插件
+
+{{< galleries >}}
+<!-- 这里的相对目录 指的是相对于当前文件html public下的结构 不能显示gif-->
+{{< gallery src="/img/docker.png" title="测试">}}
+{{< gallery src="go2.png" >}}
+{{< gallery src="https://www.sulvblog.cn/image/19_IMG_20220430_200901.png" >}}
+{{< gallery src="/img/docker.png" title="测试">}}
+{{< gallery src="go2.png" >}}
+<!-- 这个html模板 目前最多展示6张，然后多余的会在最后一张轮播 第6张第一图 后面跟着数量+3  -->
+{{< gallery src="https://www.sulvblog.cn/image/19_IMG_20220430_200901.png" >}}
+
+{{< gallery src="/img/phone.png" title="测试">}}
+{{< gallery src="/img/wechat.png" >}}
+{{< gallery src="/img/qq.png" >}}
+
+{{< /galleries >}}
