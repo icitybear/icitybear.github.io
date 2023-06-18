@@ -94,6 +94,7 @@ Read https://github.com/adityatelange/hugo-PaperMod/wiki/FAQs#bundling-custom-cs
 /*****toc目录end*****/
 
 /*****主页背景图start******/
+/* 这里的相对目录 指的是相对于当前文件css 发布后的public */
 .list {
     background-image: url("") !important;
     /* 照片不重复出现 */
