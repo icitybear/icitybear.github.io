@@ -104,3 +104,10 @@ return
 {{< gallery src="/img/qq.png" >}}
 
 {{< /galleries >}}
+
+## 也有简单的 gallery
+
+photoswipe
+figure.html gallery.html(再来个模板)
+load-photoswipe.html
+[https://github.com/liwenyip/hugo-easy-gallery/](https://github.com/liwenyip/hugo-easy-gallery/)

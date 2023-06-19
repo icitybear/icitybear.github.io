@@ -28,6 +28,10 @@
     border: 5px solid var(--hljs-bg);
 }
 
+.post-content .highlight pre {
+    border-radius: var(--radius);
+}
+
 /*解决角落显示方块问题*/
 ::-webkit-scrollbar-corner {
     background-color: var(--hljs-bg);
