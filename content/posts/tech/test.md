@@ -29,7 +29,9 @@ cover:
 mermaid: true #是否开启mermaid
 ---
 ## 图片
-文章内容的直接图片
+*文章内容的直接图片*
+**粗体**
+<font color="red">红色</font>
 ![](go2.png)
 
 [百度](http://wwww.baidu.com)一下，你就知道！
@@ -69,6 +71,11 @@ return
 
 ## 目录1
 普通问题
+
+``` php
+<?php
+echo phpinfo();
+```
 
 ## 目录2
 
