@@ -30,7 +30,8 @@ mermaid: true #自己加的是否开启mermaid
 ---
 # Reflection 类
 [官方手册](https://www.php.net/manual/zh/book.reflection.php)
-
+- MVC里，依赖注入、控制反转，用的就是反射的特性
+- 反射指在PHP运行状态中，扩展分析PHP程序，导出或提取出关于类、方法、属性、参数等的详细信息，包括注释。简而言之，就是通过对象实例反向分析，从而获取其信息。
 # 利用反射实现参数绑定
 通过new ReflectionMethod获取指定类指定方法需要的参数，然后判断$_GET中是否包含该参数。最后通过call_user_func_array调用类的方法并传入参数。
 ``` php

@@ -78,10 +78,10 @@ languages:
             name: 🙋🏻‍♂️关于
             url: about
             weight: 50
-          - identifier: links
-            name: 🤝友链
-            url: links
-            weight: 60
+          # - identifier: links
+          #   name: 🤝友链
+          #   url: links
+          #   weight: 60
 
 outputs:
     home:

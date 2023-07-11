@@ -46,5 +46,3 @@ mermaid: true #自己加的是否开启mermaid
 - 魔术方法以 __ 开头，这是一类特殊的系统方法，因此不要在自定义方法名中添加 __ 前缀 
 __construct()、__destruct()、__call()、__callStatic()、__get()、__set()、__isset()、__unset()、__sleep()、 __wakeup()、__toString()、__invoke()、__set_state()、__clone() 和 __debugInfo()。
 - [魔术方法和对象的序列化](https://laravelacademy.org/post/21651)
-# 对象的存储与传输
-- [php对象的存储与传输](https://note.youdao.com/s/OMYOVmRl)

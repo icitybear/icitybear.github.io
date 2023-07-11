@@ -43,7 +43,6 @@ xdebug.force_error_reporting => 0 => 0
 - 如果存在该方法，相应的error_reporting()就不能在使用了。所有的错误都会交给自定义的函数处理。
 - 该函数只能捕获系统产生的一些Warning、Notice级别的错误
 ``` php
-
 <?php
 
 // error_reporting(E_ALL);  // 报告所有错误（默认配置）
