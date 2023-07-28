@@ -30,6 +30,25 @@ mermaid: true #是否开启mermaid
 ---
 ## 图片
 *文章内容的直接图片*
+
+字符编码
+思维导图
+composer  kafka和普罗米修斯
+代码风格 git风格检测 php-cs-fixer sonar
+cookie session jwt 跨域 单点
+加密
+git
+http
+
+redis
+
+mysql
+
+中间件
+
+tool 抓包 vscode apifox iterm2  https://xiaozhou.net/learn-the-command-line-iterm-and-zsh-2017-06-23.html
+
+算法写到go那
 **粗体**
 <font color="red">红色</font>
 ![](go2.png)
