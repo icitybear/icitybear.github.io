@@ -40,7 +40,7 @@ languages:
         title: (〃'▽'〃) # 不填写默认取title
         subtitle: 
         #subtitle: "🧨学而时习之，不亦说乎？有朋自远方来，不亦乐乎？<br/>👏🏼欢迎光临素履(Sulv)的博客<br/>👇联系方式"
-        imageUrl: "img/Q.gif" #图片放在static/img/Q.gif
+        imageUrl: "img/Q2.jpeg" #图片放在static/img/Q.gif
         imageTitle: 
         imageWidth: 150
         imageHeight: 150
@@ -74,10 +74,10 @@ languages:
             name: 🔖标签
             url: tags
             weight: 40
-          - identifier: about
-            name: 🙋🏻‍♂️关于
-            url: about
-            weight: 50
+          # - identifier: about
+          #   name: 🙋🏻‍♂️关于
+          #   url: about
+          #   weight: 50
           # - identifier: links
           #   name: 🤝友链
           #   url: links
@@ -143,7 +143,7 @@ params:
 
     label:
       text: "Blog"
-      icon: "Q.gif"
+      icon: "img/Q2.jpeg" # 博客左上角的图标
       iconHeight: 35
 
     # analytics:  #谷歌分析
@@ -151,11 +151,11 @@ params:
     #         SiteVerificationTag: "XYZabc"
 
     assets:
-        favicon: "img/Q.gif"
-        favicon16x16: "img/Q.gif"
-        favicon32x32: "img/Q.gif"
-        apple_touch_icon: "Q.gif" #大图
-        safari_pinned_tab: "Q.gif"
+        favicon: "img/Q2.jpeg"
+        favicon16x16: "img/Q2.jpeg"
+        favicon32x32: "img/Q2.jpeg"
+        apple_touch_icon: "img/Q2.jpeg" #大图
+        safari_pinned_tab: "img/Q2.jpeg"
         disableFingerprinting: true # 禁用指纹css失效
 
     # cover:
@@ -192,8 +192,8 @@ params:
     Reward: true #打赏是否开启
     # 可用绝对和相对地址，相对地址的图片需放在static/img下，打赏微信支付宝图片地址，
     # 填写格式为img/wechat_pay.png
-    WechatPay: img/wechat.png
-    Alipay: img/wechat.png
+    WechatPay: img/wxpay.jpg
+    Alipay: img/zfbpay.jpg
 
     extendCodeBackground: false # 代码块是否自动横向展开
     

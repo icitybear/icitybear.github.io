@@ -37,11 +37,34 @@ mermaid: true #自己加的是否开启mermaid
 - make创建并初始化，<font color="red">可以使用 make()</font>，但不能使用 new() 来构造 map，
   - make(map[keytype]valuetype, cap)  map类型  （与make([]Type, size, cap ) 切片有所区别）
   - 如果错误的使用 new() 分配了一个引用对象，会获得一个空引用的指针，相当于声明了一个未初始化的变量并且取了它的地址  new返回指向类型的指针
-  - 这种方式初始化后，可以往字典中添加键值对（前面那种声明方式不能这么操作，否则编译期间会抛出 panic, testMap["one"] = 1
+  - <font color="red">make方式初始化后，一开始为空map (map[]), 可以往字典中添加键值对（前面那种var声明方式不能这么操作，否则编译期间会抛出 panic, testMap["one"] = 1</font>
 - 容量超出会自动扩容
 
 # 元素赋值
-- <font color="red">字典初始化之后才能进行赋值操作</font>, 仅仅是声明，此时 testMap 的值为 nil，在 nil 上进行操作编译期间会报 panic（运行时恐慌），导致编译不通过
+- <font color="red">字典初始化之后才能进行赋值操作</font>, 仅仅是声明var，此时 testMap 的值为 nil，在 nil 上进行操作编译期间会报 panic（运行时恐慌 panic: assignment to entry in nil map），导致编译不通过。
+- 应该使用make或者{},声明且初始化
+  
+``` go
+func TestInitMap(t *testing.T) {
+    // 错误的
+	var m0 map[int]string
+	m0[0] = "hello" // panic: assignment to entry in nil map [recovered]
+	t.Log(m0)
+    // 正确的
+	m1 := map[int]int{1: 1, 2: 4, 3: 9}
+	t.Log(m1[2])
+	t.Logf("len m1=%d", len(m1))
+    // 正确的
+	m2 := map[int]int{}
+	m2[4] = 16
+	t.Logf("len m2=%d", len(m2))
+	//正确的
+	m4 := make(map[int]string, 10)
+	t.Logf("len m4=%d", len(m3))
+	m4[0] = "hello"
+	t.Log(m4) // map[0:hello]
+}
+```
 # 查找元素
 - 从字典中查找指定键时，会返回两个值，第一个是真正返回的键值，第二个是是否找到的标识,布尔值。 配合匿名变量
 ``` go
@@ -56,12 +79,13 @@ if ok { // 找到了
 
 # 删除元素 delete()通过键名
 delete(testMap, "four")
-- 从 testMap 中删除键为「four」的键值对。如果「four」这个键不存在或者字典尚未初始化，这个调用也不会有什么副作用。
+- 从 testMap 中删除键为「four」的键值对。如果「four」**这个键不存在或者字典尚未初始化，这个调用也不会有什么副作用**
 - 删除后长度也是动态减的
-- 清空 map 的唯一办法就是重新 make 一个新的 map，不用担心垃圾回收的效率，Go语言中的并行垃圾回收效率比写一个清空函数要高效的多
+- <font color="red">清空 map 的唯一办法就是重新 make 一个新的 map</font>，不用担心垃圾回收的效率，Go语言中的并行垃圾回收效率比写一个清空函数要高效的多
 
 # 遍历 range
 - 由于字典是无序的, 获取的时候也是无序的, 可以配合匿名变量_
+- 值也是副本
 
 ``` go
 testMap := map[string]int{
@@ -92,21 +116,23 @@ for k, v := range testMap {
 # 排序
 - 如果需要特定顺序的遍历结果，正确的做法是 输入到临时切片里，然后对切片元素排序（要额外调用切片排序）
 - Go 语言<font color="red">内置的 sort 包</font>，这个包提供了一系列对切片和用户自定义集合进行排序的函数。
-  - 对切片进行排序  sort.Ints(values) sort.Strings(keys)  // 对键进行排序
+  - 对切片进行排序 sort.Ints(values)    sort.Strings(keys) 对键进行排序
 
 # 多维切片
-- （一般二维）  map[int]map[string]string, 一维时值的类型还是map字典类型
+- （一般二维）  map[int]map[string]string, 一维的值的类型还是map字典类型
 ## 空map
-<font color="red">多维切片，查找元素时，要用len防止空map， 业务用时</font>
+- 通过make初始化
+- 通过{}, m2 := map[string]int{}
+<font color="red">多维map，查找元素时，要用len防止空map， 业务用时</font>
 格式是这样的 **map[int]map[string]string** ,然后redis处理后是 比如传21 [21 => map[]]
 如果值此时是一个<font color="red">空map（已经初始化了{} x:= map[string]string{}）</font>,不能 if _, ok 用ok去判断?  得用len
 ![](map1.png)
 ![](map2.png)
 
 # 多键索引
-[Go语言map的多键索引——多个数值条件可以同时查询]https://note.youdao.com/s/D0OQeLbt
+- [Go语言map的多键索引——多个数值条件可以同时查询](https://note.youdao.com/s/D0OQeLbt)-<font color="red">添加键值对到字典时，实际是将键转化为哈希值进行存储</font>
 
-# sync.Map 并发
+# sync.Map 并发安全的map
 **为什么需要这个？**
 map 在并发情况下，只读是线程安全的，同时读写是线程不安全的
 

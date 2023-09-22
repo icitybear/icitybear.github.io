@@ -181,10 +181,7 @@ func TestSliceComparing(t *testing.T) {
 - make空切片（先声明再赋值也一样）,<font color="red">发生了内存分配操作,并且初始化默认值</font> != nil 有默认值, make返回的是引用类型本身
 
 ## make和new区别 
-在go语言中，make和new都是内存的分配（堆上）make 即分配内存，也初始化内存。new只是将内存清零，并没有初始化内存。但是make只用于slice、map以及channel的初始化（非零值）；make返回的是引用类型本身；而new返回的是指向类型的指针。
-指针值为0xc00004c088，这个指针指向的内容的值为零（zero value）, 零值 （*ptr）就是对应类型各个初始化值
-https://m.php.cn/be/go/465883.html
-go会给引用类型初始化为nil，nil是不能直接赋值的。并且不能用new分配内存 (指向类型的指针。)。无法直接赋值。
+{{< innerlink src="posts/tech/go28.md" >}}  
 
 ## 扩容
 Go 语言内置的 cap() 函数和 len() 函数来获取某个切片的容量和实际长度
