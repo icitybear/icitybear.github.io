@@ -1,5 +1,5 @@
 ---
-title: "go变量与常量，基础类型" #标题
+title: "2.0-go变量与常量，基础类型" #标题
 date: 2023-07-11T13:44:02+08:00 #创建时间
 lastmod: 2023-07-11T13:44:02+08:00 #更新时间
 author: ["citybear"] #作者
@@ -28,6 +28,8 @@ cover:
 # reward: true # 打赏
 mermaid: true #自己加的是否开启mermaid
 ---
+# [有道笔记](https://note.youdao.com/s/Vl38JFd3)
+
 # 变量
 - 变量命名规则遵循驼峰命名法，即首个单词小写，每个新单词的首字母大写，如 userName，但如果你的全局变量希望能够被外部包所使用，则需要将首个单词的首字母也大写。
 - 关键字 var
@@ -48,7 +50,27 @@ mermaid: true #自己加的是否开启mermaid
   ` （只能显示转封装函数，返回新值。。go不支持隐式转）比如 func itob(i int) bool { return i != 0 }   int转bool` 
 - 变量逃逸概念
 - 生命周期 函数的参数变量和返回值都是局部变量，它们在函数每次被调用的时候创建。
-  
+
+- <font color="red">如果外部生命了变量， 后面内部分支同个变量明，:= 不使用</font>
+``` go
+// 变量的生命周期 作用域
+func TestSM(t *testing.T) {
+	var a int
+	if c := 3; 1 > 0 {
+		// a = 1 // 这样就是直接使用外部的了
+
+		a := 2         // 这a重新定义了
+		fmt.Println(a) // 输出2 a是这if作用域里的 而不是外部的
+	} else {
+		fmt.Println(c) //
+	}
+	fmt.Println(a) // 输出0 因为没经过
+}
+```
+
+**go里 map的值为结构体指针 时，赋值时会出现的错误 重新定义了:=, 赋值了nil。外部遍历该map, 取结构体的成员时，就会panic**
+runtime error: invalid memory address or nil pointer dereference
+![Alt text](image.png)
 
 # 常量
 - 与变量大差不差
@@ -115,35 +137,205 @@ func TestStringByteRune(t *testing.T) {
 	fmt.Printf("值=%v, 类型是%T\n", s1, s1)
 	s2 := []byte(s0) //字符串 中 转成 byte字节切片
 	fmt.Printf("值=%v, 类型是%T\n", s2, s2)
-	// 遍历切片
+	// 遍历切片 s1
 	for _, s := range s2 {
 		fmt.Printf("uint8: %c  %d\n", s, s)
 	}
 }
+
+// 结果
+值=中国 a bc, 类型是string
+值=[20013 22269 9 97 32 98 99], 类型是[]int32
+值=[228 184 173 229 155 189 9 97 32 98 99], 类型是[]uint8
+
+// 如果是s2切片
+uint8: ä  228
+uint8: ¸  184
+uint8: ­  173
+uint8: å  229
+uint8: 
+int8: ½  189
+uint8:    9
+uint8: a  97
+uint8:    32
+uint8: b  98
+int32: c  99
+
+// 如果是s1切片
+int32: 中  20013
+int32: 国  22269
+int32:    9
+int32: a  97
+int32:    32
+int32: b  98
+int32: c  99
 ``` 
 
 # 字符串
 - 初始化为默认零值“”
 - <font color="red">字符串是byte字节的定长数组，且有序。</font>可以通过[]type(), []rune() 转成切片, 切片用range遍历, 数组与切片都可以用下标访问 ([]rune()转成 rune unicode码点  utf8编码, 访问下表正常打印)
 - 不可更改 cannot assign to str[0]
-- 在方括号[]内写入索引，索引从 0 开始计数，默认不强转成切片的情况下 （只对纯 ASCII 码 （[]byte()）的字符串有效）
+- 在方括号[]内写入索引，索引从 0 开始计数，**默认不强转成切片的情况下 （只对纯 ASCII 码 （[]byte()）的字符串有效）**
 - 字符串可以包含任意的二进制数据
-- unsafe.Sizeof返回变量在内存中占用的字节数(切记，如果是slice，则不会返回这个slice在内存中的实际占用长度)
-- 双引号""来定义字符串  字符串字面量（string literal）,使用`反引号， 在`间的所有代码均不会被编译器识别
+- unsafe.Sizeof返回变量在内存中占用的字节数(切记，<font color="red">字如果是slice，则不会返回这个slice在内存中的实际占用长度</font>)
+- 双引号""来定义字符串  字符串字面量（string literal）,使用`反引号`， 在间的所有代码均不会被编译器识别
 - 获取字符串中某个字节的地址属于非法行为，例如 &str[i]
-- utf8.RuneCountInString()个数 字节数len
+- utf8.RuneCountInString()utf8字符个数 字节数len
 
 ## 拼接
-1. 方法1：通过‘+’号，两个字符串 s1 和 s2 可以通过 s := s1 + s2 拼接在一起。将 s2 追加到 s1 尾部并生成一个新的字符串 s。（缺点不高效，字符串是不可变类型（值类型），内存拷贝 多次调用（旧的内存依旧存在）对GC产生压力）
-2. 方法2：bytes.Buffer 是可以缓冲并可以往里面写入各种字节数组的。字符串也是一种字节数组，使用 WriteString() 方法进行写入（写入的时候会自动扩容）。写入 stringBuilder 中，然后再通过 stringBuilder.String() 方法将缓冲转换为字符串。1.10版本新加的包 不会增加内存开销 与旧版本的bytes.Buffer的API一样 
-3. 方法3：strconv.Itoa() 每次都会新建一个字符串
-- 子字符串 通过字符串切片实现获取子串
-- strings标准库，字符串比较、是否包含指定字符/子串、获取指定子串索引位置、字符串替换、大小写转换、trim 等操作
-4. fmt.sprintf() 本质
+1. 方法1：**通过‘+’号**，两个字符串 s1 和 s2 可以通过 s := s1 + s2 拼接在一起。将 s2 追加到 s1 尾部并生成一个新的字符串 s。（缺点不高效，字符串是不可变类型（值类型），内存拷贝 多次调用（旧的内存依旧存在）对GC产生压力）
+2. 方法2：**bytes.Buffer** 是可以缓冲并可以往里面写入各种字节数组的。字符串也是一种字节数组，使用 WriteString() 方法进行写入（写入的时候会自动扩容）。写入 stringBuilder 中，然后再通过 stringBuilder.String() 方法将缓冲转换为字符串。1.10版本新加的包 不会增加内存开销 与旧版本的bytes.Buffer的API一样 
+3. 方法3：**strconv.Itoa()** 每次都会新建一个字符串
+   - 子字符串 通过字符串切片实现获取子串
+   - strings标准库，字符串比较、是否包含指定字符/子串、获取指定子串索引位置、字符串替换、大小写转换、trim 等操作
+4. **fmt.sprintf()** 本质
+``` go
+package string_test
+
+import (
+	"bytes"
+	"fmt"
+	"strconv"
+	"strings"
+	"testing"
+)
+
+// 拼接
+func TestJoinFn(t *testing.T) {
+	s := "A,B,C"
+	parts := strings.Split(s, ",")
+	for _, part := range parts {
+		t.Log(part)
+	}
+	t.Log(strings.Join(parts, "-"))
+}
+
+// 分割
+func TestSplitFn(t *testing.T) {
+	s1 := "chihuo@golang"
+	arr := strings.Split(s1, "@")
+	fmt.Printf("arr is %v\n", arr)
+}
+
+// 去掉2边空格
+func TestTrimFn(t *testing.T) {
+	s1 := " chihuo@golang \n"
+	s2 := strings.TrimSpace(s1)
+	fmt.Printf("trim space '%s'\n", s2)
+}
+
+// 是否含有前缀 后缀
+func TestHas(t *testing.T) {
+	s1 := "chihuo@golang"
+	if strings.HasPrefix(s1, "chihuo") {
+		fmt.Printf("%s has prefix chihuo\n", s1)
+	}
+	if strings.HasPrefix(s1, "@") {
+		fmt.Printf("%s has prefix chihuo\n", s1)
+	}
+	if strings.HasSuffix(s1, "golang") {
+		fmt.Printf("%s has suffix golang\n", s1)
+	}
+}
+
+// 子字符串 直接通过切片下表获取 因为字符船 是不可改变的值类型 又是 []types
+func TestSubstr(t *testing.T) {
+	s1 := "chihuo@golang"
+	s2 := s1[6:len(s1)]
+	fmt.Printf("sub string is %s\n", s2)
+}
+
+// 转化
+func TestConv(t *testing.T) {
+	s := strconv.Itoa(10)
+	t.Log("str" + s)
+	if i, err := strconv.Atoi("10"); err == nil {
+		t.Log(10 + i)
+	} else {
+		t.Log(i)
+	}
+}
+
+// + 号
+func j1() {
+	s1 := "chihuo"
+	s2 := "golang"
+	s3 := s1 + "@" + s2
+	fmt.Printf("s1 + s2 = %s\n", s3)
+}
+
+// fmt格式化Sprintf
+func j2() {
+	s1 := "chihuo"
+	s2 := "golang"
+	s3 := fmt.Sprintf("%s@%s", s1, s2)
+	fmt.Printf("s1 + s2 = %s\n", s3)
+}
+
+// strings.Join
+func j3() {
+	s1 := "chihuo"
+	s2 := "golang"
+	s3 := strings.Join([]string{s1, s2}, "@")
+	fmt.Printf("s1 + s2 = %s\n", s3)
+}
+
+// bytes.Buffer
+func j4() {
+	var bt bytes.Buffer
+	s1 := "chihuo"
+	s2 := "golang"
+	bt.WriteString(s1)
+	bt.WriteString("@")
+	bt.WriteString(s2)
+
+	s3 := bt.String() //把Buffer缓存里的转成字符串
+	fmt.Printf("s1 + s2 = %s\n", s3)
+}
+
+// strings.Builder
+func j5() {
+	var builder strings.Builder
+	s1 := "chihuo"
+	s2 := "golang"
+	builder.WriteString(s1)
+	builder.WriteString("@")
+	builder.WriteString(s2)
+	s3 := builder.String()
+	fmt.Printf("s1 + s2 = %s\n", s3)
+}
+
+// 字符串拼接
+func TestXxx(t *testing.T) {
+	// 一次性执行完毕的流程 用+ fmt都无所谓，循环脚本，后台挂起的还是用效率高的
+	j1()
+	j2()
+	j3()
+	// 5 > 4 >321
+	j5()
+}
+
+// fmt.Sprintf 
+type Value struct {
+	Name  string
+	Value int32
+}
+
+func TestFmt(t *testing.T) {
+	v1 := Value{
+		Name:  "val",
+		Value: 10,
+	}
+  //结果 format is 10 {val 10} {Name:val Value:10} string_test.Value{Name:"val", Value:10} string_test.Value 0x1400000c0a8 10.000000
+	s1 := fmt.Sprintf("%d %v %+v %#v %T %p %f", v1.Value, v1, v1, v1, v1, &v1, float64(v1.Value))
+	fmt.Printf("format is %s\n", s1)
+}
+
+```
 
 ## 遍历
-  - 一种是以字节数组的方式遍历,依据下标取字符串中的字符,类型为type,是以 UTF-8 编码的角度切入的, 此时是字节存储的utf8编码的值
-  - 一种是以 Unicode 字符遍历,因为以 Unicode 字符方式遍历时，每个字符的类型是 rune，而不是 byte。通过 range 关键字遍历字符串时，又是从 Unicode 字符集的角度切入, Unicode 字符值就是数字id
+  - 一种是**以字节数组的方式遍历,依据下标取字符串中的字符,类型为type**,是以 UTF-8 编码的角度切入的, 此时是字节存储的utf8编码的值
+  - 一种是以 Unicode 字符遍历,因为**以 Unicode 字符方式遍历时，每个字符的类型是 rune，而不是 byte**。<font color="red">字通过 range 关键字遍历字符串时</font>，又是从 Unicode 字符集的角度切入, Unicode 字符值就是数字id
 
 ``` go
 str := "Hello, 世界" 
@@ -204,8 +396,8 @@ for i, ch := range str {
 ## Go 语言中支持两种<font color="red">字符</font>类型 byte和rune
 - 从 Unicode 字符集的视角看，字符串的每个字符都是一个字符的独立单元，但如果从 UTF-8 编码的视角看，一个字符可能是由多个字节编码而来的。
 - 在 Go 语言中可以通过 unicode/utf8 包进行 UTF-8 和 Unicode 之间的转换。
-- Go语言中字符串的实现基于 UTF-8 编码(编码规则)，通过 rune 类型（int32），可以方便地对每个 UTF-8 字符进行访问。当字符为 ASCII 码时则占用 1 个字节，其它字符根据需要占用 2-4 个字节，比如中文编码通常需要 3 个字节。如果单纯只有ASCII码那转成byte
+- <font color="red">Go语言中字符串的实现基于 UTF-8 编码(编码规则)，通过 rune 类型（int32），可以方便地对每个 UTF-8 字符进行访问。当字符为 ASCII 码时则占用 1 个字节，其它字符根据需要占用 2-4 个字节，比如中文编码通常需要 3 个字节。如果单纯只有ASCII码那转成byte</font>
 - Go 代码需要包含非 ANSI 字符，保存源文件时请注意编码格式必须选择 UTF-8
-- Go 语言默认仅支持 UTF-8 和 Unicode 编码，对于其他编码，Go 语言标准库并没有内置的编码转换支持(开源封装)[iconv 库](https://github.com/qiniu/iconv)
+- Go 语言默认仅支持 UTF-8 和 Unicode 编码，对于其他编码，Go 语言标准库并没有内置的编码转换支持(开源封装) -----[iconv 库](https://github.com/qiniu/iconv)
 - 出于简化语言的考虑，Go 语言的多数 API 都假设字符串为 UTF-8 编码。
 - 将 Unicode 字符编码转化为对应的字符，<font color="red">可以使用 string 函数进行转化</font>, 但是如果是UTF-8 编码不能这样转化，英文字符没问题，因为一个英文字符就是一个字节，中文字符则会乱码，因为一个中文字符编码需要三个字节，转化单个字节会出现乱码。
