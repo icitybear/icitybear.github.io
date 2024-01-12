@@ -29,6 +29,8 @@ cover:
 mermaid: true #自己加的是否开启mermaid
 ---
 ![](pointer1.png)
+# 示例
+![](pointer2.png)
 # 声明和初始化
 - 变量的本质对一块内存空间的命名，我们可以通过引用变量名来使用这块内存空间存储的值
 - 指针则是用来<font color="red">指向这些变量值所在**内存地址的值(0x0001)**</font>
