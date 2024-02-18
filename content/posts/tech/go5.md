@@ -113,7 +113,8 @@ for k, v := range testMap {
 
 ```
 
-# 排序
+# map排序
+## 使用切片sort包
 - 如果需要特定顺序的遍历结果，正确的做法是 输入到临时切片里，然后对切片元素排序（要额外调用切片排序）
 - Go 语言<font color="red">内置的 sort 包</font>，这个包提供了一系列对切片和用户自定义集合进行排序的函数。
   - 对切片进行排序 sort.Ints(values)    sort.Strings(keys) 对键进行排序
@@ -197,6 +198,51 @@ func TestSliceSort3(t *testing.T) {
 	fmt.Println(s)
 }
 ```
+## 排序map的包 orderedmap
+``` go
+import "github.com/iancoleman/orderedmap"
+func TestOrder(t *testing.T) {
+	m1 := map[string]int{
+		"a":  1,
+		"c":  2,
+		"b":  3,
+		"c1": 4,
+	}
+	fmt.Println(m1) // 输出的时候key自然顺序
+	b, _ := json.Marshal(m1)
+	fmt.Println(string(b))
+	// 序列化也是一样的
+	// 1 想要指定顺序 包wrappers "google.golang.org/protobuf/types/known/wrapperspb"
+	// 2 使用封装好的
+	o := orderedmap.New()
+	o.Set("a", 1)
+	o.Set("c", 2)
+	o.Set("b", 3)
+	o.Set("c1", 4)
+	keys := o.Keys()
+	for _, k := range keys {
+		v, _ := o.Get(k)
+		fmt.Println(k, v)
+	}
+	c, _ := json.Marshal(o)
+	fmt.Println(string(c))
+
+}
+
+=== RUN   TestOrder
+map[a:1 b:3 c:2 c1:4]
+{"a":1,"b":3,"c":2,"c1":4}
+a 1
+c 2
+b 3
+c1 4
+{"a":1,"c":2,"b":3,"c1":4}
+--- PASS: TestOrder (0.00s)
+```
+
+## 框架返回是，序列化的处理
+- 本身序列化map (kv结构) 改为 结构体对象
+- 利用google.golang.org/protobuf/types/known/wrappersp
 
 # 多维切片
 - （一般二维）  map[int]map[string]string, 一维的值的类型还是map字典类型
