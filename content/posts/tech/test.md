@@ -31,7 +31,6 @@ mermaid: true #是否开启mermaid
 ## 图片
 *文章内容的直接图片*
 
-字符编码
 思维导图
 composer  kafka和普罗米修斯
 代码风格 git风格检测 php-cs-fixer sonar
@@ -39,9 +38,7 @@ cookie session jwt 跨域 单点
 加密
 git
 http
-
 redis
-
 mysql
 
 中间件
@@ -106,6 +103,12 @@ echo phpinfo();
 {{</mermaid>}}   
 
 </div>
+
+## ppt
+
+## 思维导图方案
+
+http://www.9ong.com/082020/hugo%E6%94%AF%E6%8C%81%E6%80%9D%E7%BB%B4%E5%AF%BC%E5%9B%BE.html
 
 ## bilibili视频
 {{< bilibili BV1xW4y1a7NK >}} 
