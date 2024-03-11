@@ -260,7 +260,7 @@ func main() {
 https://github.com/grpc/grpc-go
 ![alt text](image4.png)
 - 通过装饰器模式，生成拦截器Interceptor
-- 
+
 每次接收到来自客户端的 grpc 请求，会根据请求的 path 映射到对应的 service 和 handler 进行执行逻辑的处理，但在真正调用 handler 之前，会先先经历一轮对拦截器链 chainUnaryInterceptors 的遍历调用
 
 核心业务处理方法 handler相当于核心类（就是UnaryHandler），每一轮通过拦截器 UnaryServerInterceptor 对 handler 进行增强的过程，对应的就是一次“装饰”的步骤.
@@ -305,3 +305,4 @@ var myInterceptor = func(ctx context.Context, req interface{}, info *grpc.UnaryS
 }
 // 将myInterceptor拦截器加入拦截器链路里
 ```
+- 比如[流量控制sentinel的接入](https://pkg.go.dev/github.com/alibaba/sentinel-golang/pkg/adapters/grpc)

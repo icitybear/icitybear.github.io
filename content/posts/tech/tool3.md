@@ -1,12 +1,12 @@
 ---
-title: "vscode用法与插件" #标题
-date: 2023-07-10T18:03:11+08:00 #创建时间
-lastmod: 2023-07-10T18:03:11+08:00 #更新时间
+title: "性能工具" #标题
+date: 2024-03-08T15:26:59+08:00 #创建时间
+lastmod: 2024-03-08T15:26:59+08:00 #更新时间
 author: ["citybear"] #作者
 categories: # 没有分类界面可以不填写
-- tech
+- 
 tags: # 标签
-- 工具
+-
 keywords: 
 - 
 description: "" #描述 每个文章内容前面的展示描述
@@ -28,3 +28,6 @@ cover:
 # reward: true # 打赏
 mermaid: true #自己加的是否开启mermaid
 ---
+
+[Linux 中的负载高低和 CPU 开销并不完全对应](https://mp.weixin.qq.com/s/1Pl4tT_Nq-fEZrtRpILiig)
+[Linux性能工具](https://mp.weixin.qq.com/s/xrSaMDVEAIYRdh8w1mRGYg)
