@@ -115,7 +115,17 @@ function is_true($val, $return_null=false){
 ## 基本数据类型之间的转化
 - 只需要在变量名前通过添加 (目标转化类型) 强制转化即可
 - 会隐式转换
+``` php
+$array = [10,'11-']
+var_dump(in_array(11, $array)); 
+var_dump(11 == '11-'); 
+var_dump('11' == '11-');
 
+bool(true)
+bool(true)
+bool(false)
+```
+![alt text](image.png)
 ## 过滤器 函数 filter_xxx()
 [filter过滤函数](https://note.youdao.com/s/6iPZ7Idw)
 
