@@ -135,7 +135,7 @@ default:
 }
 ```
 
-# 退出多层循环
+# 退出多层循环 break, goto, continue
 - Go语言也支持label(标签)语法：分别是break label和 goto label 、continue label
 - 一般通过break 多次，或者通过break 标签名 ，<font color="red">标签要求必须定义在对应的 for、switch 和 select 的代码块上</font>，其他语言break n，
 - goto 语句通过标签进行代码间的无条件跳转  退出多重循环，这个功能会影响代码的可读性， 会让代码结构看起来比较乱。
@@ -146,6 +146,7 @@ func main() {
 OuterLoop:
     for i := 0; i < 2; i++ {
         for j := 0; j < 5; j++ {
+            // 偶而也配合select
             switch j {
             case 2:
                 fmt.Println(i, j)
@@ -156,6 +157,27 @@ OuterLoop:
             }
         }
     }
+}
+```
+
+- <font color="red">for配合select或者switch, break只是跳出该次循环 跳出当前select, 继续下次循环</font>
+
+``` go
+func TestForSelect(t *testing.T) {
+	// for配合select break只是跳出select, 继续下次循环， 相当continue
+	// for配合switch break只是跳出switch, 继续下次循环
+	for i := 0; i < 5; i++ {
+		switch {
+		case i%2 == 0:
+			t.Log("Even")
+		case i%2 == 1:
+			t.Log("Odd")
+			break
+			t.Log("hhh") // 后续不执行
+		default:
+			t.Log("unknow")
+		}
+	}
 }
 ```
 

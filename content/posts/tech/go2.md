@@ -40,6 +40,19 @@ mermaid: true #自己加的是否开启mermaid
 - 有符号与无符号以及高位数字向低位数字转化时，需要注意数字的溢出和截断。
 - <font color="red">浮点型转化为整型时，小数位被丢弃</font>
 
+- 加减乘除时，注意类型，精度丢失问题
+
+``` go
+func TestJisuan(t *testing.T) {
+
+	a := 710 / 100 // 与php不一样会 吞掉小数点 只保留int
+	t.Log(a) // 7
+	b := float32(710) / float32(100) 
+	t.Log(b) //7.1
+}
+```
+
+
 # 数值和布尔类型转化
 自定义函数
 
@@ -100,7 +113,7 @@ func main() {
 }
 ```
 
-# protobuf3中的float
+# protobuf3中的float 
 
 当使用Kratos框架返回int64字段时，Kratos默认会将整型字段输出为字符串。
 
