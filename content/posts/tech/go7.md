@@ -115,6 +115,48 @@ for range 结构是Go语言特有的一种的迭代结构，在许多情况下�
 4. <font color="red">val 始终为集合中对应索引的值拷贝</font>，因此它一般只具有只读性质，对它所做的任何修改都不会影响到集合中原有的值。
 5. 匿名变量本身不会进行空间分配，也不会占用一个变量的名字。
 
+## 新版1.22
+
+1.不再共享循环变量
+``` go
+func main() {
+	values := []int{1, 2, 3, 4, 5}
+	for _, value := range values {
+		go func() {
+			fmt.Printf("%p,%d\n", &value, value)
+		}()
+	}
+	time.Sleep(time.Second * 3)
+}
+
+0xc00000a0d8,4
+0xc00000a0d8,5
+0xc00000a0d8,5
+0xc00000a0d8,3
+0xc00000a0d8,5
+// 1.22之后
+0xc00000a0f0,2
+0xc00000a108,5
+0xc00000a100,4
+0xc00000a0d8,1
+0xc00000a0f8,3
+```
+2. 支持循环整形类型
+``` go
+func main() {
+    //1.22前 cannot range over 5 (untyped int constant)
+	for i := range 5 {
+		fmt.Println("Hello World!", i) 
+	}
+}
+
+Hello World! 0
+Hello World! 1
+Hello World! 2
+Hello World! 3
+Hello World! 4
+```
+
 # switch case语句
 
 - 表达式不需要为常量，甚至不需要为整数,<font color="red">为表达式</font> case r > 10 && r < 20  字符串 整型匹配等
@@ -135,10 +177,59 @@ default:
 }
 ```
 
-# 退出多层循环 break, goto, continue
+# 踩坑点
+## case 多个条件时
+``` go
+// 错误写法，php惯性
+func TestSwitchCaseCondition2(t *testing.T) {
+	i := 3
+	switch i {
+	case 3: // 并不会执行到下面的case
+	case 4:
+		t.Log(i) // 只有4会执行，3不会
+	default:
+		t.Log("unknow")
+	}
+	t.Log("after switch")
+}
+// 正确写法
+func TestSwitchCaseCondition2(t *testing.T) {
+	i := 3
+	switch i {
+	case 3, 4:
+		t.Log(i) // 3和4都会执行
+	default:
+		t.Log("unknow")
+	}
+	t.Log("after switch")
+}
+```
+
+## 退出多层循环 break, goto, continue
 - Go语言也支持label(标签)语法：分别是break label和 goto label 、continue label
 - 一般通过break 多次，或者通过break 标签名 ，<font color="red">标签要求必须定义在对应的 for、switch 和 select 的代码块上</font>，其他语言break n，
+
 - goto 语句通过标签进行代码间的无条件跳转  退出多重循环，这个功能会影响代码的可读性， 会让代码结构看起来比较乱。
+  - <font color="red">只建议在标签在最下面使用， 上面的时候进行跳转到标签 goto</font>
+  - <font color="red">后续如果有使用局部变量，那么该局部变量定义旧的就得放在最前面，很麻烦，</font>
+
+``` go
+// 报错 goto xxx jumps over variable declaration 
+func main() {
+    goto Label
+    x := 5
+Label:
+    fmt.Println(x)
+}
+// 正确的
+func main() {
+    var x int // 部变量定义旧的就得放在最前面
+    goto Label
+    x = 5
+Label:
+    fmt.Println(x) // 请注意，这里 x 没有被初始化，因此它的值为 int 的零值，即 0
+}
+```
 
 ``` go
 func main() {
@@ -160,19 +251,19 @@ OuterLoop:
 }
 ```
 
+
 - <font color="red">for配合select或者switch, break只是跳出该次循环 跳出当前select, 继续下次循环</font>
 
 ``` go
 func TestForSelect(t *testing.T) {
 	// for配合select break只是跳出select, 继续下次循环， 相当continue
-	// for配合switch break只是跳出switch, 继续下次循环
 	for i := 0; i < 5; i++ {
 		switch {
 		case i%2 == 0:
 			t.Log("Even")
 		case i%2 == 1:
 			t.Log("Odd")
-			break
+			break // 继续下次循环， 相当continue 没有break n
 			t.Log("hhh") // 后续不执行
 		default:
 			t.Log("unknow")
@@ -182,4 +273,4 @@ func TestForSelect(t *testing.T) {
 ```
 
 # continue（继续下一次循环）
-continue 语句可以结束当前循环，开始下一次的循环迭代过程，<font color="red">仅限在 for 循环内使用</font>，在 continue 语句后添加标签时，表示开始标签对应的循环
+continue 语句可以结束当前循环，开始下一次的循环迭代过程，<font color="red">**仅限在 for 循环内使用**</font>，在 continue 语句后添加标签时，表示开始标签对应的循环。for循环里的switch可以使用break

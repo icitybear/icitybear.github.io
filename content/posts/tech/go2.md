@@ -113,22 +113,21 @@ func main() {
 }
 ```
 
-# protobuf3中的float 
+# protobuf3中的float double
+1. float相当于go的float32, double相当于float64
+  
+2. 当使用<font color="red">Kratos框架返回int64字段时，Kratos默认会将整型字段输出为字符串。(json序列化的问题)</font>
+   - <font color="red">这是因为在HTTP传输中，整型数据会被序列化为JSON格式，而JSON中只支持字符串、数字、布尔值、数组和对象等数据类型。</font>所以为了保持数据的类型完整性，**Kratos会将整型字段以字符串形式输出。如果需要将整型字段作为数字类型输出，可以通过类型转换等方式进行处理。**这是为了避免在前端处理过程中丢失精度。
+   - 如果希望将int64字段直接以数字类型输出，可以将其转换为int类型，或者在序列化过程中使用特定的库或选项来实现。例如，使用jsoniter库可以将int64字段直接序列化为数字类型
 
-当使用Kratos框架返回int64字段时，Kratos默认会将整型字段输出为字符串。
-
-- <font color="red">这是因为在HTTP传输中，整型数据会被序列化为JSON格式，而JSON中只支持字符串、数字、布尔值、数组和对象等数据类型。</font>所以为了保持数据的类型完整性，Kratos会将整型字段以字符串形式输出。如果需要将整型字段作为数字类型输出，可以通过类型转换等方式进行处理。这是为了避免在前端处理过程中丢失精度。如果希望将int64字段直接以数字类型输出，可以将其转换为int类型，或者在序列化过程中使用特定的库或选项来实现。例如，使用jsoniter库可以将int64字段直接序列化为数字类型
-
-- 发起请求的参数数字，json序列化成json数字
-encoding/json解码器将JSON数据解码为Go语言中的数据结构。当解码器遇到一个JSON数字时，它会将其解码为Go语言中的float64类型。
-这是因为在<font color="red">JSON中，数字是以字符串的形式表示的。而在Go语言中，数字类型为float64，因为它可以容纳大部分的数字范围。</font>因此，解码器将JSON中的数字解码为float64类型以保持数据的精确性和完整性。
-
+   - 发起请求的参数数字，json序列化成json数字。encoding/json解码器将JSON数据解码为Go语言中的数据结构。当解码器遇到一个JSON数字时，它会将其解码为Go语言中的float64类型。这是因为在JSON中，数字是以字符串的形式表示的。<font color="red">而在Go语言中，数字类型为float64，因为它可以容纳大部分的数字范围。</font>因此，解码器将JSON中的数字解码为float64类型以保持数据的精确性和完整性。
 
 
 ## go float32导致901848.38 变为901848.4
 
-- gorm的相关modle模型 定义float64, 能正常接收，<font color="red">但是proto3 只有float类型（对应是float32），
-高精度转低精度(精度丢失问题)</font>, 四舍五入问题 float32强转的精度问题
+- gorm的相关modle模型 定义float64, 能正常接收，<font color="red">但是proto3 的float类型（对应是float32），高精度转低精度(精度丢失问题)</font>, 四舍五入问题 float32强转的精度问题，
+
+<font color="red">解决方案：proto3 使用double类型。 或者使用字符串返回浮点数</font>
 
 ``` go
 message MediaDailyCost {
@@ -157,3 +156,7 @@ log.Context(ctx).Debugf("db:%+v, to32:%+v, to64:%+v, str:%s", item.MediaCost, fl
 ```
 
 - <font color="red">所以建议proto3的float类型，定义返回时可以用字符串string (int64和float的坑)</font>
+
+# 字符串与浮点数的转换
+
+# 精度问题
