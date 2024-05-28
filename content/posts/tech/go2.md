@@ -157,6 +157,105 @@ log.Context(ctx).Debugf("db:%+v, to32:%+v, to64:%+v, str:%s", item.MediaCost, fl
 
 - <font color="red">所以建议proto3的float类型，定义返回时可以用字符串string (int64和float的坑)</font>
 
-# 字符串与浮点数的转换
+# 字符串与浮点数的转换 strconv
+- ParseXXX 系列函数 将字符串转换为指定类型的值 
+  - func ParseXXX(str string) (value XXX, err error)  
+  - Atoi：将字符串转换为整数
+``` go
+moneyFloat, err := strconv.ParseFloat("124.3434", 64) // 指定位数
+
+intValue, err := strconv.ParseInt("123", 10, 64) // 无符号数 ParseUint 还有ParseBool
+if err != nil {
+    fmt.Println("Error:", err)
+} else {
+    fmt.Println(intValue) // 输出: 123
+}
+```
+
+- FormatXXX 系列函数 将给定类型数据格式化为字符串类型的功能
+  - Itoa：将整数转换为字符串形式，等价于FormatInt(i, 10)
+
+``` go
+  str := strconv.FormatFloat(3.14159, 'f', 5, 64)
+  fmt.Println(str) // 输出: 3.14159
+
+```
 
 # 精度问题
+float32和float64类型的浮点数在进行数学运算时可能会遇到精度问题。这是由于浮点数在计算机中的表示方式决定的，它们无法精确表示所有的小数。当进行浮点数运算时（如乘法），这种精度误差可能会累积，导致结果不如预期那样精确。
+
+- 使用整数进行计算
+- 用固定精度的数学库, math/big包。这些库提供了可以表示任意精度数值的类型，并可以用来执行精确的数学运算。
+
+
+``` go
+import (
+    "fmt"
+    "math/big"
+)
+
+func main() {
+    // 使用big.Float表示两个浮点数
+    a := new(big.Float).SetFloat64(0.1)
+    b := new(big.Float).SetFloat64(0.2)
+
+    // 进行精确的乘法运算
+    result := new(big.Float).Mul(a, b)
+
+    // 打印结果
+    fmt.Println(result) // 输出: 0.02
+
+    // 设置字符串转float64
+    f := new(big.Float).SetString("0.33333333333333333333333333333333333333") // 一个很长的小数
+    // 将big.Float转换为float64
+    float64Value, _ := f.Float64()
+    fmt.Println(float64Value) // 输出: 0.3333333333333333
+}
+
+// big.Float提供了Int方法，可以将其转换为big.Int类型，然后再转换为普通的整数类型
+func main() {
+  // 创建一个big.Float并给它赋值
+  f := new(big.Float).SetString("123.456")
+
+  // 将big.Float转换为big.Int
+  i := new(big.Int)
+  f.Int(i) // 转换  使用Int方法会丢失小数部分，因为它只获取big.Float的整数部分。
+
+  // 输出big.Int的值
+  fmt.Println(i) // 输出: 123
+
+  // 将big.Int转换为int64
+  int64Value := i.Int64()  // 输出: 123
+}
+
+// Format 方法可以用来将浮点数格式化为字符串。类似于 fmt.Sprintf，但是它是为 big.Float 类型量身定制的。该方法接受两个参数：格式（和 fmt 包中的格式化谓词类似）和精度。
+func main() {
+    // 创建并设置一个big.Float值
+    f := new(big.Float).SetPrec(128).SetFloat64(123.456)
+
+    // 格式化big.Float为字符串
+    // 'f' 表示浮点数记数法。第二个参数表示小数点后的精度。
+    // 此处设置为10，表示转换后的字符串小数点后有10位数字。
+    s := f.Text('f', 10)
+
+    fmt.Println(s) // 输出: 123.4560000000
+}
+
+// 
+  money := new(big.Float).SetFloat64(123.456)
+  bs := new(big.Float).SetFloat64(100)
+  valbig := new(big.Float).Mul(money, bs)
+  // int转float Text会四舍五入0位小数
+  moneyFloat, _ := strconv.ParseFloat(valbig.Text('f', 0), 64)
+```
+
+- 由于protof的float或double类型，接收前端参数后，进行处理出现精度问题
+
+
+``` go
+  money := new(big.Float).SetFloat64(123.456)
+  bs := new(big.Float).SetFloat64(100)
+  valbig := new(big.Float).Mul(money, bs)
+  // int转float Text会四舍五入0位小数
+  moneyFloat, _ := strconv.ParseFloat(valbig.Text('f', 0), 64)
+```
