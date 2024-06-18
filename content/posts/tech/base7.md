@@ -86,6 +86,94 @@ mermaid: true #自己加的是否开启mermaid
 ## 启动层
 启动层始终包含在默认域中（即，它们在所有流量上运行）。启动层中的实验为参数提供了替代默认值。
 
+# hash算法
+[DEK Hash 和 Murmur Hash](https://zhuanlan.zhihu.com/p/648347825) 
+DEK Hash 的缺陷
+
+- github.com/spaolacci/murmur3 现有的包
+``` go 
+import (
+    "fmt"
+    "github.com/spaolacci/murmur3"
+)
+
+func main() {
+    text := "Hello, World!"
+    hashValue := murmur3.Sum32([]byte(text))
+    fmt.Printf("Hash of '%s': 0x%x\n", text, hashValue)
+}
+``` 
+
+- 实现MurmurHash算法在Go语言中通常涉及较复杂的位操作和数学计算
+``` go 
+package main
+import (
+    "encoding/binary"
+    "fmt"
+)
+//  Go 语言中实现 MurmurHash3 算法（32-bit 版本） MurmurHash算法的不同变体（例如32位、64位、128位版本）需要不同的实现。
+func murmur3_32(key []byte, seed uint32) uint32 {
+    const (
+        c1 uint32 = 0xcc9e2d51
+        c2 uint32 = 0x1b873593
+        r1 uint32 = 15
+        r2 uint32 = 13
+        m  uint32 = 5
+        n  uint32 = 0xe6546b64
+    )
+
+    hash := seed
+    length := len(key)
+    roundedEnd := (length & 0xfffffffc) // round down to 4 byte block
+
+    for i := 0; i < roundedEnd; i += 4 {
+        k1 := binary.LittleEndian.Uint32(key[i : i+4])
+        k1 *= c1
+        k1 = (k1 << r1) | (k1 >> (32 - r1))
+        k1 *= c2
+
+        hash ^= k1
+        hash = ((hash << r2) | (hash >> (32 - r2))) * m + n
+    }
+
+    if length > roundedEnd {
+        tail := uint32(0)
+        switch length & 3 {
+        case 3:
+            tail |= uint32(key[roundedEnd+2]) << 16
+            fallthrough
+        case 2:
+            tail |= uint32(key[roundedEnd+1]) << 8
+            fallthrough
+        case 1:
+            tail |= uint32(key[roundedEnd])
+            tail *= c1
+            tail = (tail << r1) | (tail >> (32 - r1))
+            tail *= c2
+            hash ^= tail
+        }
+    }
+
+    hash ^= uint32(length)
+    hash ^= hash >> 16
+    hash *= 0x85ebca6b
+    hash ^= hash >> 13
+    hash *= 0xc2b2ae35
+    hash ^= hash >> 16
+
+    return hash
+}
+
+func main() {
+    text := "Hello, World!"
+    hashValue := murmur3_32([]byte(text), 0)
+    fmt.Printf("Hash of '%s': 0x%x\n", text, hashValue)
+}
+```
+## hash算法也用于布隆过滤器
+[布隆过滤器如何实现? - 小徐先生的回答 - 知乎](https://www.zhihu.com/question/389604738/answer/3152180842)
+
 # 案例用于投放广告系统的设计
 
 https://o15vj1m4ie.feishu.cn/wiki/D58lwXOAoisY8TkSbr8cQvIrn4d
+
