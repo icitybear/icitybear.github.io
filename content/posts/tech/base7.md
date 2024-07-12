@@ -62,7 +62,7 @@ mermaid: true #自己加的是否开启mermaid
 - AB实验+hash分流+大数定律 应该是天然的正交
 # 谷歌分层重叠实验框架
 在正交实验的基础上，通过对流量的切割，以及分层重叠嵌套，便可设计出更为灵活的AB实验框架。
-## 概念
+## 概念(直接看得物的)
 1) domain：域，是流量的分段。全部流量被切割之后的一段流量  
 
 2）layer：层， 在layer里面包含一系列可以改变的参数。例如上面的实验可以分成2个layer，layer1对应实验1，layer2对应实验2。
@@ -103,6 +103,53 @@ func main() {
     fmt.Printf("Hash of '%s': 0x%x\n", text, hashValue)
 }
 ``` 
+- 离散性验证
+``` go 
+import (
+	"math/rand"
+	"github.com/spaolacci/murmur3"
+)
+
+func TestParse(t *testing.T) {
+	scale := 50 //概率
+	// 演示随机生成1w次hash的分布情况
+	hit1 := 0
+	hit2 := 0
+	uhit1 := 0
+	uhit2 := 0
+	for i := 0; i < 100; i++ {
+		text := randStr() // 生产的随机字符串
+		hash := murmur3.Sum32([]byte(text))
+		fmt.Printf("str: %s, Hash: %d\n", text, hash)
+		// 模是1000的情况
+		if hash%1000 < uint32(scale)*10 {
+			hit1 += 1
+		} else {
+			uhit1 += 1
+		}
+		// 模是100的情况
+		if hash%100 < uint32(scale) {
+			hit2 += 1
+		} else {
+			uhit2 += 1
+		}
+	}
+    // 不管模取多少 循环大于100后 概率都是接近scale
+	fmt.Printf("hit1: %d, uhit1: %d \n hit2: %d, uhit2: %d\n", hit1, uhit1, hit2, uhit2)
+}
+
+func randStr() string {
+	n := 32
+	const charset = "abcdefghijklmnopqrstuvwxyz0123456789"
+	rand.Seed(time.Now().UnixNano())
+
+	b := make([]byte, n)
+	for i := range b {
+		b[i] = charset[rand.Intn(len(charset))]
+	}
+	return string(b)
+}
+```
 
 - 实现MurmurHash算法在Go语言中通常涉及较复杂的位操作和数学计算
 ``` go 
@@ -177,3 +224,6 @@ func main() {
 
 https://o15vj1m4ie.feishu.cn/wiki/D58lwXOAoisY8TkSbr8cQvIrn4d
 
+# 得物
+[得物技术浅谈AB实验设计实现与分流算法](https://segmentfault.com/a/1190000039180775)
+<font color="red">得物系列技术文章</font>
