@@ -101,3 +101,6 @@ mermaid: true #自己加的是否开启mermaid
 4. Element-UI: Element-UI 是一个<font color="red">基于 Vue.js 的桌面 UI 组件库</font>，提供了丰富的 UI 组件和样式，适用于构建中大型 Web 应用程序。它<font color="red">遵循了 Google 的 Material Design 设计规范</font>，提供了一致且易于使用的用户界面组件。
 5. Material-UI: Material-UI 是一个<font color="red">基于 Google 的 Material Design 设计语言的 React UI 框架。</font>它提供了一套符合 Material Design 规范的 React 组件，可以帮助开发者构建具有时尚外观的 Web 应用程序。
 6. Semantic UI: Semantic UI 是一个语义化的 UI 框架，它提供了一组<font color="red">语义化的 HTML 标记和 CSS 类</font>，可以帮助开发者构建具有清晰结构和易于理解的用户界面。Semantic UI 支持响应式设计和模块化组件，使得开发者可以轻松创建各种类型的 Web 界面。
+
+
+vue2+webpack技术栈已逐步成为历史，且2023年底vue2已停止维护。从2020年底推出vue3后，vue3+vite技术栈已逐步流行起来
