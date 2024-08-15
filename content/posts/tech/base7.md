@@ -8,7 +8,7 @@ categories: # 没有分类界面可以不填写
 tags: # 标签
 - 基础
 keywords: 
-- 
+- ab实验
 description: "" #描述 每个文章内容前面的展示描述
 weight: # 输入1可以顶置文章，用来给文章展示排序，不填就默认按时间排序
 slug: ""
@@ -62,6 +62,7 @@ mermaid: true #自己加的是否开启mermaid
 - AB实验+hash分流+大数定律 应该是天然的正交
 # 谷歌分层重叠实验框架
 在正交实验的基础上，通过对流量的切割，以及分层重叠嵌套，便可设计出更为灵活的AB实验框架。
+![alt text](image8.png)
 ## 概念(直接看得物的)
 1) domain：域，是流量的分段。全部流量被切割之后的一段流量  
 
@@ -87,10 +88,12 @@ mermaid: true #自己加的是否开启mermaid
 启动层始终包含在默认域中（即，它们在所有流量上运行）。启动层中的实验为参数提供了替代默认值。
 
 # hash算法
-[DEK Hash 和 Murmur Hash](https://zhuanlan.zhihu.com/p/648347825) 
-DEK Hash 的缺陷
 
-- github.com/spaolacci/murmur3 现有的包
+## DEK Hash 的缺陷
+[DEK Hash 和 Murmur Hash](https://zhuanlan.zhihu.com/p/648347825) 
+
+## Murmur Hash
+github.com/spaolacci/murmur3 现有的包
 ``` go 
 import (
     "fmt"
@@ -103,7 +106,7 @@ func main() {
     fmt.Printf("Hash of '%s': 0x%x\n", text, hashValue)
 }
 ``` 
-- 离散性验证
+## 离散性验证
 ``` go 
 import (
 	"math/rand"
@@ -217,12 +220,56 @@ func main() {
     fmt.Printf("Hash of '%s': 0x%x\n", text, hashValue)
 }
 ```
+## 他趣令牌桶
+- 不同hash算法, 获取指定字符串的桶编号
+``` java
+/** 
+ * 方法描述: 获取指定字符串的桶编号
+ * @param str 字符串
+ * @param bucketAccount 桶数量
+ * @return 桶编号
+ */
+public static long getBucketNum(String str, int bucketAccount) {
+    byte[] buf;
+    try {
+        buf = str.getBytes(StandardCharsets.UTF_8);
+    } catch (Exception e) {
+        buf = str.getBytes();
+    }
+    long seed = 0xcbf29ce484222325L;
+    for (int i = 0; i < buf.length; i++) {
+        seed += (seed << 1) + (seed << 4) + (seed << 5) + (seed << 7) + (seed << 8) + (seed << 40);
+        seed ^= buf[i];
+    }
+    if (seed < 0) {
+        seed = Math.abs(seed);
+    }
+    return seed % bucketAccount+1;
+}
+
+public static long getBucketNumByConsistentHash(String str, int bucketAccount) {
+    byte[] buf;
+    try {
+        buf = str.getBytes(StandardCharsets.UTF_8);
+    } catch (Exception e) {
+        buf = str.getBytes();
+    }
+    long seed = 0xcbf29ce484222325L;
+    for (int i = 0; i < buf.length; i++) {
+        seed += (seed << 1) + (seed << 4) + (seed << 5) + (seed << 7) + (seed << 8) + (seed << 40);
+        seed ^= buf[i];
+    }
+    return Hashing.consistentHash(seed, bucketAccount);
+}
+```
+![alt text](image5.png)
+![alt text](image6.png)
 ## hash算法也用于布隆过滤器
 [布隆过滤器如何实现? - 小徐先生的回答 - 知乎](https://www.zhihu.com/question/389604738/answer/3152180842)
 
 # 案例用于投放广告系统的设计
-
-https://o15vj1m4ie.feishu.cn/wiki/D58lwXOAoisY8TkSbr8cQvIrn4d
+<font color="red">[王树森 ab/test](https://www.bilibili.com/video/BV1J44y1o7g)</font>
+![alt text](image7.png)
 
 # 得物
 [得物技术浅谈AB实验设计实现与分流算法](https://segmentfault.com/a/1190000039180775)

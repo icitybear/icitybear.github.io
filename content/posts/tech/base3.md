@@ -7,6 +7,7 @@ categories: # 没有分类界面可以不填写
 - tech
 tags: # 标签
 - 基础
+- 缓存
 keywords: 
 - 
 description: "" #描述 每个文章内容前面的展示描述
@@ -73,3 +74,12 @@ cdn是有失效机制的 所以可以通过标记cdn服务器的资源失效触�
 
 - 通过请求参数加版本号，需要cdn支持并开启全路径缓存 ，业务上都算常见（看后端怎么写）。缓存都是按url区别的，可以带参数也可以不带参数，还可以只带个别参数。
 站在 CDN厂商立场来说，CDN管不了客户的代码怎么写，即使url带时间戳，CDN缓存的时候也可以选择忽略掉或保留,<font color="red">举例子一个图片url可能同时携带尺寸参数和鉴权参数，缓存的时候通常会保留尺寸参数但忽略鉴权参数。</font>
+
+# 如何查看一个URL是否命中CDN缓存
+
+- 设置cdn不缓存
+header('Cache-Control: no-cache, private, max-age=0');
+header('Expires: Mon, 26 Jul 2013 05:00:00 GMT');
+
+- 主要查看响应头信息中的“X-Cache”字段。显示“MISS”，说明没有命中CDN缓存，是回源的。显示“HIT”，是命中了CDN缓存。
+![alt text](image1.png)

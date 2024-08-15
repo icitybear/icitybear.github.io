@@ -100,3 +100,28 @@ QPS    耗时    并发数
   - <font color="red">MetricBucket 里的 count 并不是一个数字类型，而是一个 map 类型，它将上面提到的 cnt 和 Latency 等都作为一种 key-value 来存放。</font>以后想要新增字段就不需要改代码了，提高了代码扩展性。
 - bucket环形数组，在 sentinel-golang 中叫 AtomicBucketWrapArray,
 - 滑动窗口，它在 sentinel-golang 中叫 LeapArray
+
+# 案例
+- cpu和内存被打满（限流导致的）
+ <font color="red">**ab实验平台崩了(下游系统限流)，但是ab平台未直接熔断，http连接池被打满**</font>
+1. AB系统间的接口约定qps问题
+2. 本来b系统qps 1000 预留了1000 结果暴涨到3000就扛不住 （或者a请求b系统的一个接口，缓存穿透，导致请求时长增加，qps抗压下降）
+3. b系统崩前直接限流（保护自己），正常进出会很快<font color="red">(这里应该不应该降低告警等级)</font>
+4. 然后请求a系统-》b系统，a的请求就要等待了（系统设置超时soa 3秒 重试3次）量直接翻倍了。
+5. <font color="red">等待链接（b线程池数量才设置10 远远不够）</font>，等待的请求数 因为报异常（限流code xxx）所以没有警觉，而继续等待, 越堆越多把cpu和内存打满
+
+A是j91系统-ab实验平台 B是eff系统画像平台
+![alt text](image7.png)
+
+![alt text](image8.png)
+- j91系统
+  - 2023-10-16 11:14:10 本轮第一波被限流。
+    - 2023-10-16 11:14:10 j91-75fbbc9d99-t5xfn | online | 10.66.18.9 | cn-zhangjiakou.10.63.99.201 | 调用user-profile, assertGroupWithLabel，失败原因请求过载，已被限流！<font color="red"> (这里调用的是eff系统的服务接口)</font>
+  -  2023-10-16 11:16:09 开始出现http连接池被打满
+    - j91-75fbbc9d99-t5xfn | online | 10.66.18.9 | cn-zhangjiakou.10.63.99.201 | soa请求失败 org.apache.http.conn.ConnectionPoolTimeoutException: Timeout waiting for connection from pool at org.apache.http.impl.conn.PoolingHttpClientConnectionManager.leaseConnection(PoolingHttpClientConnectionManager.java:316)
+
+
+- 限流阈值早就出现了，但是在画像平台和AB试验平台**全部为warn异常**,导致没有及时发现
+  - 限流是有损的，不同的业务针对限流的error基于是否是强依赖敏感度不同
+  - <font color="red">但是对于画像平台限流是强感知的。(画像平台应该报error)</font>
+  ![alt text](image9.png)
