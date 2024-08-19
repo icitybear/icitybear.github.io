@@ -126,6 +126,31 @@ bool(true)
 bool(false)
 ```
 ![alt text](image.png)
+
+## 扩展bcmath精度问题
+-  bc 函数要求2个string，当传递 number 时，php 会自动将 number 转成对应的 string
+-  <font color="red">字符串转数值, 科学计数法值作为参数的坑</font>
+``` php
+$nums = [75.99999, 20, 3, 1, 0.00001];
+$total = 0;
+foreach ($nums as $num) {
+    $total = bcadd($total, $num, 5);
+}
+echo $total . PHP_EOL;
+// 输出了99.99999，为啥0.00001没计算，明显也是保留5位小数点
+// 原因是 bc 函数要求2个string，当传递 number 时，php 会自动将 number 转成对应的 string
+// 最后的 0.00001 预期转换为 '0.00001' 但实际被转换成 '1.0E-5' 导致最后的 0.00001 不被计算到 $total 里（bcadd执行错误）
+
+$nums = [75.99999, 20, 3, 1, 0.00001];
+$total = '0';
+foreach ($nums as $num) {
+    // (string) $num 或 strval($num) 都会转成 '1.0E-5'
+    $total = bcadd($total, sprintf('%.5f', $num), 5);
+}
+echo $total . PHP_EOL; // output '100.00000'
+```
+![alt text](image1.png)
+
 ## 过滤器 函数 filter_xxx()
 [filter过滤函数](https://note.youdao.com/s/6iPZ7Idw)
 

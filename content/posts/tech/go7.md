@@ -164,7 +164,10 @@ Hello World! 4
 - Go语言规定每个 switch 只能有一个 default 分支
 - switch的<font color="red">每一个case是从上到下去匹配</font>，如果没有break，则每一个都会去匹配
 - 不同的 case 表达式使用<font color="red">逗号分隔</font>。 case "mum", "daddy":
-- 紧接着执行下一个 case，但是为了兼容一些移植代码，依然加入了 fallthrough 关键字来实现这一功能但是新写的代码不建议使用
+- Go里面switch默认相当于每个case最后带有break，匹配成功后不会自动向下执行其他case，而是跳出整个switch, 但是可以使用fallthrough强制执行后面的case代码。
+  - fallthrough不能用在switch的最后一个分支
+  - 加了fallthrough后，会直接运行【紧跟的后一个】case或default语句，不论条件是否满足都会执行，后面的条件并不会再判断了
+  
 ``` go
 var a = "hello"
 switch a {
@@ -175,6 +178,26 @@ case "world":
 default:
     fmt.Println(0)
 }
+```
+
+``` go
+s := "abcd" 
+switch s[1] {
+case 'a' 
+    fmt.Println("the integer was <=4") 
+    fallthrough
+case 'b': 
+    fmt.Println("The integer was <= 5") 
+    fallthrough // 会直接运行【紧跟的后一个】case或default语句，不论条件是否满足都会执行
+case 'c': 
+    fmt.Println("The integer was <= 6") 
+default:
+    fmt.Println("default case")
+}
+
+// 输出
+// The integer was <= 5
+// The integer was <= 6
 ```
 
 # 踩坑点
