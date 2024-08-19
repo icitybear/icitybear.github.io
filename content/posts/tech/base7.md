@@ -266,7 +266,9 @@ public static long getBucketNumByConsistentHash(String str, int bucketAccount) {
 ![alt text](image6.png)
 ## hash算法也用于布隆过滤器
 [布隆过滤器如何实现? - 小徐先生的回答 - 知乎](https://www.zhihu.com/question/389604738/answer/3152180842)
-b站视频
+b站视频有对应视频
+
+[布谷鸟过滤器-知乎](https://zhuanlan.zhihu.com/p/436642641)
 
 # 案例用于投放广告系统的设计
 <font color="red">[王树森 ab/test](https://www.bilibili.com/video/BV1J44y1o7g)</font>
