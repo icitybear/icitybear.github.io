@@ -66,10 +66,11 @@ QPS    耗时    并发数
 1. 接入 Prometheus 的代码库，然后在每个需要计算 QPS 的地方，加入类似Counter.Inc() 函数执行次数加1(打点) 
 2. grafana调取时序数据库里的打点数据，在监控面板上通过特殊的表达式(PromQL)，对某段时间里的打点进行求导计算速率，这样就能看到这个函数的调用 QPS 啦。
 ![alt text](image2.png)
+3. 单纯的限流：漏桶、令牌桶等，他们的缺点是单一限流和无差别限流。此外，系统需要先做压测，拿到一个初始的限流参考值，超过这个值才启动限流机制
 
-# 实时性要求较高的服务治理场景。 sentinel-golang服务治理
+# 实时性要求较高的服务治理场景
 - sentinel-golang, 阿里开源的go包, 盖流量路由/调度、流量染色、流控降级、过载保护/实例摘除[文档](https://sentinelguard.io/zh-cn/docs/golang/flow-control.html)
-- <font color="red">实时计算服务 api 当前的 QPS，当它大于某个阈值时，可以做一些自定义逻辑，比如是直接拒绝掉一些请求，还是将请求排队等一段时间后再处理等等，也就是所谓的限流。</font>
+- <font color="red">实时计算服务 api 当前的 QPS，当它大于某个阈值时，可以做一些自定义逻辑，比如是直接拒绝掉一些请求，还是将请求排队等一段时间后再处理等等，也就是所谓的限流。</font> （相比令牌桶优点：自适应）
 
 ## 方案1 单独变量cnt
 ![alt text](image3.png)
@@ -94,12 +95,21 @@ QPS    耗时    并发数
 
 <font color="red">函数的平均耗时 = Latency总和/cnt总和</font>
 
+# 动态限流
 ## sentinel-golang相关源码
 - 基于 sliding_window_metric.go 里的 GetQPS 开始看起，它是实时计算 QPS 的入口函数
 - 环形数组里存放的 bucket 在代码里就是 MetricBucket
   - <font color="red">MetricBucket 里的 count 并不是一个数字类型，而是一个 map 类型，它将上面提到的 cnt 和 Latency 等都作为一种 key-value 来存放。</font>以后想要新增字段就不需要改代码了，提高了代码扩展性。
 - bucket环形数组，在 sentinel-golang 中叫 AtomicBucketWrapArray,
 - 滑动窗口，它在 sentinel-golang 中叫 LeapArray
+
+## kratos的限流
+https://pandaychen.github.io/2020/07/12/KRATOS-LIMITER/
+- 自适应限流算法原理 BBR 实现
+- [限流包](https://github.com/go-kratos/aegis/ratelimit/bbr)
+
+熔断，用于提供客户端熔断功能，默认实现了sre breaker 算法。
+限流，用于服务端流量控制，默认使用bbr limiter算法。
 
 # 案例
 - cpu和内存被打满（限流导致的）

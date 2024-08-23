@@ -119,6 +119,7 @@ mermaid: true #自己加的是否开启mermaid
 # <font color="red">实战(go项目包)</font>
 - [一致性缓存理论分析与技术实战](https://zhuanlan.zhihu.com/p/697171272)
   - B站有对应的视频
+
 - [git项目consistent_cache包](https://github.com/xiaoxuxiansheng/consistent_cache)
 - 避开中间键binlog, 延时双删的进一步优化
 ## 背景
@@ -182,4 +183,10 @@ mermaid: true #自己加的是否开启mermaid
 - 写流程完成写 db 操作后，通过需要延迟一段时间再重新开启该笔数据下的 “写缓存机制”，其本质思路和缓存延时双删策略中“延时”的用意是一致的，就是避免在并发场景下，读取到 db 脏数据的读流程写 cache 操作恰好发生在写流程“写缓存机制”启用之后.如下图：
   ![alt text](image11.png)
 
+## 缺点
+双删依然无法解决删除失败的问题，个人感觉写流程 是先写db 再写cache 这个流程，这个流程下 在更新数据库的过程中，缓存层相当于一层屏障，读流程不会穿透到写数据库的这个流程中。最后如果删除失败 是有key 过期兜底的，或者采用最用一致性的方案保证最终数据的一致
+
+比如：写缓存禁用这两种情况，如果读流程特别特别慢，在最后写cache的时候超过了设定的延时，依然会导致缓存不一致
+
 ## consistent_cache包源码
+- todo 待补充
