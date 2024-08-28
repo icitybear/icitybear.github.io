@@ -29,3 +29,8 @@ cover:
 # reward: true # 打赏
 mermaid: true #自己加的是否开启mermaid
 ---
+美团大规模KV存储挑战与架构实践 4399缓存一致性hash
+- https://blog.csdn.net/zhaozhiqiang1981/article/details/139564621
+
+
+b站视频

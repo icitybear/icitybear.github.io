@@ -107,6 +107,8 @@ function s() {
 $csv = s('Demo');
 $csv->test();
 ```
+
+# 利用反射访问非public
 比如 redis实例通过s方法获取后，使用scan方法
 <font color="red">注意：在 __call 魔术方法中，传递的参数无法传回原始调用处,所以无法在 __call 魔术方法中传递 参数引用</font>
 ``` php 
@@ -129,8 +131,8 @@ redis 迁移数据需要扫描旧  key
 如果直接使用 r() 方法返回的实例， scan 的时候会报下面这个错误，<font color="red">然后 $it 一直不迭代，导致死循环</font>
 [code-warinng]: [2]Parameter 1 to Redis::scan() expected to be a reference, value given exception发生错误的位置为: /data/html/privilege/vendor/haibao/xy/base/XyRedis.php 中的第124行
 -  解决方案： 通过反射调用非 public 方法
-  
-# 通过反射调用非 public 方法
+![alt text](image.png)
+## 通过反射调用非 public 方法
 
 ``` php 
 $method = new ReflectionMethod(Benz::class, 'customMethod');
