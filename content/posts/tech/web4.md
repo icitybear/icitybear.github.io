@@ -1,7 +1,7 @@
 ---
-title: "会话方案-cookie,session和token,jwt" #标题
-date: 2024-08-20T14:12:31+08:00 #创建时间
-lastmod: 2024-08-20T14:12:31+08:00 #更新时间
+title: "授权oauth2.0" #标题
+date: 2024-09-05T14:50:50+08:00 #创建时间
+lastmod: 2024-09-05T14:50:50+08:00 #更新时间
 author: ["citybear"] #作者
 categories: # 没有分类界面可以不填写
 - tech
