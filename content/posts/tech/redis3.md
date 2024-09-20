@@ -1,5 +1,5 @@
 ---
-title: "k/v hash环的演进" #标题
+title: "k/v一致性hash, hash环的演进" #标题
 date: 2024-08-20T10:47:47+08:00 #创建时间
 lastmod: 2024-08-20T10:47:47+08:00 #更新时间
 author: ["citybear"] #作者
@@ -29,8 +29,20 @@ cover:
 # reward: true # 打赏
 mermaid: true #自己加的是否开启mermaid
 ---
-美团大规模KV存储挑战与架构实践 4399缓存一致性hash
-- https://blog.csdn.net/zhaozhiqiang1981/article/details/139564621
+# 一致性hash
+1. [一致性哈希算法原理解析](https://zhuanlan.zhihu.com/p/653210271)
+- 对应b站视频
+2. [从零到一落地实现一致性哈希算法](https://zhuanlan.zhihu.com/p/654778311)
 
+- <font color="red">[美团大规模KV存储挑战与架构实践-b站视频](https://b23.tv/CabuXug)</font>
+  - 4399缓存一致性hash
+  - https://blog.csdn.net/zhaozhiqiang1981/article/details/139564621
 
-b站视频
+# 分布式锁
+- [Golang分布式锁技术攻略](https://b23.tv/iVOODdQ)
+  - 文章 https://zhuanlan.zhihu.com/p/626924850
+- etcd实现分布式锁
+  - raft
+- redis实现（一般是这个）[Redis分布式锁进阶篇-b站视频](https://b23.tv/aRUuFZQ)
+  - lua
+  - 文章 https://zhuanlan.zhihu.com/p/629247043

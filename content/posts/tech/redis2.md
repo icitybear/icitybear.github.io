@@ -30,7 +30,7 @@ cover:
 mermaid: true #自己加的是否开启mermaid
 ---
 # 缓存的过期策略和key的失效策略
-- [b站视频](https://b23.tv/fvdQV2X)
+- <font color="red">[b站视频](https://b23.tv/fvdQV2X)</font>
 - FIFO（先进先出） LRU（时间） LFU（频率） (hash和双向链表实现)
 - 定时任务，过期时间（同步或异步），访问时删除    redis的key失效
 
@@ -96,30 +96,33 @@ mermaid: true #自己加的是否开启mermaid
 {{< innerlink src="posts/tech/redis3.md" >}}
 
 # 多级缓存架构和热点key检测的设计与分析
-[b站视频](https://b23.tv/pSJjN34)
+- <font color="red">[b站视频](https://b23.tv/pSJjN34)</font>
 - 本地缓存（服务端-单体内存缓存和客户端缓存）
 - 存储介质的缓存
 
 # redis一些最佳实践
+## 大key新增数据，hash表的rehash机制导致
+- [【有道云笔记】redis内存使用率异常增长问题](https://note.youdao.com/s/NPBPDw6)
+## 查询大key,hash拆分为string
+[【有道云笔记】redis大key拆分](https://note.youdao.com/s/C1javJgV)
+1. **高峰时期流量增大**
+2. 一个key存储了全部的任务内容，所有完成任务的都需要查询该key，当查询的量足够大时，对于存储这个key的节点就会占用较大资源（cpu，内存）, 这个时候应该拆分
+3. 将该key 拆分成每个任务一个 key+任务id 的形式，任务的key会散落到redis实例下的不同节点，<font color="red">由多个节点分担这个key的查询压力，设置过期时间，让key在过期后会切换不同的节点，达到动态平衡的效果</font>
+- [【有道云笔记】Redis缓存各种大key的的拆分方案](https://note.youdao.com/s/A9PZta3X)
 
-## 删除单个key时，redis不可用(参照其他文档针对大key的解决方案)
-- <font color="red">[【有道云笔记】redis缓存大key删除](https://note.youdao.com/s/M0bGM5MG)</font>
+## 删除单个大key
+如果线上redis出现大key，断然不可立即执行del，因为大key的删除会造成阻塞。阻塞期间，所有请求都可能造成超时，当超时越来越多，新的请求不断进来，这样会造成redis连接池耗尽，尽而引发线上各种依赖redis的业务出现异常。
+- **<font color="red">[【有道云笔记】redis缓存大key删除](https://note.youdao.com/s/M0bGM5MG)</font>**
+   - 立即删除<font color="red">(各种scan查询，配合相关数据类型删除语法)</font>
+   - 过期删
+     - <font color="red">同步删除 过期策略（定期删除和惰性删除（惰性的淘汰策略）</font>
+     - 异步删除 主动删除和程序被动删除
 
-String O(1)
-List Hash Set Zset  O(n) n越大。会阻塞主线程，如何del 先获取元素数量（5000），否则分批删除
-``` go
-llen  lpop rpop
-hlen hscan
-scard  sscan
-zcard  scan
-```
-
-
-## keys命令优化为scan 查找遍历
+## keys与scan(scan查询命令代替各数据类型的keys)
 - keys命令  遍历算法O(n) 没有limit
 - 在正式的生产环境中一般不会直接使用keys这个命令，因为他会返回所有的键，如果键的数量很多会导致查询时间很长，进而导致服务器阻塞，所以需要scan来进行更细致的查找
 - String O(1)
-- List Hash Set Zset  O(n) 
+- List Hash Set Zset  O(n)  n越大。会阻塞主线程，如何del 先获取元素数量（5000），否则分批删除
 - <font color="red">使用scan代替 O（N） 但是是分次进行 (不会阻塞线程) 能指定count  会返回游标（下次要执行）+ 数据 </font>
   - 根据返回的游标值是否为0 判断遍历结束
   - 缺点：遍历中途发生数据修改，之后能否遍历到不确定（根据游标来的 不是表面顺序），客户端要去重
@@ -207,8 +210,9 @@ TYPE可以根据具体的结构类型来匹配该类型的键
 ```
 
 ## 估算需要多大的redis 
-http://www.redis.cn/redis_memory/
-MEMORY USAGE mykey命令，可以在测试环境查看这个key具体占用的字节，在根据我们目前的日活60w来提前预估可能会存的量，可以提前预估一下占用的内存
+- http://www.redis.cn/redis_memory/
+- MEMORY USAGE mykey命令，可以在测试环境查看这个key具体占用的字节，在根据我们目前的日活60w来提前预估可能会存的量，可以提前预估一下占用的内存
+
 - 在 Redis 中，一个 key 占用的内存空间主要由如下三部分组成：
   1. 键名本身的长度。可以使用 STRLEN key 命令获取。
   2. 键值的长度。可以使用 STRLEN key 命令获取。

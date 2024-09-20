@@ -1,13 +1,12 @@
 ---
-title: "go数据结构算法" #标题
-date: 2023-07-16T21:47:16+08:00 #创建时间
-lastmod: 2023-07-16T21:47:16+08:00 #更新时间
+title: "Mysql1" #标题
+date: 2024-09-20T14:16:18+08:00 #创建时间
+lastmod: 2024-09-20T14:16:18+08:00 #更新时间
 author: ["citybear"] #作者
 categories: # 没有分类界面可以不填写
 - tech
 tags: # 标签
-- 数据结构
-- 算法
+- mysql
 keywords: 
 - 
 description: "" #描述 每个文章内容前面的展示描述
@@ -29,12 +28,15 @@ cover:
 # reward: true # 打赏
 mermaid: true #自己加的是否开启mermaid
 ---
-- https://geekr.dev/go-data-structure-and-algorithm 汇总数据结构和算法 常见面试算法
 
-1. [基于 golang 从零到一实现时间轮算法](https://zhuanlan.zhihu.com/p/658079556)
-2. [基于golang从零到一实现跳表](https://zhuanlan.zhihu.com/p/620291031)
-   - [如何实现一个并发安全的跳表](https://zhuanlan.zhihu.com/p/622177029)
+- mysql完成一次查询的流程
 
-3. [文解析raft算法原理](https://zhuanlan.zhihu.com/p/600147978)
+- [mysql innodb 锁机制实现原理]()
+  - 文章 https://zhuanlan.zhihu.com/p/699793619
 
-4. [基于 Golang 实现前缀树 Trie](https://zhuanlan.zhihu.com/p/642258329)
+- [mysql innodb 事务实现原理]()
+  - 文章 https://zhuanlan.zhihu.com/p/704967664
+
+死锁排查案例
+
+常见优化

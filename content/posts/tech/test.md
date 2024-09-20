@@ -38,13 +38,11 @@ cookie session jwt 跨域 单点
 加密
 git
 http
-redis
 mysql
-
 中间件
 
 tool 抓包 vscode apifox iterm2  https://xiaozhou.net/learn-the-command-line-iterm-and-zsh-2017-06-23.html
-
+业务 红包，抽奖加权，脚手架
 算法写到go那
 **粗体**
 <font color="red">红色</font>
