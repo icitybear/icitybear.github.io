@@ -166,7 +166,7 @@ func Test_decorator(t *testing.T) {
 ``` 
 # <font color="red">增强函数实现装饰器模式(闭包)</font>
 - 拦截前后会执行的核心逻辑执行方法（核心类）type xxx func(xxx)xx
-- 
+- 函数的参数和返回值签名都要与要加强的一致
 ``` go
 //  handleFunc 对应的是装饰器模式中的核心类
 type handleFunc func(ctx context.Context, param map[string]interface{}) error
@@ -184,13 +184,15 @@ func Decorate(fn handleFunc) handleFunc {
         return err
     }
 }
+
+// 以下具体调用  再进一步是中间件写法
 ```
 
-# 小例子-包装耗时功能(闭包)
+## 小例子-包装耗时功能(闭包)
 - 通过**高阶函数**实现
 - 核心思路就是在被修饰的功能模块（这里是外部传入的乘法函数 f）**<font color="red">执行前后加上一些额外的业务逻辑，而又不影响原有功能模块的执行.</font>**
 - 在 main 函数中调用乘法函数 multiply 时，如果要应用装饰器，需要通过装饰器 execTime 包裹，装饰器返回的是个匿名函数，所以需要再度调用<font color="red">(延时执行)</font>才能真正执行，
-## 基本功能模块
+### 基本功能模块
 ``` go
 package main
 
@@ -209,7 +211,7 @@ func main() {
 ```
 **不修改现有 multiply 函数代码的前提下计算乘法运算的执行时间**
 
-## 装饰器模式
+### 装饰器模式增强
 ``` go
 package main
 
@@ -254,7 +256,7 @@ func main() {
 // --- 执行耗时: 180ns ---
 // 2 x 8 = 16
 ```
-- 为了实现更加通用的函数执行耗时计算功能，应该将 MultiPlyFunc 函数参数和返回值声明为泛型
+- **为了实现更加通用的函数执行耗时计算功能，应该将 MultiPlyFunc 函数参数和返回值声明为泛型**
 
 # grpc-go 中对拦截器链(Interceptor) chainUnaryInterceptors 的实现（闭包）
 https://github.com/grpc/grpc-go
