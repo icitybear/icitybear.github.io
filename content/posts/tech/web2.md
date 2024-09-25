@@ -30,3 +30,9 @@ cover:
 # reward: true # 打赏
 mermaid: true #自己加的是否开启mermaid
 ---
+1. 23年 文章：[解析 Golang 网络 IO 模型之 EPOLL](https://zhuanlan.zhihu.com/p/609629545)
+   - 视频：
+2. 24年 文章：[万字解析 golang netpoll 底层原理](https://zhuanlan.zhihu.com/p/721422268)
+   - 视频：
+
+万字解析 golang netpoll 底层原理：这是一个力求温故而知新的重置篇章，希望在有了不同语言间横向对比的视角后，能够对 golang 底层 io 模型设计、方案取舍原因有着更加立体的认知. 在本文中，我们将涉及到的如下知识点：io多路复用概念、epoll实现原理、针对 golang 底层 epoll 应用细节以及 netpoll 框架模型进行源码级别的讲解.
