@@ -131,6 +131,7 @@ func TestSliceShareMemory(t *testing.T) {
 与遍历数组一致
 
 ## 声明切片和空切片 初始化{}
+- 用途：接口返回时，比如返回map类型，序列化时时nil （null）, 与[]的区别
 - **<font color="red">空切片指声明了不填充默认值的slice{}（v值为[]）, 只声明不赋值是有区别的（v值nil），声明但是分配的是默认零值（v值[0 0]）</font>**
 ``` go
 func TestSliceComparing(t *testing.T) {

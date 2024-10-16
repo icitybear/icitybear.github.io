@@ -115,6 +115,47 @@ for range 结构是Go语言特有的一种的迭代结构，在许多情况下�
 4. <font color="red">val 始终为集合中对应索引的值拷贝</font>，因此它一般只具有只读性质，对它所做的任何修改都不会影响到集合中原有的值。
 5. 匿名变量本身不会进行空间分配，也不会占用一个变量的名字。
 
+## range 切片+指针 v只初始化一次
+- v 只初始化了一次，之后的遍历都是在原来遍历的基础上赋值，所有v的指针（地址）并没有变。该指针指向的是最后一次遍历的v的值
+``` go
+type Person struct {
+	name string
+}
+
+func main() {
+	arr := []Person{
+		Person{"小明"},
+		Person{"小刚"},
+	}
+	var res []*Person
+
+	for _, v := range arr {
+        fmt.Printf("v 指针 %p\n", &v)
+		fmt.Println("v 的值", v)
+		res = append(res, &v)
+	}
+    // 正确写法
+    // for i, _ := range arr {
+	// 	fmt.Printf("v 指针 %p\n", &arr[i])
+	// 	fmt.Println("v 的值", arr[i])
+	// 	res = append(res, &arr[i])
+	// }
+    fmt.Println(res)
+	// 遍历查看结果集
+	for _, person := range res{
+		fmt.Println("name-->:", person.name)
+	}
+}
+
+// v 指针 0xc0001101e0
+// v 的值 {小明}
+// v 指针 0xc0001101e0
+// v 的值 {小刚}
+// [0xc0001101e0 0xc0001101e0]
+// name-->: 小刚
+// name-->: 小刚
+```
+
 ## 新版1.22
 
 1.不再共享循环变量
