@@ -36,14 +36,14 @@ mermaid: true #自己加的是否开启mermaid
   - 视频
   - 他趣的g2 tqmq 纯redis
 
-- 单机cron
-
-- Asynq分布式任务队列
-{{< innerlink src="posts/tech/go38.md" >}}
-
 - go 语言分布式消息队列 nsq
    - 文章 https://zhuanlan.zhihu.com/p/665893174
    - 视频
+
+- 单机cron
+
+- Asynq分布式任务队列 （基于消息队列）
+{{< innerlink src="posts/tech/go38.md" >}}
 
 # 协程池
 - 使用 Go Channel 构建可扩展的并发 worker pool
@@ -55,9 +55,6 @@ mermaid: true #自己加的是否开启mermaid
   - 文章 [基于协程池架构实现分布式定时器](https://zhuanlan.zhihu.com/p/600380258)
   - 视频  
   
-  
-
-
 # 分布式事务
 - [漫谈分布式事务实现原理]()
   - 文章 https://zhuanlan.zhihu.com/p/648556608 事务消息和 TCC 事务两种分布式事务实现方案的技术原理
