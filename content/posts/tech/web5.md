@@ -29,3 +29,8 @@ cover:
 # reward: true # 打赏
 mermaid: true #自己加的是否开启mermaid
 ---
+
+【有道云笔记】前后端分离的单点登录设计与实现
+https://note.youdao.com/s/BIT7SbZ8
+
+- b站单点系统设计， 踢出登录人

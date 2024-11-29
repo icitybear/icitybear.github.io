@@ -31,8 +31,7 @@ mermaid: true #是否开启mermaid
 ## 图片
 *文章内容的直接图片*
 
-思维导图
-composer  kafka和普罗米修斯
+composer  kafka
 代码风格 git风格检测 php-cs-fixer sonar
 cookie session jwt 跨域 单点
 加密

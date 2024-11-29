@@ -29,3 +29,20 @@ cover:
 # reward: true # 打赏
 mermaid: true #自己加的是否开启mermaid
 ---
+
+# 视频讲解进化路线
+cookie seession token jwt
+【有道云笔记】session深入理解
+https://note.youdao.com/s/HUWN0mWl
+
+【有道云笔记】Session与Token认证机制 前后端分离下如何登录 - eret9616 - 博客园
+https://note.youdao.com/s/IZ42vwad
+
+【有道云笔记】HTTP跨域详解和解决方式-仙士可博客,技术博客,php,mysql,swoole,php博客
+https://note.youdao.com/s/9bwH7VT5
+
+【有道云笔记】什么是 JWT -- JSON WEB TOKEN - 简书
+https://note.youdao.com/s/F5LOP76i
+
+
+token与oauth2.0

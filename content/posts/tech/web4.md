@@ -29,3 +29,13 @@ cover:
 # reward: true # 打赏
 mermaid: true #自己加的是否开启mermaid
 ---
+
+【有道云笔记】OAuth 2.0 的四种方式 - 阮一峰的网络日志
+https://note.youdao.com/s/adrBVhZG
+
+【有道云笔记】微信开放平台开发——网页微信扫码登录（OAuth2.0） - WhyWin - 博客园
+https://note.youdao.com/s/CbrEn8Xe
+
+微信网页扫码登录和公众号授权登录
+
+投放管家授权
