@@ -29,6 +29,10 @@ cover:
 # reward: true # 打赏
 mermaid: true #自己加的是否开启mermaid
 ---
+# MQ 
+todo
+1. [日常工作，MQ的8种常用使用场景](https://mp.weixin.qq.com/s/6vDMvJ13RP2xPVCACBvW8w)
+2. [RocketMQ 的设计理念](https://mp.weixin.qq.com/s/i_bwyEb8QqfVLxY-R9odag) 有点rpc思想
 
 # 消息队列
 - 如何基于Redis实现消息队列

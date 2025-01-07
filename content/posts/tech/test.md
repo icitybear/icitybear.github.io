@@ -34,7 +34,7 @@ mermaid: true #是否开启mermaid
 composer  kafka
 代码风格 git风格检测 php-cs-fixer sonar
 cookie session jwt 跨域 单点
-加密
+
 git
 http
 mysql
