@@ -96,9 +96,10 @@ mermaid: true #自己加的是否开启mermaid
 
 # 前端的UI库
 1. Ant Design Vue是一个<font color="red">基于Ant Design系统和设计原则开发的Vue.js UI库。</font>它提供了一组高质量的Vue组件，用于构建具有一致和专业外观的Web应用程序。Ant Design Vue包括各种组件，如按钮、表单、表格、模态窗口等，所有组件都按照Ant Design设计语言进行样式化。它具有高度可定制性和易用性，是开发人员在使用Vue.js创建精美且用户友好界面时的热门选择。(Ant Design Vue 主要关注 UI 组件的构建和样式化，而 Nuxt.js 则是一个更全面的应用框架，提供了更多的功能和工具，帮助开发者构建 Vue.js 应用程序，包括 SSR 和 SSG 等。)
-2. Bootstrap: Bootstrap 是一个<font color="red">流行的 HTML、CSS 和 JavaScript 框架</font>，用于构建响应式和移动优先的网站和 Web 应用程序。它提供了各种组件和样式，可以帮助开发者快速搭建现代化的用户界面
-3. Tailwind CSS: Tailwind CSS 是一个<font color="red">实用的 CSS 框架，它提供了一组可定制的 CSS 实用类</font>，可以帮助开发者快速构建灵活和响应式的用户界面。与传统的 UI 框架不同，Tailwind CSS 注重原子级的 CSS 类，使得开发者可以更灵活地定制样式。
-4. Element-UI: Element-UI 是一个<font color="red">基于 Vue.js 的桌面 UI 组件库</font>，提供了丰富的 UI 组件和样式，适用于构建中大型 Web 应用程序。它<font color="red">遵循了 Google 的 Material Design 设计规范</font>，提供了一致且易于使用的用户界面组件。
+2. Element-UI: Element-UI 是一个<font color="red">基于 Vue.js 的桌面 UI 组件库</font>，提供了丰富的 UI 组件和样式，适用于构建中大型 Web 应用程序。它<font color="red">遵循了 Google 的 Material Design 设计规范</font>，提供了一致且易于使用的用户界面组件。
+3. Bootstrap: Bootstrap 是一个<font color="red">流行的 HTML、CSS 和 JavaScript 框架</font>，用于构建响应式和移动优先的网站和 Web 应用程序。它提供了各种组件和样式，可以帮助开发者快速搭建现代化的用户界面
+4. Tailwind CSS: Tailwind CSS 是一个<font color="red">实用的 CSS 框架，它提供了一组可定制的 CSS 实用类</font>，可以帮助开发者快速构建灵活和响应式的用户界面。与传统的 UI 框架不同，Tailwind CSS 注重原子级的 CSS 类，使得开发者可以更灵活地定制样式。
+   - Tailwind UI: 组件都是基于 Tailwind CSS 构建且开源的。<font color="red">不是一个组件库。</font>这是一个可重复使用的组件集合，您可以将组件的源码复制并粘贴到您的应用程序中直接使用。不能把它当作一个依赖包来安装。即，它不能通过 npm 安装或发布 www.shadcn-ui.cn
 5. Material-UI: Material-UI 是一个<font color="red">基于 Google 的 Material Design 设计语言的 React UI 框架。</font>它提供了一套符合 Material Design 规范的 React 组件，可以帮助开发者构建具有时尚外观的 Web 应用程序。
 6. Semantic UI: Semantic UI 是一个语义化的 UI 框架，它提供了一组<font color="red">语义化的 HTML 标记和 CSS 类</font>，可以帮助开发者构建具有清晰结构和易于理解的用户界面。Semantic UI 支持响应式设计和模块化组件，使得开发者可以轻松创建各种类型的 Web 界面。
 
