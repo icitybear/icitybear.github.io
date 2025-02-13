@@ -32,7 +32,7 @@ mermaid: true #自己加的是否开启mermaid
 # 树分类
 ![alt text](image1.png)
 
-# 名次
+# 名词
 1. 根节点： 最上面的那个节点(root)，根节点没有父节点，只有子节点（0个或多个都可以）
 2. 层数： 一般认为根节点是第1层(有的也说第0层)，而树的高度就是层数最高(上图层数开始为1)节点的层数
 3. 节点关系:
@@ -975,8 +975,7 @@ func (t *aVLTree) LevelOrderTraversal() {
 
 
 # 前缀树和压缩前缀树
-- [基于 Golang 实现前缀树 Trie](https://zhuanlan.zhihu.com/p/642258329)
-- Gin 的路由实现确实使用了压缩前缀树，这种数据结构在性能和内存占用上都有优势，特别适合处理 HTTP 路由的场景
+{{< innerlink src="posts/tech/algorithm2.md" >}}  
 
 # 数据库索引 B+树
 - [【有道云笔记】数据库索引二叉树，B树，B+树演进](https://note.youdao.com/s/cyzODWVH)
