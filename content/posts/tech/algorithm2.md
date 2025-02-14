@@ -30,6 +30,10 @@ cover:
 mermaid: true #自己加的是否开启mermaid
 ---
 
+# [压缩前缀树实现_哔哩哔哩_bilibili](https://b23.tv/s0LrzbR)
+
+{{< bilibili BV1wT4y1x7xm >}} 
+
 # 前缀树 trie
 前缀树 trie ，又称为<font color="red">字典树或者单词查找树</font>，是一种广泛应用于本文词频统计场景的树状存储结构.
 
