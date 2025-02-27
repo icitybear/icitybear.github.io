@@ -56,6 +56,10 @@ mermaid: true #自己加的是否开启mermaid
 由于 geohash 这种基于公共前缀圈定距离的实现方式，因此我们在存储基于 geohash 生成的大量位置信息时，通常会优先考虑使用 trie 树作为实现的数据结构.
 ![alt text](image2.png)
 
+【有道云笔记】GeoHash核心原理解析 https://note.youdao.com/s/MHKENkgG
+
+Redis三种特殊数据类型——Geospatial地理空间 https://blog.csdn.net/w15558056319/article/details/121329348
+
 ## 代码解析
 - 插入
 ![alt text](image4.png)

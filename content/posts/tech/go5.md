@@ -258,7 +258,34 @@ c1 4
 # 多键索引
 - [Go语言map的多键索引——多个数值条件可以同时查询](https://note.youdao.com/s/D0OQeLbt)-<font color="red">添加键值对到字典时，实际是将键转化为哈希值进行存储</font>
 
-# sync.Map 并发安全的map
+# 并发不安全
+- Go 内置 map 的非原子性操作和底层哈希表结构的复杂性导致的
+
+1. 数据竞争（Data Race）：当多个协程同时对 map 进行读写（例如一个协程写入，另一个协程读取或写入），会导致数据竞争。这种竞争可能引发 panic，例如 fatal error: concurrent map writes 
+2. 哈希表内部结构破坏：map 的底层实现基于哈希表，当触发扩容（rehash）时，若并发读写可能破坏内部指针或桶结构，导致程序崩溃或数据丢失
+3. 结构体赋值的非原子性：即使是对结构体中的 map 字段赋值（如 struct.MapField = newMap），若未加锁，其他协程可能读取到部分初始化的中间状态
+## 场景
+1. 协程 A 和 B 同时写入同一个 map：可能导致键值对覆盖或哈希桶损坏。
+2. 协程 A 写入，协程 B 读取：可能读到不完整的数据（如扩容过程中的中间状态），或触发 panic。
+3. 结构体中的 map 字段并发操作：即使结构体本身是局部变量，若多个协程共享该结构体实例的 map，仍然存在并发风险
+## 案例
+``` go
+// 危险：多个协程并发写入 map
+func main() {
+    m := make(map[string]int)
+    var wg sync.WaitGroup
+    for i := 0; i < 100; i++ {
+        wg.Add(1)
+        go func(i int) {
+            defer wg.Done()
+            m[fmt.Sprintf("key%d", i)] = i // 触发并发写 panic
+        }(i)
+    }
+    wg.Wait()
+}
+```
+
+# 内置sync.Map 并发安全的map
 **为什么需要这个？**
 map 在并发情况下，只读是线程安全的，同时读写是线程不安全的
 
@@ -300,6 +327,34 @@ func main() {
     })
 
 }
+```
+
+# 分片加锁 concurrent-map
+- https://github.com/orcaman/concurrent-map
+- 支持存储任意类型的键和值，只要键是 comparable 的
+``` go
+// 存储任意类型的示例
+m := cmap.New[any]()
+m.Set("key1", 123)       // 整型
+m.Set("key2", 3.14)      // 浮点型
+m.Set("key3", struct{}{}) // 结构体
+```
+
+# 并发安全总结
+1. 高频读写：分片加锁（如 concurrent-map）。
+2. 读多写少：sync.Map 或读写锁。
+3. 低频全量替换：atomic.Value
+``` go
+import "github.com/orcaman/concurrent-map"
+cmap := cmap.New()
+cmap.Set("key", "value")
+
+var m sync.Map
+m.Store("key", "value")
+value, _ := m.Load("key")
+
+var atomicMap atomic.Value
+atomicMap.Store(make(map[string]int))
 ```
 
 # 列表
