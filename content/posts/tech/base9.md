@@ -7,6 +7,7 @@ categories: # 没有分类界面可以不填写
 - tech
 tags: # 标签
 - rpc
+- gRpc
 keywords: 
 - 
 description: "" #描述 每个文章内容前面的展示描述
@@ -28,9 +29,9 @@ cover:
 # reward: true # 打赏
 mermaid: true #自己加的是否开启mermaid
 ---
-- https://juejin.cn/post/7191008929986379836
+
   
-# 是什么
+# 序列化是什么
 - <font color="red">序列化通俗来说就是把内存的一段数据转化成二进制并存储或者通过网络传输，而读取磁盘或另一端收到后可以在内存中重建这段数据</font>
 
 # idl
@@ -64,28 +65,50 @@ $ go install google.golang.org/protobuf/cmd/protoc-gen-go@v1.3.0
 ## protoc-gen-go
 - pb文件要求必须指定go包的路径
 ``` go
-option go_package = "liangwt/note/grpc/example/ecommerce";
+option go_package = "xxxx";
 ```
 
 - 命令来生成pb序列化相关的文件
+  1. --go_out 指定go代码生成的基本路径(指定基本目录)
+  2. --go_opt：设定插件参数 (可以指定多个)
 ``` go
-protoc --proto_path=src --go_out=out --go_opt=paths=source_relative foo.proto bar/baz.proto
+protoc --proto_path=src --go_out=xxx --go_opt=paths=source_relative foo.proto bar/baz.proto
 
-paths=import , 生成的文件会按go_package路径来生成
-paths=source_relative ， 就在当前pb文件同路径下生成代码
-
---go_out
-指定go代码生成的基本路径
-
---go_opt：设定插件参数 (可以指定多个)
+paths=import , 生成的文件会按go_package路径来生成 在--go_out目录下
+    $go_out/$go_package/pb_filename.pb.go
+paths=source_relative ， 就在当前pb文件同路径下生成代码 pb的目录也被包含进去了
+    $go_out/$pb_filedir/$pb_filename.pb.go
 ```
 
 # protobuf 复杂的使用
 [【有道云笔记】protobuf3复杂的返回结构](https://note.youdao.com/s/3wnz5C9l)
 
 # grpc-go 插件
-在google.golang.org/protobuf中，<font color="red">protoc-gen-go纯粹用来生成pb序列化相关的文件，不再承载gRPC代码生成功能。
-生成gRPC相关代码需要安装grpc-go相关的插件protoc-gen-go-grpc</font>
+在google.golang.org/protobuf中，<font color="red">protoc-gen-go纯粹用来生成pb序列化相关的文件，不再承载gRPC代码生成功能。生成gRPC相关代码需要安装grpc-go相关的插件protoc-gen-go-grpc</font>
 
 - 安装插件
+``` go
 go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@latest
+```
+![alt text](image0.png)
+
+## 生成gRPC相关代码
+1. --go-grpc_out 指定grpc go代码生成的基本路径 
+2. --go-grpc_opt 指定参数，并可以设置多个
+``` go
+protoc --go_out=. --go_opt=paths=source_relative \
+    --go-grpc_out=. --go-grpc_opt=paths=source_relative \
+    routeguide/route_guide.proto
+```
+- xxx.pb.go 包含所有类型的序列化和反序列化代码
+- xxx_grpc.pb.go 定义在xxx service中的用来给client调用的接口定义,定义在 xxx service中的用来给服务端实现的接口定义
+
+# github.com/golang/protobuf vs google.golang.org/protobuf
+
+<font color="red">google.golang.org/protobuf</font>是github.com/golang/protobuf的升级版本，v1.4.0之后github.com/golang/protobuf仅是google.golang.org/protobuf的包装
+
+![alt text](image1.png)
+
+# Buf 工具
+使用的插件逐渐变多，插件参数逐渐变多时，命令行执行并不是很方便和直观。
+- https://juejin.cn/post/7191008929986379836
