@@ -8,6 +8,7 @@ categories: # 没有分类界面可以不填写
 tags: # 标签
 - 基础
 - 缓存
+- web技术
 keywords: 
 - 
 description: "" #描述 每个文章内容前面的展示描述

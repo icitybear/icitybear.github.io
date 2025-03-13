@@ -134,3 +134,12 @@ mermaid: true #自己加的是否开启mermaid
   
 # SM国产商密算法
 https://git.internal.taqu.cn/go/g3
+
+
+# 国密算法与国际标准算法的对比
+![alt text](image1.png)
+
+- 常见国密算法与国际标准算法各参数性能的对比如下：
+![alt text](image2.png)
+
+![alt text](image3.png)
