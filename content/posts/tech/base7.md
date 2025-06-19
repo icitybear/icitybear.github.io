@@ -274,6 +274,12 @@ public static long getBucketNumByConsistentHash(String str, int bucketAccount) {
 <font color="red">[王树森 ab/test](https://www.bilibili.com/video/BV1J44y1o7g)</font>
 ![alt text](image7.png)
 
+# 他趣实验组的分桶优化
+AB中有一段逻辑，需要根据用户命中的分桶和实验配置去找对应的实验组 （这里还有实验层的概念），
+- 优化前：遍历该层的所有分桶，如果相等，返回实验组
+- 优化后：把实验配置信息加载到缓存（嵌套的map）里，然后通过用户命中的分桶和实验层直接get 实验组信息 。
+<font color="red">本质上就是化行为表，可能最初AB也没想到会发展到这么多实验</font>
+
 # 得物
 [得物技术浅谈AB实验设计实现与分流算法](https://segmentfault.com/a/1190000039180775)
 <font color="red">得物系列技术文章</font>
