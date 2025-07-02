@@ -48,7 +48,7 @@ mermaid: true #自己加的是否开启mermaid
 - 不同类型的值不能使用 == 或 != 运算符进行比较,比较的时候类型也要相等，int32或者rune != int      mismatched types rune and int
 - <font color="red">Go 是强类型语言，变量类型一旦确定，就不能将其他类型的值赋值给该变量。只支持显示转化，强转的基础也是底层要一样，比如都是整形byte<=>uint8 (字符串也就是数组) int32=>int等</font>
   ` （只能显示转封装函数，返回新值。。go不支持隐式转）比如 func itob(i int) bool { return i != 0 }   int转bool` 
-- 变量逃逸概念
+- 变量逃逸概念 [【有道云笔记】Go语言变量逃逸分析](https://share.note.youdao.com/s/O3AX7pSm)
 - 生命周期,**函数的参数变量和返回值都是局部变量，它们在函数每次被调用的时候创建。**
 
 - <font color="red">如果外部生明了变量， 后面内部分支同个变量名赋值时，:= 不使用，不然会重新定义该变量（生命周期也只在这个内部分支）</font>

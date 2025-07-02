@@ -331,3 +331,25 @@ func TestArraySection(t *testing.T) {
 	t.Log(arr3_sec)
 }
 ```
+
+# 切片字面量和nil切片
+- var t []int 声明了一个int类型的切片t，但并没有对它进行初始化。这时候这个切片被认为是nil的。这意味着它并没有指向任何的底层数组。它的长度（len）和容量（cap）都是0
+  - 对nil切片进行for range、len和append等操作是不会引起panic的。
+- t := []int{} 这个切片不是nil的。这个切片的指向了一个底层的数组，但这个数组并没有包含任何的元素。
+
+1. <font color="red">nil切片只是一个没有指向任何地方的指针，而空切片（[]int{}）则分配了很小的内存去指向一个空数组。</font>
+2. Go社区更倾向于使用nil切片的方式，因为这更加符合Go语言简单的哲学以及**切片本身的零值。**
+3. <font color="red">例外的情况。使用JSON的时候，nil切片和空切片的表现是不一样的。nil切片（var t []int）编码成JSON后的值是null，而空切片（t := []int{}）编码成JSON后的值是一个空的JSON数组（[]）</font>. 尤其是php转go很多时候习惯使用[]
+
+# 把切片转换成数组
+``` go
+// 方案1
+slice := []int{1, 2，3，4, 5} 
+var array [5]int 
+copy(array[:], slice)
+
+// 方案2 更新到Go 1.20版本 类似于处理其他类型的解析（例如int转int32）
+a := []int{0, 1, 2, , 3, 4, 5} 
+b : = [3]int(a[0:3]) 
+fmt.Println(b) // [0 1 2]
+``` 
