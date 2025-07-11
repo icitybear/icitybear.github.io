@@ -49,6 +49,15 @@ todo
 - Asynq分布式任务队列 （基于消息队列）
 {{< innerlink src="posts/tech/go38.md" >}}
 
+# 理解定时任务cron
+{{< innerlink src="posts/tech/go37.md" >}}
+- 他趣基于kratos框架 
+  - 进一步封装biz-cron-job包  https://git.internal.taqu.cn/go-modules/biz-cron-job
+  - 普通调度
+
+# 分布式调度
+- 开源项目 gojob https://github.com/icitybear/gojob
+
 # 协程池
 - 使用 Go Channel 构建可扩展的并发 worker pool
   - https://mp.weixin.qq.com/s/zmS5L-ZxHNYGo3SylibMWg
