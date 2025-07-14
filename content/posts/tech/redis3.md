@@ -29,6 +29,14 @@ cover:
 # reward: true # 打赏
 mermaid: true #自己加的是否开启mermaid
 ---
+# Redis是单线程模型
+Redis6.0引入多线程IO，但多线程部分只是用来处理网络数据的读写和协议解析，执行命令仍然是单线程。默认是不开启的，需要进程启动前开启配置，并且在运行期间无法通过 config set 命令动态修改。
+
+- https://segmentfault.com/a/1190000046792622
+
+# redis常用集群以及性能
+https://segmentfault.com/a/1190000042301957
+
 # 一致性hash
 1. [一致性哈希算法原理解析](https://zhuanlan.zhihu.com/p/653210271)
 - 对应b站视频

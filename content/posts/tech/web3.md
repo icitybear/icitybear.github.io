@@ -158,3 +158,4 @@ var signature = HMACSHA256(encodedString, 'secret'); // TJVA95OrM7E2cBab30RMHrHD
 2. 邮箱验证和密码重置 (链接含有用户信息)
 3. 加密
 
+# kratos框架 jwt中间件和验证码

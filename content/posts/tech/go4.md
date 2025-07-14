@@ -29,6 +29,8 @@ cover:
 mermaid: true #自己加的是否开启mermaid
 ---
 
+[得物:解析Go切片：为何按值传递时会发生改变](https://tech.dewu.com/article?id=147)
+
 # 数组 [] 
 - **<font color="red">数组是固定长度的、同一类型的数据集合, 值类型</font>, 与切片显著区别：长度编译时就确定不变**
 - 数组元素通过 {} 包裹，然后通过逗号分隔多个元素

@@ -83,3 +83,7 @@ header('Expires: Mon, 26 Jul 2013 05:00:00 GMT');
 
 - 主要查看响应头信息中的“X-Cache”字段。显示“MISS”，说明没有命中CDN缓存，是回源的。显示“HIT”，是命中了CDN缓存。
 ![alt text](image1.png)
+
+# 得物技术网络优化-CDN资源请求优化实践
+
+https://segmentfault.com/a/1190000041729910

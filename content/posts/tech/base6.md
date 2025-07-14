@@ -135,3 +135,6 @@ A是j91系统-ab实验平台 B是eff系统画像平台
   - 限流是有损的，不同的业务针对限流的error基于是否是强依赖敏感度不同
   - <font color="red">但是对于画像平台限流是强感知的。(画像平台应该报error)</font>
   ![alt text](image9.png)
+
+
+画像 hbase+es 后续优化成hologress
