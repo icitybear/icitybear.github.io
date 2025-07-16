@@ -343,7 +343,9 @@ m.Set("key3", struct{}{}) // 结构体
 # 并发安全总结
 1. 高频读写：分片加锁（如 concurrent-map）。
 2. 读多写少：sync.Map 或读写锁。
-3. 低频全量替换：atomic.Value
+3. 低频全量替换：atomic.Value (所以也不太合适)
+   - atomic.Value：适合原子替换整个对象 
+   - sync.Mutex：适合保护操作过程
 ``` go
 import "github.com/orcaman/concurrent-map"
 cmap := cmap.New()
@@ -354,7 +356,26 @@ m.Store("key", "value")
 value, _ := m.Load("key")
 
 var atomicMap atomic.Value
-atomicMap.Store(make(map[string]int))
+atomicMap.Store(make(map[string]int)) 
+
+type Config struct {
+	Addr string
+	Port int
+}
+
+func main() {
+	var config atomic.Value
+
+	// 存储值 (必须同类型)
+	cfg := Config{Addr: "127.0.0.1", Port: 8080}
+	config.Store(cfg)
+
+	// 加载值 (需类型断言)
+	if v := config.Load(); v != nil {
+		loadedCfg := v.(Config) // 类型断言
+		println(loadedCfg.Addr) // 127.0.0.1
+	}
+}
 ```
 
 # 列表
