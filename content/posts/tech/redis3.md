@@ -8,6 +8,7 @@ categories: # 没有分类界面可以不填写
 tags: # 标签
 - redis
 - 缓存
+- go包
 keywords: 
 - 
 description: "" #描述 每个文章内容前面的展示描述
