@@ -103,13 +103,16 @@ QPS    耗时    并发数
 - bucket环形数组，在 sentinel-golang 中叫 AtomicBucketWrapArray,
 - 滑动窗口，它在 sentinel-golang 中叫 LeapArray
 
-## kratos的限流
+## kratos的限流 BBR 限流 
 https://pandaychen.github.io/2020/07/12/KRATOS-LIMITER/
 - 自适应限流算法原理 BBR 实现
 - [限流包](https://github.com/go-kratos/aegis/ratelimit/bbr)
 
+Kratos提供了限流ratelimit和熔断circuitbreaker中间件，用于微服务出现异常故障时自动对流量进行限制，提升服务的健壮性，避免雪崩。这两个中 间件使用的算法，也可以在我们的可用性算法仓库aegis中找到，独立于Kratos直接使用。
+
 熔断，用于提供客户端熔断功能，默认实现了sre breaker 算法。
 限流，用于服务端流量控制，默认使用bbr limiter算法。
+sentinel-go
 
 # 案例
 - cpu和内存被打满（限流导致的）
