@@ -48,18 +48,28 @@ protoc --help // 查看帮助命令
 protoc --version // 查看版本
 
 protoc [OPTION] PROTO_FILES
-## 搜索路径
--I=PATH, --proto_path=PATH。它表示的是我们要在哪个路径下搜索.proto文件，这个参数既可以用-I指定，也可以使用--proto_path=指定。
-## 语言插件参数
---cpp_out=，--python_out=等，<font color="red">protoc支持的语言长达13种，且都是比较常见的运行help出现的语言参数，说明protoc本身已经内置该语言对应的编译插件，我们无需安装下面的语言是由google维护，通过protoc的插件机制来实现，所以仓库单独维护</font>Dart和Go 
 
-- 非内置的语言支持就得自己单独安装语言插件， --go_out=对应的是protoc-gen-go
+## 搜索路径
+
+-I=PATH, --proto_path=PATH。它表示的是我们要在哪个路径下搜索.proto文件，这个参数既可以用-I指定，也可以使用--proto_path=指定。
+- 多个的情况下 -I ./ -I ./third_party/, 引入第三方的时候 比如import "google/api/annotations.proto"
+
+## 语言插件参数
+
+--cpp_out=，--python_out=等，<font color="red">protoc支持的语言长达13种，且都是比较常见的运行help出现的语言参数，说明protoc本身已经内置该语言对应的编译插件，我们无需安装下面的语言是由google维护，通过protoc的插件机制来实现，所以仓库单独维护</font>Dart和Go
+
+- 非内置的语言支持就得自己单独安装语言插件， --go_out=对应的是 protoc-gen-go
+  
 ## 安装命令 protoc-gen-go
 ``` go
 # 最新版
 $ go install google.golang.org/protobuf/cmd/protoc-gen-go@latest
 # 指定版本
-$ go install google.golang.org/protobuf/cmd/protoc-gen-go@v1.3.0
+$ go install google.golang.org/protobuf/cmd/protoc-gen-go@v1.28.1
+
+$ protoc-gen-go --version
+protoc-gen-go v1.36.8
+
 ```
 
 ## protoc-gen-go
@@ -76,7 +86,7 @@ protoc --proto_path=src --go_out=xxx --go_opt=paths=source_relative foo.proto ba
 
 paths=import , 生成的文件会按go_package路径来生成 在--go_out目录下
     $go_out/$go_package/pb_filename.pb.go
-paths=source_relative ， 就在当前pb文件同路径下生成代码 pb的目录也被包含进去了
+paths=source_relative ， 就在当前pb文件同路径下生成代码 pb的目录也被包含进去了 （一般使用这个）
     $go_out/$pb_filedir/$pb_filename.pb.go
 ```
 
@@ -89,6 +99,10 @@ paths=source_relative ， 就在当前pb文件同路径下生成代码 pb的目�
 - 安装插件
 ``` go
 go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@latest
+
+$ protoc-gen-go-grpc --version
+protoc-gen-go-grpc 1.5.1    // 1.3.0版本的比较旧
+
 ```
 ![alt text](image0.png)
 
@@ -103,11 +117,55 @@ protoc --go_out=. --go_opt=paths=source_relative \
 - xxx.pb.go 包含所有类型的序列化和反序列化代码
 - xxx_grpc.pb.go 定义在xxx service中的用来给client调用的接口定义,定义在 xxx service中的用来给服务端实现的接口定义
 
+## <font color="red">需要引入第三方的protobuf</font>
+项目根目录下，执行protoc命令生成代码 对应proto路径/api/vivo/vivo.proto ,**使用了import "google/api/annotations.proto"**, 使用-I 参数
+
+![alt text](image2.png)
+``` go
+$ protoc -I ./ -I ./third_party/ --go_out=. --go_opt=paths=source_relative \ 
+       --go-grpc_out=. --go-grpc_opt=paths=source_relative \
+       ./api/vivo/vivo.proto
+```
+## 依赖不同的插件版本
+一般是默认一个版本, 有时需要同时使用多个版本的 protoc-gen-go protoc-gen-go-grpc 来处理不同项目或遗留代码
+- --plugin=protoc-gen-go=xxx  --plugin=protoc-gen-go-grpc=xxx (xxx对应环境变量) 
+
+
 # github.com/golang/protobuf vs google.golang.org/protobuf
 
-<font color="red">google.golang.org/protobuf</font>是github.com/golang/protobuf的升级版本，v1.4.0之后github.com/golang/protobuf仅是google.golang.org/protobuf的包装
+- <font color="red">google.golang.org/protobuf</font>是github.com/golang/protobuf的升级版本，v1.4.0之后github.com/golang/protobuf仅是google.golang.org/protobuf的包装
 
 ![alt text](image1.png)
+
+# 生成的pb文件代码多版本
+grpc.SupportPackageIsVersionX 当使用 protoc 生成 gRPC 代码时，生成的 .pb.go 文件会包含类似 grpc.SupportPackageIsVersion9 的声明，确保生成的代码与特定版本的 gRPC-Go 库兼容。
+
+## SupportPackageIsVersionX
+- 1-6：旧版 gRPC API 时期
+- 7：重大转折点（分离 gRPC 和 Protobuf 生成器）
+- 8-9：新版 API 优化期
+
+- 有时需要同时使用多个版本的 protoc-gen-go 来处理不同项目或遗留代码。解决方案1临时覆盖安装 2使用docker 3使用sh脚本管理多版本 
+- 所以一般项目管理代码 只会上传proto文件，对应的xxx.pb.go xxx_grpc.pb.go都忽略管理
+
+## 旧版生成器会创建兼容旧gRPC的代码。
+grpc.SupportPackageIsVersion9 的支持完全由代码生成工具决定。 <font color="red">即使使用最新的 gRPC 库 (v1.56.3)，如果使用旧版 protoc-gen-go (如 v1.4.x)，生成的代码仍会使用 Version7 </font> protoc-gen-go 版本（v1.25.0+）。
+
+``` go
+go get google.golang.org/grpc@v1.33.0 // 正式引入的 gRPC-Go 库
+```
+
+``` go
+// 旧版
+go install google.golang.org/protobuf/cmd/protoc-gen-go@v1.28.0
+go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@v1.3.0
+
+// 新版
+go install google.golang.org/protobuf/cmd/protoc-gen-go@v1.36.8 // latest
+go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@v1.5.1 // latest
+```
+
+![alt text](image3.png)
 
 # Buf 工具
 使用的插件逐渐变多，插件参数逐渐变多时，命令行执行并不是很方便和直观。
