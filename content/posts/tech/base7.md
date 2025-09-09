@@ -60,10 +60,12 @@ mermaid: true #自己加的是否开启mermaid
 
 - <font color="red">为了确保不同层的实验独立转移，谷歌使用 mod = f(cookie, layer) % 1000 代替。</font>
 - AB实验+hash分流+大数定律 应该是天然的正交
+
 # 谷歌分层重叠实验框架
 在正交实验的基础上，通过对流量的切割，以及分层重叠嵌套，便可设计出更为灵活的AB实验框架。
 ![alt text](image8.png)
-## 概念(直接看得物的)
+
+## 概念(得物)
 1) domain：域，是流量的分段。全部流量被切割之后的一段流量  
 
 2）layer：层， 在layer里面包含一系列可以改变的参数。例如上面的实验可以分成2个layer，layer1对应实验1，layer2对应实验2。
@@ -73,7 +75,9 @@ mermaid: true #自己加的是否开启mermaid
 - 1个domain可以有多个重叠的layer，1个layer反过来也可以嵌套多个domain，实验最终落入到layer里面的bucket里面。
 - <font color="red">各个layer之间的实验是要独立的。</font>例如layer1中的实验是设置按钮为白色和黑色，layer3的实验是设置按钮为白色和红色，这样的两个layer之间就不是独立的了，那么正交性就会遭到破坏。需要特别注意这一点。
   - 如果layer之间相关，也该怎么办呢？合并成一个吗（比两个实验颜色对比，改成三个颜色同时对比）？答案：<font color="red">两个颜色或三个颜色对比 应该放在同一层 层里面有再分桶 桶里面放不同的颜色</font>
-  
+
+- 每一个实验要取用30%的流量才能够得出可信的实验结果。最小样本量计算
+
 ## 案例
 ![alt text](image3.png)
 在(a)中，只有1个domain，domain里面嵌套了3个layer。当用户请求过来的时候，会依次经过UI Layer，Search results layer和Ads result layer，在各个layer里面通过 hash(layerId + userId)%1000 映射到对应的桶取出相应的experiment。<font color="red">因此1个用户请求最多会同时进行3个实验</font>
@@ -87,7 +91,7 @@ mermaid: true #自己加的是否开启mermaid
 ## 启动层
 启动层始终包含在默认域中（即，它们在所有流量上运行）。启动层中的实验为参数提供了替代默认值。
 
-# hash算法
+# <font color="red">hash算法</font>
 
 ## DEK Hash 的缺陷
 [DEK Hash 和 Murmur Hash](https://zhuanlan.zhihu.com/p/648347825) 
@@ -220,78 +224,163 @@ func main() {
     fmt.Printf("Hash of '%s': 0x%x\n", text, hashValue)
 }
 ```
-## 他趣令牌桶
+## 他趣hash桶
 - 不同hash算法, 获取指定字符串的桶编号
-``` java
-/** 
- * 方法描述: 获取指定字符串的桶编号
- * @param str 字符串
- * @param bucketAccount 桶数量
- * @return 桶编号
- */
-public static long getBucketNum(String str, int bucketAccount) {
-    byte[] buf;
-    try {
-        buf = str.getBytes(StandardCharsets.UTF_8);
-    } catch (Exception e) {
-        buf = str.getBytes();
-    }
-    long seed = 0xcbf29ce484222325L;
-    for (int i = 0; i < buf.length; i++) {
-        seed += (seed << 1) + (seed << 4) + (seed << 5) + (seed << 7) + (seed << 8) + (seed << 40);
-        seed ^= buf[i];
-    }
-    if (seed < 0) {
-        seed = Math.abs(seed);
-    }
-    return seed % bucketAccount+1;
+``` go
+package hashbucket
+
+// GetBucketNum 计算字符串的哈希值并返回桶编号（范围 1 到 bucketAccount）
+func GetBucketNum(str string, bucketAccount int) int64 {
+	buf := []byte(str) // Go 字符串直接转换为 UTF-8 字节切片
+
+	// 使用 uint64 初始化，避免溢出问题
+	seed := uint64(0xcbf29ce484222325)
+	for i := 0; i < len(buf); i++ {
+		// 使用 uint64 进行位运算
+		seed += (seed << 1) + (seed << 4) + (seed << 5) +
+			(seed << 7) + (seed << 8) + (seed << 40)
+		seed ^= uint64(buf[i])
+	}
+
+	// 将 uint64 转换为 int64 并取绝对值
+	result := int64(seed)
+	if result < 0 {
+		result = -result
+	}
+
+	// 计算桶编号（范围 1 ~ bucketAccount）
+	bucket := int64(bucketAccount)
+	return result%bucket + 1
 }
 
-public static long getBucketNumByConsistentHash(String str, int bucketAccount) {
-    byte[] buf;
-    try {
-        buf = str.getBytes(StandardCharsets.UTF_8);
-    } catch (Exception e) {
-        buf = str.getBytes();
-    }
-    long seed = 0xcbf29ce484222325L;
-    for (int i = 0; i < buf.length; i++) {
-        seed += (seed << 1) + (seed << 4) + (seed << 5) + (seed << 7) + (seed << 8) + (seed << 40);
-        seed ^= buf[i];
-    }
-    return Hashing.consistentHash(seed, bucketAccount);
+// GetBucketNumByConsistentHash 使用一致性哈希算法返回桶编号（范围 0 到 bucketAccount-1）
+func GetBucketNumByConsistentHash(str string, bucketAccount int) int {
+	buf := []byte(str)
+
+	// 直接使用 uint64 类型
+	seed := uint64(0xcbf29ce484222325)
+	for i := 0; i < len(buf); i++ {
+		seed += (seed << 1) + (seed << 4) + (seed << 5) +
+			(seed << 7) + (seed << 8) + (seed << 40)
+		seed ^= uint64(buf[i])
+	}
+
+	return consistentHash(seed, bucketAccount)
+}
+
+// 实现 Guava 的一致性哈希算法 可以考虑Murmur3算法
+func consistentHash(input uint64, buckets int) int {
+	if buckets <= 0 {
+		panic("buckets must be positive")
+	}
+
+	generator := newLinearCongruentialGenerator(input)
+	candidate := 0
+
+	for {
+		// 计算下一个候选桶
+		next := int(float64(candidate+1) / generator.nextDouble())
+		if next >= 0 && next < buckets {
+			candidate = next
+		} else {
+			return candidate
+		}
+	}
+}
+
+// 线性同余生成器
+type linearCongruentialGenerator struct {
+	state uint64
+}
+
+func newLinearCongruentialGenerator(seed uint64) *linearCongruentialGenerator {
+	return &linearCongruentialGenerator{state: seed}
+}
+
+func (lcg *linearCongruentialGenerator) nextDouble() float64 {
+	const multiplier = 2862933555777941757
+	lcg.state = lcg.state*multiplier + 1
+
+	// 无符号右移 33 位
+	unsigned := lcg.state >> 33
+	value := uint32(unsigned) // 取低 32 位
+
+	// 转换为 [1, 0x80000000] 区间的浮点数
+	return float64(value+1) / float64(0x80000000)
+}
+
+
+// seed 就是盐值，随实验层变 化，只是确实名字不叫 seed
+// bucketNum 通过 getBucketNum(LEVEL_BUCKET_RREFIX + levelld + userinfo.getld(), 1000);
+// 其中 userinfo.getid 是uuid或者token, levelid 就是实验层id，其他是固定的，levelid 才是seed的概念
+
+func TestHashBucket(t *testing.T) {
+	text := "taqu1username"
+	bucket1 := hashbucket.GetBucketNum(text, 1000)
+	fmt.Println(bucket1)
+	// 使用一致性哈希算法返回桶编号
+	bucket2 := hashbucket.GetBucketNumByConsistentHash(text, 1000)
+	fmt.Println(bucket2)
 }
 ```
+
 ![alt text](image5.png)
 ![alt text](image6.png)
-## hash算法也用于布隆过滤器
+## <font color="red">hash算法也用于布隆过滤器</font>
 - [布隆过滤器如何实现? - 小徐先生的回答 - 知乎](https://www.zhihu.com/question/389604738/answer/3152180842)
   - b站视频有对应视频
 
 - [布谷鸟过滤器-知乎](https://zhuanlan.zhihu.com/p/436642641)
 
 # 案例用于投放广告系统的设计
-<font color="red">[王树森 ab/test](https://www.bilibili.com/video/BV1J44y1o7g)</font>
 ![alt text](image7.png)
 
-# 他趣实验组的分桶优化
-AB中有一段逻辑，需要根据用户命中的分桶和实验配置去找对应的实验组 （这里还有实验层的概念），
-- 优化前：遍历该层的所有分桶，如果相等，返回实验组
-- 优化后：把实验配置信息加载到缓存（嵌套的map）里，然后通过用户命中的分桶和实验层直接get 实验组信息 。
-<font color="red">本质上就是化行为表，可能最初AB也没想到会发展到这么多实验</font>
 
 # 得物
 [得物技术浅谈AB实验设计实现与分流算法](https://segmentfault.com/a/1190000039180775)
 <font color="red">得物系列技术文章</font>
 
-# 他趣大致架构
+# 他趣案例
+ab实验基本概念（他趣分享）.pdf
+## 架构
 ![alt text](image11.png)
 1. 实验平台 是公司内部员工使用的交互页面，用于创建、配置、查看实验。
 2. 分流引擎 是实验平台的核心基础设置，其作用是根据用户特征将其划分到不同分组，并确定每个分组的值。为客户端、服务端不同流量来源提供服务。同时上报来自客户端和服务端的入组埋点信息。
 3. 自助分析平台  基于事件模型+三种高级分析模型提供AB试验效果的查询能力。负责计算p值、显著性、涨跌幅和指标值等统计指标。最终，将统计结果进行数据可视化，以实验报告或Excel的形式展示出来。    
 ## AB平台的使用说明
 - [AB平台的使用说明-飞书文档](https://o15vj1m4ie.feishu.cn/wiki/wikcnfStBTjDZVfmL7ddXGv3rVt)
-  
+
+## 分流流程
+![alt text](image13.png)
+## 流量分桶
+![alt text](image14.png)
+# 他趣实验组的分桶优化
+AB中有一段逻辑，需要根据用户命中的分桶和实验配置去找对应的实验组 （这里还有实验层的概念），
+- 优化前：遍历该层的所有分桶，如果相等，返回实验组
+- 优化后：把实验配置信息加载到缓存（嵌套的map）里，然后通过用户命中的分桶和实验层直接get 实验组信息 。
+<font color="red">本质上就是化行为表，可能最初AB也没想到会发展到这么多实验</font>
+
+## 实际遇到问题
+- 过度曝光
+    表现情况：分组不均、入组人数大幅度震荡变化
+
+    实际原因：在海豹业务后台中，存在着相当多一些可视化/未可视化的策略配置。实践中，运营同学通过流量平台亦或是低价策略平台等业务后台，配置了自动化实验。看起来是很“可配置、自动化”的操作，却不知道实验设计的入组时机和真实入组时机已经相隔甚远，其中的认知误差在于，运营同学设计实验时的认知是“活跃即入组”，然而在业务 方的代码中是，“活跃->有无城市实验？-＞有无低价投放？-＞按权重排序的流量策略，优先执行大权重策略-＞入组“。链条上的每一步流量截取都在让实验的入组人数在变化。
+
+    <font color="red">实际原因：还是来源于信息差，运营同学和研发同学存在对入组时机的了解不一致</font>
+
+- 用户入组又出组
+表现情况：我昨天已经是进的B组/展示的B效果，但是今天是A组
+  1. 人群包
+    实际原因：在画像平台上配置人群包需要 选择入组不出组，当配置了人群包且出了人群包的用户，AB平台会返回空 结果，此时的呈现效果就依赖于请求方的逻辑呈现，一般是对照组的效果。 
+
+    引申拓展：如果人群特征就在请求方的上下文中，比如 性别、城市等，更加建议是由请求方根据上下文信息来限制人群，会得到更好的效果。<font color="red">画像作为异步链条，链路上时延不可避免。通过更好的实验设计获得更加真实的实验效果！</font>
+
+  2. 区分设备实验和服务端实验
+   
+    实际原因：埋点表中存在一个用户同时查到同一个实验的两个组信息 
+
+    实际原因：因为该实验是设备实验 引申拓展：<font color="red">实验设计中一定要认真区分设备实验和用户实验的作用，混淆了概念就会判断错实验主体，最终得到的错 误实验结果</font>
+
 ## 分流引擎-实验埋点上报机制
 hash算法分桶
 - 客户端实验场景
@@ -305,7 +394,9 @@ hash算法分桶
 ## 自助分析平台
 - 指标管理体系基础知识及自助分析平台的使用.pdf
 ![alt text](image12.png)
-# AB实验平台中的数据科学
+
+
+# AB实验平台中的数据科学（了解一下就行）
 1. 假设检验
 假设检验的基本思想是“小概率事件”。
 
