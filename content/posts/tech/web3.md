@@ -159,3 +159,4 @@ var signature = HMACSHA256(encodedString, 'secret'); // TJVA95OrM7E2cBab30RMHrHD
 3. 加密
 
 # kratos框架 jwt中间件和验证码
+- 官方包 github.com/golang-jwt/jwt/v4
