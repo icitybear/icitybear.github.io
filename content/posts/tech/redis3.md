@@ -38,6 +38,12 @@ Redis6.0引入多线程IO，但多线程部分只是用来处理网络数据的�
 # redis常用集群以及性能
 https://segmentfault.com/a/1190000042301957
 
+- Codis 采用 Pre-sharding 的技术来实现数据的分片, 默认分成 1024 个 slots (0-1023), 对于每个Key来说, 通过以下公式确定所属的 Slot Id : SlotId = crc32(key) % 1024。
+ - Codis 是 Wandoujia Infrastructure Team 开发的一个分布式 Redis 服务
+ - 一个无限内存的 Redis 服务, 有动态扩/缩容的能力. 对偏存储型的业务更实用. Codis 是不支持 SUBPUB 之类的指令
+
+- Redis cluster 默认分配了 16384 个slot，当我们set一个key 时，会用CRC16算法来取模得到所属的slot，然后将这个Key 分到哈希槽区间的节点上，具体算法就是：CRC16(key) % 16384
+ - Redis 集群的优势:1.自动分割数据到不同的节点上。2.整个集群的部分节点失败或者不可达的情况下能够继续处理命令。Redis集群并不支持处理多个Keys的命令
 # 一致性hash
 1. [一致性哈希算法原理解析](https://zhuanlan.zhihu.com/p/653210271)
 - 对应b站视频
@@ -56,6 +62,7 @@ https://segmentfault.com/a/1190000042301957
   - 文章 https://zhuanlan.zhihu.com/p/629247043
   - 有封装的包
   - 简单版（redis的lua脚本）
+
 ## redis的lua脚本
 ``` go
 package redislock

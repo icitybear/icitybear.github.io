@@ -97,7 +97,8 @@ mermaid: true #自己加的是否开启mermaid
 [DEK Hash 和 Murmur Hash](https://zhuanlan.zhihu.com/p/648347825) 
 
 ## Murmur Hash
-github.com/spaolacci/murmur3 现有的包
+- github.com/spaolacci/murmur3 现有的包
+- cityhash进一步优化murmur3
 ``` go 
 import (
     "fmt"
