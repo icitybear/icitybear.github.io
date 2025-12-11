@@ -44,12 +44,12 @@ https://segmentfault.com/a/1190000042301957
 
 - Redis cluster 默认分配了 16384 个slot，当我们set一个key 时，会用CRC16算法来取模得到所属的slot，然后将这个Key 分到哈希槽区间的节点上，具体算法就是：CRC16(key) % 16384
  - Redis 集群的优势:1.自动分割数据到不同的节点上。2.整个集群的部分节点失败或者不可达的情况下能够继续处理命令。Redis集群并不支持处理多个Keys的命令
-# 一致性hash
+# <font color="red">一致性hash</font>
 1. [一致性哈希算法原理解析](https://zhuanlan.zhihu.com/p/653210271)
 - 对应b站视频
 2. [从零到一落地实现一致性哈希算法](https://zhuanlan.zhihu.com/p/654778311)
 
-- <font color="red">[美团大规模KV存储挑战与架构实践-b站视频](https://b23.tv/CabuXug)</font>
+- 美团大规模KV存储挑战与架构实践-b站视频
   - 4399缓存一致性hash
   - https://blog.csdn.net/zhaozhiqiang1981/article/details/139564621
 
