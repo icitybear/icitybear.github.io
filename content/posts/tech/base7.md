@@ -34,6 +34,13 @@ mermaid: true #自己加的是否开启mermaid
 通过实验的对比指标来衡量这些修改对用户的影响程度，以此来提高用户体验，提高公司收益等等。
 参考google经典论文《Overlapping Experiment Infrastructure:More, Better, Faster Experimentation》第4部分，阐述谷歌等大厂都是如何高效地做ab实验的
 
+# 神策AB平台
+  - [分流逻辑详细介绍](https://manual.sensorsdata.cn/abtesting/docs/abtesting_diversiondetails/v0102) 
+  - [分流模型介绍](https://manual.sensorsdata.cn/abtesting/docs/abtesting_diversionintroduction/v0102) 
+  - [抽样统计理论](https://manual.sensorsdata.cn/abtesting/docs/abtesting_SamplingStatistics/v0102)
+    - [假设检验与置信区间](https://manual.sensorsdata.cn/abtesting/docs/abtesting_ConfidenceInterval/v0102)
+  - [指标配置](https://manual.sensorsdata.cn/abtesting/docs/abtesting_IndexConfig/v0102)
+
 # 想到的实验方案
 1. 方案1）将用户分成两半，一半做对照组，一半做实验组
 
