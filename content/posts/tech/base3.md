@@ -38,8 +38,8 @@ app  源站 多个cdn
 2. cdn会配置源站  如果拼接cdn地址的资源 404 就会到源站取资源 <font color="red">（回源操作）</font>
 3. 所以图片违规未审核的情况下 图片链接应该是要源站的，<font color="red">只有审核通过后才能用cdn 不扩散到cdn  否则cdn域名被封</font>
    - -src 是给后台用的。是原始资源，没有CDN。给客户端的不用加-src
-  比如https://forum01-src.jiaoliuqu.com/516808488010008543.jpg 线上也没走cdn 因为未使用cdn的
-  https://forum01.jiaoliuqu.com/516808488010008543.jpg 走cdn的情况
+  比如https://forum01-src.xxx.com/516808488010008543.jpg 线上也没走cdn 因为未使用cdn的
+  https://forum01.xxx.com/516808488010008543.jpg 走cdn的情况
    - 还有比如语言违规的资源，就直接把文件移走
 4. 七牛提供移动cdn文件 刷新cdn地址的，或者禁用。**本质都是加密 比如移到私有空间然后需要token才能访问。token的有效期15天。。需要访问时先获取token再拼接到url**
 

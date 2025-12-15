@@ -230,7 +230,7 @@ func main() {
     fmt.Printf("Hash of '%s': 0x%x\n", text, hashValue)
 }
 ```
-## 他趣hash桶
+## tq企业hash桶
 - 不同hash算法, 获取指定字符串的桶编号
 ``` go
 package hashbucket
@@ -346,8 +346,8 @@ func TestHashBucket(t *testing.T) {
 [得物技术浅谈AB实验设计实现与分流算法](https://segmentfault.com/a/1190000039180775)
 <font color="red">得物系列技术文章</font>
 
-# 他趣案例
-ab实验基本概念（他趣分享）.pdf
+# tq企业案例
+ab实验基本概念.pdf
 ## 架构
 ![alt text](image11.png)
 1. 实验平台 是公司内部员工使用的交互页面，用于创建、配置、查看实验。
@@ -360,7 +360,7 @@ ab实验基本概念（他趣分享）.pdf
 ![alt text](image13.png)
 ## 流量分桶
 ![alt text](image14.png)
-# 他趣实验组的分桶优化
+# tq企业实验组的分桶优化
 AB中有一段逻辑，需要根据用户命中的分桶和实验配置去找对应的实验组 （这里还有实验层的概念），
 - 优化前：遍历该层的所有分桶，如果相等，返回实验组
 - 优化后：把实验配置信息加载到缓存（嵌套的map）里，然后通过用户命中的分桶和实验层直接get 实验组信息 。

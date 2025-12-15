@@ -48,7 +48,7 @@ rocksdb 则采用多线程处理模型，并发读写内存数据结构时，需
 ## <font color="red">如何基于Redis实现消息队列</font>
   - 文章 https://zhuanlan.zhihu.com/p/651758438
   - 视频
-  - 他趣的g2 tqmq 纯redis
+  - tq企业的g2 tqmq 纯redis
 
 ## go 语言分布式消息队列 nsq （服务端客户端)
    - 文章 https://zhuanlan.zhihu.com/p/665893174
@@ -63,7 +63,7 @@ rocketMQ 延时队列	时间精度和灵活度不足.
 
 # 理解定时任务cron
 {{< innerlink src="posts/tech/go37.md" >}}
-- 他趣基于kratos框架 
+- tq企业基于kratos框架 
   - 进一步封装biz-cron-job包  https://git.internal.taqu.cn/go-modules/biz-cron-job
 - https://github.com/shunfei/cronsun 基于cron分布式版本 后端：Go 语言 前端：Vue.js 存储：支持 etcd 或 MongoDB
 
