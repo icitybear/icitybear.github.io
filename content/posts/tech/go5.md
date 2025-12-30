@@ -183,7 +183,13 @@ func TestSliceSort2(t *testing.T) {
 		}}
 	sort.Sort(p)
 	fmt.Println(p) // [{mike 12} {jane 13} {peter 14}]
+	sort.Sort(sort.Reverse(p))
+	fmt.Println(p) // [{peter 14} {jane 13} {mike 12}]
 }
+
+// sort.Reverse 的作用 它包装原始结构体，反转 Less() 方法的逻辑：
+// 原始 Less(i, j) 返回 true 表示 i 应排在 j 前面（升序）
+// 反转后：Less(i, j) 实际调用原始 Less(j, i)，实现降序逻辑
 
 // sort.Slice(slice, func(i, j int) bool)
 // 任意类型slice, 比较函数如果省略这个函数，则使用内置的比较函数对切片进行排序
@@ -198,6 +204,8 @@ func TestSliceSort3(t *testing.T) {
 	fmt.Println(s)
 }
 ```
+
+
 ## 排序map的包 orderedmap
 ``` go
 import "github.com/iancoleman/orderedmap"

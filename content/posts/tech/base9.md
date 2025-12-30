@@ -149,12 +149,12 @@ grpc.SupportPackageIsVersionX 当使用 protoc 生成 gRPC 代码时，生成的
 - 所以一般项目管理代码 只会上传proto文件，对应的xxx.pb.go xxx_grpc.pb.go都忽略管理
 
 ## 旧版生成器会创建兼容旧gRPC的代码。
-grpc.SupportPackageIsVersion9 的支持完全由代码生成工具决定。 <font color="red">即使使用最新的 gRPC 库 (v1.56.3)，如果使用旧版 protoc-gen-go (如 v1.4.x)，生成的代码仍会使用 Version7 </font> protoc-gen-go 版本（v1.25.0+）。
+grpc.SupportPackageIsVersion9 的支持完全由代码生成工具决定。 <font color="red">即使使用最新的 gRPC 库 (v1.56.3)，如果使用旧版工具 protoc-gen-go (如 v1.4.x)，生成的代码仍会使用 Version7 </font> protoc-gen-go 版本（v1.25.0+）。
 
 ``` go
 go get google.golang.org/grpc@v1.33.0 // 正式引入的 gRPC-Go 库
 ```
-
+- 使用的工具版本
 ``` go
 // 旧版
 go install google.golang.org/protobuf/cmd/protoc-gen-go@v1.28.0
@@ -163,6 +163,15 @@ go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@v1.3.0
 // 新版
 go install google.golang.org/protobuf/cmd/protoc-gen-go@v1.36.8 // latest
 go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@v1.5.1 // latest
+```
+- 复现案例
+``` go
+// 原因使用了 旧版本的protobuf
+github.com/golang/protobuf v1.5.3 //  优化防范 升级成google.golang.org/protobuf
+
+// 改为
+google.golang.org/grpc v1.75.0 // v1.56.3
+google.golang.org/protobuf v1.36.8
 ```
 
 ![alt text](image3.png)
