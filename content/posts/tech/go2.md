@@ -29,6 +29,10 @@ cover:
 mermaid: true #自己加的是否开启mermaid
 ---
 
+- Go 是强类型语言，变量类型一旦确定，就不能将其他类型的值赋值给该变量。
+- <font color="red">只支持显示转化，然后返回新值。</font>只能显示转封装函数，返回新值, go不支持隐式转比如 func itob(i int) bool { return i != 0 } int转bool
+- 强转的基础也是底层要一样，比如都是整形 int=>uint8,<font color="red">强转时如果范围大于后者会被截取截取</font>
+
 # 数据类型转换
 - 由于Go语言不存在隐式类型转换，因此所有的类型转换都必须显式的声明
 - <font color="red">类型转换精度问题</font>，从一个取值范围较小的类型转换到一个取值范围较大的类型（将 int16 转换为 int32）。当从一个取值范围较大的类型转换到取值范围较小的类型时（将 int32 转换为 int16 或将 float32 转换为 int），会发生精度丢失（截断）的情况。
@@ -57,6 +61,7 @@ func TestJisuan(t *testing.T) {
 自定义函数
 
 # 将整型转化为字符串
+
 ### 整型到字符串
 - 通过 Unicode 字符集转化为对应的 UTF-8 编码的字符串 <font color="red">string()</font>
 - **将 byte 数组或者 rune 数组转化为字符串**,byte 是 uint8 的别名，rune 是 int32 的别名，所以也可以看做是整型数组和字符串之间的转化。
@@ -250,9 +255,69 @@ func ThousandSeparate(str string) string {
 }
 ```
 
-# 字符串和文件流
-strings.Reader 是 Go 标准库中一个重要的类型，用于将字符串（string）包装成一个可读取的流（io.Reader）。它提供了一系列方法，允许你像操作文件或网络连接一样高效地读取字符串内容。
+# 字符串的读写
+
+类型	|主要用途	|读写性质	|线程安全	|关键特性
+-----|------------|----------|----------|----------
+bytes.Buffer	|字节序列的读写(字节缓冲区)	|可读可写	|是	|通用缓冲，支持多种IO操作(处理字节的读写、转换、缓存)
+strings.Builder	|构建字符串	|只写	|否	|高效构建字符串（避免拷贝）
+strings.Reader	|从字符串读取(字符串读取器	)	|只读	|是（只读天生安全）	|提供读取、定位等功能，将字符串视为数据源(包装成文件流)
+
+## bytes.Buffer （字节缓冲区）
+-  在 Go 1.10 引入 strings.Builder 之前，bytes.Buffer 是构建字符串的主要选择,内部使用锁（Mutex），适合并发场景
+   -  支持读写交替操作
+-  用途：<font color="red"> 类型转换 string 和 []byte, 字节流缓存（如网络请求/响应的缓冲）</font>
+
 ``` go
+func j3() {
+  var buf bytes.Buffer
+  buf.WriteString("Hello")
+  buf.Write([]byte{32, 100}) // 写入字节 对应asic码
+  fmt.Println(buf.String())   // 输出: "Hello d"
+}
+
+func j4() {
+	var bt bytes.Buffer
+	s1 := "chihuo"
+	s2 := "golang"
+	bt.WriteString(s1)
+	bt.WriteString("@")
+	bt.WriteString(s2)
+
+	s3 := bt.String() //把Buffer缓存里的转成字符串 不增加内存开销
+	fmt.Printf("s1 + s2 = %s\n", s3)
+}
+```
+
+## strings.Builder（字符串构建器）
+- 写入数据（WriteString、WriteByte、WriteRune）后，通过 String() 一次性生成结果字符串。现在对于纯字符串构建，通常首选 strings.Builder。
+  - <font color="red"> 实现了io.Writer（写入字节），io.StringWriter（写入字符串），但不可读</font>
+  - <font color="red"> String() 方法直接返回底层字节的引用（无拷贝），性能极高</font>
+  - 内存增长策略更激进（减少分配次数）
+  -  非线程安全，需自行处理并发（如加锁）
+- 用途：高频字符串拼接（如生成 JSON、HTML 模板）
+
+``` go
+func j5() {
+	var builder strings.Builder
+	s1 := "chihuo"
+	s2 := "golang"
+	builder.WriteString(s1)
+	builder.WriteString("@")
+	builder.WriteString(s2)
+	s3 := builder.String()
+	fmt.Printf("s1 + s2 = %s\n", s3)
+}
+``` 
+
+## strings.Reader（字符串读取器）
+- strings.Reader 是 Go 标准库中一个重要的类型，<font color="red"> 用于将字符串（string）包装成一个可读取的流（io.Reader）</font>
+  - 用于从字符串中高效读取数据。它实现了io.Reader, io.ReaderAt, io.Seeker, io.ByteScanner, io.RuneScanner, io.WriterTo等，使得我们可以像操作文件或字节流一样操作一个字符串
+  - 只读特性天生支持并发读
+- 用途：<font color="red"> 将字符串作为流处理（如解析字符串数据、模拟文件读取）</font>
+
+``` go
+
 func TestIo(t *testing.T) {
 	s1 := "chihuo@golang"
 	fmt.Printf("s1 is %v\n", s1)
