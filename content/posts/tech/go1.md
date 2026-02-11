@@ -164,6 +164,16 @@ func TestInt(t *testing.T) {
 - 浮点数 float32 和 float64 Printf 函数打印浮点数时可以使用“%f”来控制保留几位小数 
   - 精准计算使用 github.com/shopspring/decimal 处理浮点精度问题
   - math/big包：对整数的高精度计算
+
+``` go
+	money := new(big.Float).SetFloat64(3.136)
+	bs := new(big.Float).SetFloat64(100)
+	valbig := new(big.Float).Mul(money, bs)
+	fmt.Println(valbig.String())
+	tmp := valbig.Text('f', 0) // 3.136   314  四舍五入
+	// tmp := valbig.Text('f', 1) //3.136  313.6
+```
+
 - 复数 complex128（64 位实数和虚数）和 complex64（32 位实数和虚数），其中 complex128 为复数的默认类型。
 
 # 字符与字符串
@@ -380,6 +390,7 @@ func TestUp(t *testing.T) {
 
 	s2 := "GOLANG_HHH"
 	r := []rune(s2)
+	// 判断首字母是否大写 如果是就转成小写
 	if unicode.IsUpper(r[0]) {
 		r[0] = unicode.ToLower(r[0])
 	}
@@ -388,7 +399,8 @@ func TestUp(t *testing.T) {
 
 }
 
-// 替换 替换多少
+// 替换 
+// strings.ReplaceAll
 
 // 拼接
 func TestJoinFn(t *testing.T) {
@@ -401,7 +413,7 @@ func TestJoinFn(t *testing.T) {
 	t.Log(strings.Join(parts, "-"))
 }
 
-// 分割 有缺陷 就算返回空数组 长度也是1 使用lancet.SplitEx代替
+// 分割 tag:有缺陷 就算返回空数组 长度也是1 使用lancet模块的strutil.SplitEx代替
 func TestSplitFn(t *testing.T) {
 	// str := "1,"
 	str := ""
@@ -481,7 +493,14 @@ func j5() {
 	fmt.Printf("s1 + s2 = %s\n", s3)
 }
 
-// 字符串拼接
+// 字符串转文件流
+func TestIo(t *testing.T) {
+	s1 := "chihuo@golang"
+	fmt.Printf("s1 is %v\n", s1)
+	stream1 := strings.NewReader(s1)
+	fmt.Printf("stream1 is %v\n", stream1)
+}
+
 func TestXxx(t *testing.T) {
 	// 一次性执行完毕的流程 用+ fmt都无所谓，循环脚本，后台挂起的还是用效率高的
 	j1()
@@ -507,13 +526,7 @@ func TestFmt(t *testing.T) {
 	// 浮点数保留2位小数 %.2f
 	fmt.Printf("format is %s\n", s1)
 }
-// 字符串转文件流
-func TestIo(t *testing.T) {
-	s1 := "chihuo@golang"
-	fmt.Printf("s1 is %v\n", s1)
-	stream1 := strings.NewReader(s1)
-	fmt.Printf("stream1 is %v\n", stream1)
-}
+
 
 ```
 ## strconv 标准库 类型转换
@@ -537,7 +550,6 @@ func TestRegex3(t *testing.T) {
 		if len(match) > 1 { // match[0]是完整匹配，match[1]是捕获组
 			// fmt.Println(match[0]) // 达人一口价-
 			fmt.Println(pos, match[1]) // 达人一口价
-			// strings.Trim(match[1], "[")
 		}
 	}
 
@@ -665,7 +677,7 @@ func TestParse(t *testing.T) {
 - <font color="red">**UTF-8 是编码规则，将 Unicode 中字符的 ID 以某种方式(4个字节动态表示)进行编码**</font>
 
 ## Go 语言中支持两种<font color="red">字符类型</font> byte和rune
-1. 从 Unicode 字符集的视角看，字符串的每个字符都是一个字符的独立单元，但如果从 UTF-8 编码的视角看，一个字符可能是由多个字节编码而来的。
+1. 从 Unicode 字符集的视角看，字符串的每个字符都是一个字符的独立单元，但如果从 UTF-8 编码的视角看，一个字符可能是由多个字节编码而来的。(遍历字符串时，位移体现)
 2. <font color="red">Go语言中字符串的实现**基于 UTF-8 编码(编码规则)**，通过 rune 类型（int32），可以方便地对每个 UTF-8 字符进行访问。当字符为 ASCII 码时则占用 1 个字节，其它字符根据需要占用 2-4 个字节，比如中文编码通常需要 3 个字节。**如果单纯只有ASCII码那转成byte类型**</font>
 3. Go 代码需要包含非 ANSI 字符，保存源文件时请注意编码格式必须选择 UTF-8
 4. Go 语言默认仅支持 UTF-8编码规则 和 Unicode字符集，对于其他编码，Go 语言标准库并没有内置的编码转换支持 [iconv 库](https://github.com/qiniu/iconv)
