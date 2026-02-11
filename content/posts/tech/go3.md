@@ -45,6 +45,9 @@ mermaid: true #自己加的是否开启mermaid
 - 接口。关键字interface
 - 范型
 
+## 变量内置pair
+待补充视频
+
 ## 值类型
 - 基本类型，如布尔类型、整型、浮点型、字符串等；
 - 复合类型，如数组、结构体、函数
@@ -79,6 +82,17 @@ func main() {
 ## 引用类型
 - 切片、字典、指针和通道都是引用语义
 
+## 数组 切片
+{{< innerlink src="posts/tech/go4.md" >}}
+## 字典 列表
+{{< innerlink src="posts/tech/go5.md" >}}
+## 指针
+{{< innerlink src="posts/tech/go6.md" >}}
+## 函数
+{{< innerlink src="posts/tech/go8.md" >}}
+## 结构体
+{{< innerlink src="posts/tech/go10.md" >}}
+
 ## 接口
 **实现某个接口时，只需要实现该接口要求的所有方法即可，<font color="red">无需显式声明实现的接口</font>**
 ``` go
@@ -92,3 +106,7 @@ type Math interface {
 ## 任意类型
 - 任何类型都可以被 Any 类型引用
 - Any 类型就是空接口，即 interface{}
+{{< innerlink src="posts/tech/go14.md" >}}  
+
+## 泛型
+{{< innerlink src="posts/tech/go58.md" >}}  

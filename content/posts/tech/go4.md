@@ -57,7 +57,7 @@ arr2 := [4]int{1: 34, 2: 5} // 指定下标位置
 # 遍历 
 - for len
 - 遍历 range range 表达式返回两个值，第一个是数组下标索引值，第二个是索引对应数组元素值，可用匿名变量_
-- 通过range获取数组的值 -> 不能修改原数组中结构体的值： <font color="red">只是值副本 只能通过下标</font>
+- 通过range获取数组的值 <font color="red">只是值副本 只能通过下标</font>, 如果值是引用类型，那么可以修改结构体的内容
 
 ## 多维数组 
 - 每个元素可能是个数组，在进行循环遍历的时候需要多层嵌套循环
@@ -71,6 +71,7 @@ arr2 := [4]int{1: 34, 2: 5} // 指定下标位置
 
 # 切片slice
 
+![alt text](slice5.png)
 ``` go
 // 源码结构体
 type slice struct {
@@ -89,9 +90,20 @@ type slice struct {
 
 ## 基于数组
 ![](slice2.png)
-- array[start:end] 左闭右开的集合, 支持缺省写法
+- array[start:end] 左闭右开的集合, 支持缺省写法, a[:], a[3:], a[3:6], a[:5]等, 没有指定数组的开始索引，表示从索引0开始切(inclusive)，指定了数组的结束索引，表示切到结束索引的位置(exclusive)
 - 切片可以只使用数组的一部分元素或者整个数组来创建
 - <font color="red">切片则可以看作是数组某个连续片段的引用</font>
+``` go
+func TestCreate(t *testing.T) {
+    originArray := [6]int{1, 2, 3, 4, 5, 6}
+    slice := originArray[2:5] // 容量是切片自动扩容
+    fmt.Printf("originArrayPointer=%p\n", &originArray) // originArrayPointer=0xc0000bc060 数值本身地址
+	// len=3, cap=4, slicePointer=0xc0000980d8, sliceArrayPointer=0xc0000bc070
+    fmt.Printf("len=%d, cap=%d, slicePointer=%p, sliceArrayPointer=%p\n",len(slice), cap(slice), &slice, slice)
+}
+
+```
+![alt text](slice6.png)
 
 ## 基于切片
 - 基于切片，本质也是基于数组
@@ -121,13 +133,39 @@ func TestSliceShareMemory(t *testing.T) {
 }
 ```
 
+
+``` go
+func TestCreate(t *testing.T) {
+    originArray := [6]int{1, 2, 3, 4, 5, 6}
+    originSlice := originArray[:]
+    derivedSlice := originSlice[2:4] // derivedSlice是切切片originSlice得到的切片
+	
+    fmt.Printf("originArrayPointer=%p\n", &originArray) // originArrayPointer=0xc0000bc060
+	// originSlice: len=6, cap=6, slicePointer=0xc0000980d8, sliceArrayPointer=0xc0000bc060
+    fmt.Printf("originSlice: len=%d, cap=%d, slicePointer=%p, sliceArrayPointer=%p\n",len(originSlice), cap(originSlice), &originSlice, originSlice)
+    // derivedSlice: len=2, cap=4, slicePointer=0xc0000980f0, sliceArrayPointer=0xc0000bc070
+	fmt.Printf("derivedSlice: len=%d, cap=%d, slicePointer=%p, sliceArrayPointer=%p\n",len(derivedSlice), cap(derivedSlice), &derivedSlice, derivedSlice)
+}
+```
+
+![alt text](slice7.png)
+
+- 两个切片会使用同一个底层数组，区别就是可能使用的是底层数组的不同区域，因此如果其中一个切片更改了数据，而这个数据恰好另一个切片可用访问，那么另一个切片访问该数据时就会发现数据发生了更改
+- 切片的len和cap都是独立, 其中一个切片通过类似于append() 函数导致len或者cap发生了更改，此时另一个切片的len或者cap是不会受影响的
+
 ## 直接创建 make
 ![](slice3.png)
 内置函数 make( []Type, size, cap ) 可以用于灵活地创建切片。
+- make() 函数返回的就是引用类型对应的底层结构体本身
 - 默认填充对应类型的零值
 - Type 是指切片的元素类型，size 指的是为这个类型分配多少个元素，cap 为预分配的元素数量，这个值设定后不影响 size，只是能提前分配空间，降低多次分配空间造成的性能问题。容量不会影响当前的元素个数
-- <font color="red">使用 make() 函数生成的切片一定发生了内存分配操作，与其他2种方式给定开始与结束位置（包括切片复位）的切片（slice [开始位置 : 结束位置]）只是将新的切片结构指向已经分配好的内存区域，设定开始与结束位置，不会发生内存分配操作。</font>
-- Go 底层还是会有一个<font color="red">匿名数组</font>被创建出来，然后调用基于数组创建切片的方式返回切片，只是上层不需要关心这个匿名数组的操作而已
+- <font color="red">使用 make() 函数生成的切片一定发生了内存分配操作，</font>
+  - Go 底层还是会有一个<font color="red">匿名数组</font>被创建出来，然后调用基于数组创建切片的方式返回切片，只是上层不需要关心这个匿名数组的操作而已
+
+- 切片（slice [开始位置 : 结束位置]）只是将新的切片结构指向已经分配好的内存区域，设定开始与结束位置，不会发生内存分配操作。
+
+## make和new区别 
+{{< innerlink src="posts/tech/go28.md" >}}  
 
 ## 遍历切片
 与遍历数组一致
@@ -188,15 +226,12 @@ func TestSliceComparing(t *testing.T) {
 - 切片是动态结构（引用类型），只能与 nil 判定相等，不能互相判定相等(切片直接不能互相比较)。(切片可以看做是操作数组的指针)
 - make空切片（先声明再赋值也一样）,<font color="red">发生了内存分配操作,并且初始化默认值</font> != nil 有默认值, make返回的是引用类型本身
 
-## make和new区别 
-{{< innerlink src="posts/tech/go28.md" >}}  
 
 ## 扩容append
 Go 语言内置的 cap() 函数和 len() 函数来获取某个切片的容量和实际长度
 - 对于基于数组和切片创建的切片而言，默认容量是从切片起始索引到对应底层数组的结尾索引
 - 对于通过内置 make 函数创建的切片而言，在没有指定容量参数的情况下，默认容量和切片长度一致
-- 函数append() 的第二个参数是一个不定参数
-- 直接将一个切片追加到另一个切片的末尾 xxx...
+- 函数append() 的第二个参数是一个不定参数, 可以直接将一个切片追加到另一个切片的末尾 xxx...
 - 如果使用了make初始化了容量，那么可以在range里，通过下标赋值效率上肯定远胜 append（就算编译器会做优化，从代码书写上来说，也是下标赋值更直观）
 
 ``` go
@@ -205,6 +240,7 @@ newSlice := append(oldSlice, 1, 2, 3)
 appendSlice := []int{1, 2, 3, 4, 5}
 newSlice := append(oldSlice, appendSlice...)  // 注意末尾的 ... 不能省略
 ```
+
 ### 自动扩容
 使用 append() 函数向切片中添加元素。在使用 append() 函数为切片动态添加元素时
 - 追加的元素个数超出 oldSlice 的默认容量，则底层会自动进行扩容 (可以看源码)
@@ -212,10 +248,36 @@ newSlice := append(oldSlice, appendSlice...)  // 注意末尾的 ... 不能省�
   - 默认2倍，当原切片的长度大于或等于 1024 时，Go 语言将会以原容量的 1.25 倍作为新容量的基准（后续不一定是1.25）
 - **<font color="red">切片自动扩容后，会返回新切片，对应切片的地址也会发生改变</font>, 不扩容就不变**
 - 在切片开头添加元素一般都会导致内存的重新分配，而且会导致已有元素全部被复制 1 次，因此，从切片的开头添加元素的性能要比从尾部追加元素的性能差很多
-  
+![alt text](slice8.png)
+
+## 数据共享问题 (重新分配内存)
+- 扩容后切片使用了另外一个数组作为了底层数组。对扩容之后的切片任何操作将不再影响原切片；反之：扩容之前，对新切片的新增和修改影响的是底层数组，同时也会影响引用了该数组的任何切片
+- **切片结构体，在结构体中使用指针存在不同实例的数据共享问题**
+
+比如：slice2 是基于 slice1 创建的，它们的数组指针指向了同一个数组，因此，修改 slice2 元素会同步到 slice1，因为修改的是同一份内存数据，这就是数据共享问题
+- 解决方案 (重新分配内存)
+``` go
+slice1 := make([]int, 4)
+// slice1 := make([]int, 4, 5) //初始化的容量是 5，比长度大，执行append 的时候没有进行扩容，也就不存在重新分配内存操作。
+slice2 := slice1[1:3] // slice2 是基于 slice1 创建的
+// append 函数会重新分配新的内存，然后将结果赋值给 slice1，
+// 这样一来，slice2 会和老的 slice1 共享同一个底层数组内存，不再和新的 slice1 共享内存
+slice1 = append(slice1, 0)
+slice1[1] = 2
+slice2[1] = 6
+
+fmt.Println("slice1:", slice1)
+fmt.Println("slice2:", slice2)
+```
+**一定要重新分配内存空间，如果没有重新分配，依然存在数据共享问题**
+
+{{< innerlink src="posts/tech/php5.md" >}}  
+**比如 PHP，类似问题就是引用对象共享，在涉及到引用对象属性的复合对象集合遍历时，很多初学者可能都遇到过这个问题，其实就是浅拷贝导致的不同对象引用了同一个对象属性，要解决这个问题，需要通过深拷贝将对象及嵌套引用的对象重新克隆一份出来，避免内存共享**
+
 ### 内容复制 copy
 - 内置函数 copy()，用于将元素从一个切片复制到另一个切片。如果两个切片不一样大，就会<font color="red">按其中较小的那个切片的元素个数进行复制。</font>
 - 实现删除头3个元素, slice3[:copy(slice3, slice3[3:])] 
+
 ## 删除
 - 通过切片的切片实现的「伪删除」数据还是那份
 - append 函数和 copy 函数实现切片元素的「删除」
@@ -244,29 +306,6 @@ func TestDel(t *testing.T) {
 	fmt.Printf("%p, %p\n", slice3, slice7)      // 0x1400011a0a0, 0x1400011a0a0
 }
 ```
-
-### 数据共享问题 (重新分配内存)
-- **切片结构体，在结构体中使用指针存在不同实例的数据共享问题**
-
-比如：slice2 是基于 slice1 创建的，它们的数组指针指向了同一个数组，因此，修改 slice2 元素会同步到 slice1，因为修改的是同一份内存数据，这就是数据共享问题
-- 解决方案 (重新分配内存)
-``` go
-slice1 := make([]int, 4)
-// slice1 := make([]int, 4, 5) //初始化的容量是 5，比长度大，执行append 的时候没有进行扩容，也就不存在重新分配内存操作。
-slice2 := slice1[1:3] // slice2 是基于 slice1 创建的
-// append 函数会重新分配新的内存，然后将结果赋值给 slice1，
-// 这样一来，slice2 会和老的 slice1 共享同一个底层数组内存，不再和新的 slice1 共享内存
-slice1 = append(slice1, 0)
-slice1[1] = 2
-slice2[1] = 6
-
-fmt.Println("slice1:", slice1)
-fmt.Println("slice2:", slice2)
-```
-**一定要重新分配内存空间，如果没有重新分配，依然存在数据共享问题**
-
-{{< innerlink src="posts/tech/php5.md" >}}  
-**比如 PHP，类似问题就是引用对象共享，在涉及到引用对象属性的复合对象集合遍历时，很多初学者可能都遇到过这个问题，其实就是浅拷贝导致的不同对象引用了同一个对象属性，要解决这个问题，需要通过深拷贝将对象及嵌套引用的对象重新克隆一份出来，避免内存共享**
 
 # 多维切片
 - 每个元素都是一个切片
