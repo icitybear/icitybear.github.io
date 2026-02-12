@@ -1,5 +1,5 @@
 ---
-title: "3.0-go的复合类型-数组和切片（nil空值）" #标题
+title: "3.0-go的复合类型-数组和切片" #标题
 date: 2023-07-13T23:21:14+08:00 #创建时间
 lastmod: 2023-07-13T23:21:14+08:00 #更新时间
 author: ["citybear"] #作者
@@ -28,8 +28,6 @@ cover:
 # reward: true # 打赏
 mermaid: true #自己加的是否开启mermaid
 ---
-
-[得物:解析Go切片：为何按值传递时会发生改变](https://tech.dewu.com/article?id=147)
 
 # 数组 [] 
 - **<font color="red">数组是固定长度的、同一类型的数据集合, 值类型</font>, 与切片显著区别：长度编译时就确定不变**
@@ -81,18 +79,15 @@ type slice struct {
 }
 ```
 - 由三个部分构成 —— <font color="red">指针、长度和容量</font>
+- 切片是动态结构（引用类型），只能与 nil 判定相等，不能互相判定相等(切片直接不能互相比较), 切片内含数组指针,用来操作数组
 - 切片的类型字面量中只有元素的类型，没有长度： []不定长
-- 基于数组，做了一层封装
 - **可变长度的、同一类型元素集合**，<font color="red">切片的长度可以随着元素数量的增长而增长（但不会随着元素数量的减少而减少）</font>
-- 创建 基于数组、切片和make直接创建，<font color="red">本质都是基于数组</font>
-- <font color="red">切片则可以看作是数组某个连续片段的引用</font>
+- 创建 基于数组、切片和make直接创建，**<font color="red">本质都是基于数组, 切片则可以看作是数组某个连续片段的引用</font>**
 ![](slice1.png)
 
 ## 基于数组
 ![](slice2.png)
-- array[start:end] 左闭右开的集合, 支持缺省写法, a[:], a[3:], a[3:6], a[:5]等, 没有指定数组的开始索引，表示从索引0开始切(inclusive)，指定了数组的结束索引，表示切到结束索引的位置(exclusive)
-- 切片可以只使用数组的一部分元素或者整个数组来创建
-- <font color="red">切片则可以看作是数组某个连续片段的引用</font>
+- <font color="red">array[start:end] 左闭右开的集合, 支持缺省写法</font>, a[:], a[3:], a[3:6], a[:5]等, 没有指定数组的开始索引，表示从索引0开始切(inclusive)，指定了数组的结束索引，表示切到结束索引的位置(exclusive),必须确保数组本身长度>=end
 ``` go
 func TestCreate(t *testing.T) {
     originArray := [6]int{1, 2, 3, 4, 5, 6}
@@ -107,8 +102,18 @@ func TestCreate(t *testing.T) {
 
 ## 基于切片
 - 基于切片，本质也是基于数组
-- slice[start:end]
+- slice[start:end],左闭右开的集合, end必须确保基础切片本身长度>=end
 ``` go
+func TestSliceL(t *testing.T) {
+	var s []int
+	for i := 0; i < 10; i++ {
+		s = append(s, i)
+	}
+	spew.Println(s)
+	// 这种写法必须确保切片之前的长度为7 不然panic
+	spew.Println(s[:7])
+}
+
 func TestSliceShareMemory(t *testing.T) {
 	//下标是0开始计数
 	year := []string{"Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep",
@@ -165,66 +170,77 @@ func TestCreate(t *testing.T) {
 - 切片（slice [开始位置 : 结束位置]）只是将新的切片结构指向已经分配好的内存区域，设定开始与结束位置，不会发生内存分配操作。
 
 ## make和new区别 
+- make空切片（先声明再赋值也一样）,<font color="red">发生了内存分配操作,并且初始化默认值</font> [分配的零值]!= nil 有默认值, make返回的是引用类型本身
+- make 即分配内存，也初始化内存。
+- new只是将内存清零，并没有初始化内存。new不能对引用类型的分配内存（new返回的是指向类型的指针）
+
 {{< innerlink src="posts/tech/go28.md" >}}  
 
 ## 遍历切片
 与遍历数组一致
 
-## 声明切片和空切片 初始化{}
-- 用途：接口返回时，比如返回map类型，序列化时时nil （null）, 与[]的区别
-- **<font color="red">空切片指声明了不填充默认值的slice{}（v值为[]）, 只声明不赋值是有区别的（v值nil），声明但是分配的是默认零值（v值[0 0]）</font>**
+## <font color="red">nil切片, 空切片(切片字面量), 正常切片区别</font>
+- **<font color="red">空切片指声明了不填充默认值的slice{}（v值为[]）, nil切片指只声明不赋值是有区别的（v值nil）， make既声明又分配内存默认零值填充（v值[0 0]）</font>**
+
+1. var t []int 声明了一个int类型的切片t（nil切片），但并没有对它进行初始化。这时候这个切片被认为是nil的。这意味着它并没有指向任何的底层数组。它的长度（len）和容量（cap）都是0
+  - <font color="red">对nil切片进行for range、len和append等操作是不会引起panic的。</font>
+  - 只是一个没有指向任何地方的指针
+  - 只声明但未使用(未赋值)的切片的默认值是 nil == nil 
+  
+2. t := []int{} 这个切片不是nil的(空切片)。这个切片的指向了一个底层的数组，但这个数组并没有包含任何的元素。(分配了很小的内存去指向一个空数组)
+  - 使用了{}, 本来会在{}中填充切片的初始化元素，<font color="red">这里没有填充(因为也不知道长度)，所以切片是空的</font>，但是此时的 已经被分配了内存，只是还没有元素。因此和 nil 比较时是 false。 空切片[], [] != nil 无默认值
+  
+3. Go社区更倾向于使用nil切片的方式，因为这更加符合Go语言简单的哲学以及**切片本身的零值。**
+  - **<font color="red">例外的情况。使用JSON的时候，nil切片和空切片的表现是不一样的。nil切片（var t []int）编码成JSON后的值是null，而空切片（t := []int{}）编码成JSON后的值是一个空的JSON数组（[]）</font>. 尤其是php转go很多时候习惯使用[]**
+
 ``` go
 func TestSliceComparing(t *testing.T) {
 	a := []int{1, 2, 3, 4}
 	b := []int{1, 2, 3, 4} //切片
 	//c := [...]int{1, 2, 3, 4} 数组
-	// if a == b { //切片只能和nil比较 内含指针与指针不能比较，计算
+	// 切片只能和nil比较 内含指针的结构体，指针都不能比较，计算
+	// if a == b {
 	// 	t.Log("equal")
 	// }
+
 	t.Log(a, b)
-	var c []int        //只声明 不分配内存 nil
-	var d []int        //申明
-    x := []int{} // 注意等号 var x = []int{}
-	d = make([]int, 2) //分配内存 并且会默认填充对应类型的零值
+	var c []int //只声明 不分配内存 nil切片
 	if c == nil {
 		// 只声明一个切片 未分配内存
 		t.Log("c equal nil") // 会执行
 	}
+	t.Logf("%v %T", c, c) //序列化时为nil [] []int
+
+	var d []int        //申明 后续赋值
+	d = make([]int, 2) //分配内存 并且会默认填充对应类型的零值
 	if d == nil {
-		// 空切片 分配内存了 make会填充默认值
+		//  make会分配内存 填充默认值
 		t.Log("d equal nil") // 不执行
 	}
-    if x == nil {
-		// 空切片 不填充默认值
+	t.Logf("%v %T", d, d) //序列化时为{0,0} [0 0] []int
+
+	x := []int{} // 等价 var x = []int{}
+	// 空切片 不填充默认值
+	if x == nil {
 		t.Log("t equal nil") // 不执行
 	}
-	t.Logf("%v %T", c, c) //nil [] []int
-	t.Logf("%v %T", d, d) //非nil [0 0] []int
-    t.Logf("%v %T", x, x) //非nil [] []int
-	// 声明一个空切片 注意有等号
-	var e = []int{}
-	// 声明并初始化, 只是未填充,这里用具体类型int string会报错 nil [] []interface {}
-	// var e []interface{} 要使用这个var e = []interface{} Compilation failed
+	t.Logf("%v %T", x, x) //序列化时为null  [] []int
+
+	var e = []any{} // 或者var e = []interface{}{} 本质就是any类型
+	// 空切片分配内存了
 	if e == nil {
-		// 空切片分配内存了
-		t.Log("e equal nil")
+		t.Log("e equal nil") // 不执行
 	}
-	t.Logf("%v %T", e, e) //无nil [] []int
+	t.Logf("%v %T", e, e) //序列化时为null [] []interface{}
 
-	// 指针 创建该类型的指针 分配内存 *f 取指针指向变量的值 零值
-	var f = new(int)
+	// 指针 new创建该类型的指针 分配内存 *f 取指针指向变量的值 零值
+	var f = new(int) // make 即分配内存，也初始化内存。new只是将内存清零，并没有初始化内存
 	if f == nil {
-		t.Log("f equal nil")
+		t.Log("f equal nil") // 不执行
 	}
-	t.Logf("%v %T %d", f, f, *f) // 0xc000014328 *int 0
-
+	t.Logf("%v %T %d", f, f, *f) // 0x140001024a0 *int 0
 }
 ```
-
-- 声明但未使用(未赋值)的切片的默认值是 nil  == nil 只声明
-- 使用了{}, 本来会在{}中填充切片的初始化元素，<font color="red">这里没有填充(因为也不知道长度)，所以切片是空的</font>，但是此时的 已经被分配了内存，只是还没有元素。因此和 nil 比较时是 false。 空切片（[]）, != nil 无默认值
-- 切片是动态结构（引用类型），只能与 nil 判定相等，不能互相判定相等(切片直接不能互相比较)。(切片可以看做是操作数组的指针)
-- make空切片（先声明再赋值也一样）,<font color="red">发生了内存分配操作,并且初始化默认值</font> != nil 有默认值, make返回的是引用类型本身
 
 
 ## 扩容append
@@ -276,11 +292,12 @@ fmt.Println("slice2:", slice2)
 
 ### 内容复制 copy
 - 内置函数 copy()，用于将元素从一个切片复制到另一个切片。如果两个切片不一样大，就会<font color="red">按其中较小的那个切片的元素个数进行复制。</font>
-- 实现删除头3个元素, slice3[:copy(slice3, slice3[3:])] 
+
 
 ## 删除
 - 通过切片的切片实现的「伪删除」数据还是那份
-- append 函数和 copy 函数实现切片元素的「删除」
+- append 函数和 copy 函数实现切片元素的「删除」 
+  - 实现删除头3个元素, slice3[:copy(slice3, slice3[3:])]
 - copy 之所以可以用于删除元素，是因为其返回值是拷贝成功的元素个数，我们可以<font color="red">根据这个值完成新切片的设置</font>从而达到「删除」元素的效果,和动态增加元素一样，**<font color="red">原切片的值并没有变动，而是创建出一个新的内存空间来存放新切片并将其赋值给其它变量。</font>**
 - 删除返回的切片，**指针是否变化根据起始指针是否变了**
 
@@ -298,12 +315,15 @@ func TestDel(t *testing.T) {
 	// 通过append 删除并没有自动扩容，所以不会返回新切片地址，还是旧切片
 	slice4 := append(slice3[:0], slice3[3:]...) // 删除开头三个元素
 	fmt.Printf("%p, %p\n", slice3, slice4)      // 0x1400011a0a0, 0x1400011a0a0
+	// 使用copy 切片复制（小的覆盖大的）
+	slice7 := slice3[:copy(slice3, slice3[3:])] // 删除开头前三个元素 这种不变 起始指针不变 因为还是slice3[:xx] 下标0开始  
+	fmt.Printf("%p, %p\n", slice3, slice7)      // 0x1400011a0a0, 0x1400011a0a0
+
 	slice5 := append(slice3[:1], slice3[4:]...) // 删除中间三个元素
 	fmt.Printf("%p, %p\n", slice3, slice5)      // 0x1400011a0a0, 0x1400011a0a0
 	slice6 := append(slice3[:0], slice3[:7]...) // 删除最后三个元素
 	fmt.Printf("%p, %p\n", slice3, slice6)      // 0x1400011a0a0, 0x1400011a0a0
-	slice7 := slice3[:copy(slice3, slice3[3:])] // 删除开头前三个元素 这种不变 起始指针不变 下标0
-	fmt.Printf("%p, %p\n", slice3, slice7)      // 0x1400011a0a0, 0x1400011a0a0
+
 }
 ```
 
@@ -321,66 +341,6 @@ slice := [][]int{{10}, {100, 200}}
 ```
 ![](slice4.png)
 
-# nil 空值/零值
-- 基本类型的零值：布尔类型的零值（初始值）为 false，数值类型的零值为 0，字符串类型的零值为空字符串""，
-- nil 是 map、slice、pointer、channel、func、interface 的零值。预定义好的标识符
-- nil 标识符是不能比较的
-- nil 没有默认类型  use of untyped nil
-- 不同类型 nil 的指针是一样的  %p都是 0x0
-- 不同类型的 nil 值 unsafe.Sizeof( m ) 大小可能不同，大小取决于编译器和架构， 也不能比较
-
-
-``` go
-func main() {
-    var m map[int]string
-    var ptr *int
-    var c chan int
-    var sl []int
-    var f func()
-    var i interface{}
-    fmt.Printf("%#v\n", m)
-    fmt.Printf("%#v\n", ptr)
-    fmt.Printf("%#v\n", c)
-    fmt.Printf("%#v\n", sl)
-    fmt.Printf("%#v\n", f)
-    fmt.Printf("%#v\n", i)
-}
-// 打印结果
-map[int]string(nil)
-(*int)(nil)
-(chan int)(nil)
-[]int(nil)
-(func())(nil)
-<nil>
-
-```
-
-- <font color="red">参数为非基本类型，使用nil作为值时，要使用对应类型的零值（先声明类型）</font>
-``` go
-func TestArraySection(t *testing.T) {
-	arr3 := [...]int{1, 2, 3, 4, 5}
-	arr3_sec := arr3[:]
-
-	arr1 := []int{1, 2, 3, 4, 5}
-	var arr2 []int
-	arr4 := append(arr2, arr1...)
-	t.Log(arr4)
-	// first argument to append must be a slice; have untyped nil
-	// arr5 := append(nil, arr1...) // 但是不能直接使用nil
-	// t.Log(arr5)
-
-	t.Log(arr3_sec)
-}
-```
-
-# 切片字面量和nil切片
-- var t []int 声明了一个int类型的切片t，但并没有对它进行初始化。这时候这个切片被认为是nil的。这意味着它并没有指向任何的底层数组。它的长度（len）和容量（cap）都是0
-  - 对nil切片进行for range、len和append等操作是不会引起panic的。
-- t := []int{} 这个切片不是nil的。这个切片的指向了一个底层的数组，但这个数组并没有包含任何的元素。
-
-1. <font color="red">nil切片只是一个没有指向任何地方的指针，而空切片（[]int{}）则分配了很小的内存去指向一个空数组。</font>
-2. Go社区更倾向于使用nil切片的方式，因为这更加符合Go语言简单的哲学以及**切片本身的零值。**
-3. <font color="red">例外的情况。使用JSON的时候，nil切片和空切片的表现是不一样的。nil切片（var t []int）编码成JSON后的值是null，而空切片（t := []int{}）编码成JSON后的值是一个空的JSON数组（[]）</font>. 尤其是php转go很多时候习惯使用[]
 
 # 把切片转换成数组
 ``` go
@@ -390,7 +350,7 @@ var array [5]int
 copy(array[:], slice)
 
 // 方案2 更新到Go 1.20版本 类似于处理其他类型的解析（例如int转int32）
-a := []int{0, 1, 2, , 3, 4, 5} 
+a := []int{0, 1, 2, 3, 4, 5} 
 b : = [3]int(a[0:3]) 
 fmt.Println(b) // [0 1 2]
 ``` 

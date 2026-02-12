@@ -110,3 +110,42 @@ type Math interface {
 
 ## 泛型
 {{< innerlink src="posts/tech/go58.md" >}}  
+
+# nil 空值/零值
+- 基本类型的零值：布尔类型的零值（初始值）为 false，数值类型的零值为 0，字符串类型的零值为空字符串""，
+- nil 是 map、slice、pointer、channel、func、interface 的零值。预定义好的标识符
+- nil 标识符是不能比较的
+- nil 没有默认类型  use of untyped nil
+- 不同类型 nil 的指针是一样的  %p都是 0x0
+- 不同类型的 nil 值 unsafe.Sizeof( m ) 大小可能不同，大小取决于编译器和架构， 也不能比较
+
+
+``` go
+func main() {
+    var m map[int]string
+    var ptr *int
+    var c chan int
+    var sl []int
+    var f func()
+    var i interface{}
+    fmt.Printf("%#v\n", m) // map[int]string(nil)
+    fmt.Printf("%#v\n", ptr) // (*int)(nil)
+    fmt.Printf("%#v\n", c) // (chan int)(nil)
+    fmt.Printf("%#v\n", sl) // []int(nil)
+    fmt.Printf("%#v\n", f) // (func())(nil)
+    fmt.Printf("%#v\n", i) // <nil>
+}
+```
+
+- <font color="red">参数为非基本类型，使用nil作为值时，要使用对应类型的零值（先声明类型）</font>
+``` go
+func TestArraySection(t *testing.T) {
+	arr1 := []int{1, 2, 3, 4, 5}
+	var arr2 []int
+	arr4 := append(arr2, arr1...) // 先声明arr2为对应类型 零值
+	t.Log(arr4)
+	// first argument to append must be a slice; have untyped nil
+	// arr5 := append(nil, arr1...) // 不能直接使用nil
+	// t.Log(arr5)
+}
+```
