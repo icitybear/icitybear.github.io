@@ -41,14 +41,14 @@ mermaid: true #自己加的是否开启mermaid
   - <font color="red">复合类型是由基本类型或其他复合类型组合而成的类型</font>，函数类型由函数的参数类型和返回值类型组成，所以是复合类型
 - 可以指向任意对象的类型（Any 类型），其实就是空接口
 - 值语义和引用语义；值语义和引用语义等价于之前介绍类型时提到的值类型和引用类型。
-- 面向对象，即所有具备面向对象特征（比如成员方法）的类型
+- 面向对象类型，即所有具备面向对象特征（比如成员方法）的类型
 - 接口。关键字interface
 - 范型
 
-## 变量内置pair
+# 变量内置pair
 待补充视频
 
-## 值类型
+# 值类型
 - 基本类型，如布尔类型、整型、浮点型、字符串等；
 - 复合类型，如数组、结构体、函数
 - 函数类型在Go语言中是一种第一类对象，<font color="red">可以像其他值一样被赋值、传递和比较。函数类型的值是可以被复制的，因此函数类型是值语义</font>
@@ -79,8 +79,10 @@ func main() {
 ```
 **<font color="red">本质上它仍然是一个整型数字，你可以把具体的数值看做是 Integer 类型的实例</font>,将基本的数字类型就转化成了面向对象类型。**
 
-## 引用类型
+# 引用类型
 - 切片、字典、指针和通道都是引用语义
+
+map和Chan是真的指针 slice包含指针
 
 ## 数组 切片
 {{< innerlink src="posts/tech/go4.md" >}}
@@ -88,12 +90,15 @@ func main() {
 {{< innerlink src="posts/tech/go5.md" >}}
 ## 指针
 {{< innerlink src="posts/tech/go6.md" >}}
-## 函数
+## 通道
+{{< innerlink src="posts/tech/go18.md" >}}
+
+# 函数
 {{< innerlink src="posts/tech/go8.md" >}}
-## 结构体
+# 结构体
 {{< innerlink src="posts/tech/go10.md" >}}
 
-## 接口
+# 接口
 **实现某个接口时，只需要实现该接口要求的所有方法即可，<font color="red">无需显式声明实现的接口</font>**
 ``` go
 type Math interface {
@@ -103,12 +108,12 @@ type Math interface {
 ```
 结合上面 Integer类型，认为 Integer 实现了 Math 接口，无需显式声明。
 
-## 任意类型
+# 任意类型
 - 任何类型都可以被 Any 类型引用
 - Any 类型就是空接口，即 interface{}
 {{< innerlink src="posts/tech/go14.md" >}}  
 
-## 泛型
+# 泛型
 {{< innerlink src="posts/tech/go58.md" >}}  
 
 # nil 空值/零值

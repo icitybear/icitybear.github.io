@@ -223,8 +223,7 @@ func writeToFile(filename, content string) error {
 - float相当于go的float32, double相当于float64 类型影响数据范围
 - <font color="red">所以建议proto3的浮点数类型，定义返回时可以用字符串string, 或者分清数据范围float和double</font>
 
-- gorm的相关modle模型 定义float64, 能正常接收，<font color="red">但是proto3 的float类型（对应是float32），高精度转低精度(精度丢失问题)</font>, 四舍五入问题 float32强转的精度问题，
-  - 比如float32导致901848.38 变为901848.4
+- gorm的相关modle模型 定义float64, 能正常接收，<font color="red">但是proto3 的float类型（对应是float32），高精度转低精度(精度丢失问题)</font>, 四舍五入问题 float32强转的精度问题，比如float32导致901848.38 变为901848.4
 
 <font color="red">解决方案：proto3 使用double类型。 或者使用字符串返回浮点数</font>
 
@@ -255,15 +254,21 @@ log.Context(ctx).Debugf("db:%+v, to32:%+v, to64:%+v, str:%s", item.MediaCost, fl
 // "message":"db:901848.38, to32:901848.4, to64:901848.38 str:901848.38
 ```
 
-# <font color="red">kratos框架返回int64字段时，kratos默认会将整型字段输出为字符串。(json序列化的问题)</font>
- - <font color="red">这是因为在HTTP传输中，整型数据会被序列化为JSON格式，而JSON中只支持字符串、数字、布尔值、数组和对象等数据类型。所以为了保持数据的类型完整性，Kratos会将整型字段以字符串形式输出, 这是为了避免在前端处理过程中丢失精度。</font> 如果需要将整型字段作为数字类型输出，可以通过类型转换等方式进行处理。
+# json数字的序列化（int64）
 
-1. 发起请求的参数数字，json序列化成json数字（在JSON中，数字是以字符串的形式表示的）。
-2. encoding/json解码器将JSON数据解码为Go语言中的数据结构。
-   - **<font color="red">当解码器遇到一个JSON数字时，它会将其解码为Go语言中的float64类型。</font>**
-   - 当数字超过 2^53（约 9e15）时，float64 会丢失精度，导致大整数解析错误,<font color="red">特别是对于int64类型的字段，如果数值很大，转换为float64可能会造成精度损失。</font>
+<font color="red">kratos框架返回int64字段时，kratos默认会将整型字段输出为字符串</font>
+
+- 这是因为在HTTP传输中，整型数据会被序列化为JSON格式，而JSON中只支持字符串、数字、布尔值、数组和对象等数据类型。<font color="red">所以为了保持数据的类型完整性，Kratos会将整型字段以字符串形式输出, 这是为了避免在前端处理过程中丢失精度。</font> 
+
+![alt text](image1.png)
+
+# json数字的反序列化 (float64和int64)
+
+1. 发起请求的参数数字，<font color="red">json序列化成json数字（在JSON中，数字是以字符串的形式表示的）。</font>
+2. 接受数据后，json字符串通过encoding/json解码器将JSON数据解码为Go语言中的数据结构。
+   - **<font color="red">当解码器遇到一个JSON数字时，它会将其解码为Go语言中的float64类型。</font>** 当数字超过 2^53（约 9e15）时，float64 会丢失精度，导致大整数解析错误,<font color="red">特别是对于int64类型的字段，如果数值很大，转换为float64可能会造成精度损失。</font>
 3. 指定解码器解析json字符串里的int64数字, 超出范围精度丢失，使用UseNumber解码器
-   - UseNumber方法会使Decoder在解析数字时，**将数字作为json.Number类型（本质是字符串）保存**，而不是直接解析为float64,后续步骤中根据需要将json.Number转换为int64、float64等, 配合结构体定义好字段int64可以直接使用，精度也不会丢失
+   - <font color="red">UseNumber方法会使Decoder在解析数字时，**将数字作为json.Number类型（本质是字符串）保存**，而不是直接解析为float64,后续步骤中根据需要将json.Number转换为int64、float64等, 配合结构体定义好字段int64可以直接使用，精度也不会丢失</font>
 
 ``` go
 // json字符串 解析int64 float64精度丢失
@@ -274,8 +279,9 @@ type Data struct {
 
 type Data2 struct {
 	ID    string `json:"id"`
-	Value int64  `json:"value"` // 使用 json.Number 接收
+	Value int64  `json:"value"` // 指定结构体无异常 但是解析到map时，json数字会被处理成go的float64 int64就会精度丢失
 }
+
 
 func TestDecoder3(t *testing.T) {
 	// 示例 JSON（包含大整数）
@@ -285,16 +291,15 @@ func TestDecoder3(t *testing.T) {
 	_ = json.Unmarshal([]byte(jsonStr), &originData2)
 	// json_fmt.Data2{ID:"test", Value:7044144249855934983} int64
 	fmt.Printf("%+#v %T\n", originData2, originData2.Value)
-	// 使用map接收就会异常
+
+	// 使用map接收就会异常 json数字会被处理成go的float64 
 	var rawMap map[string]interface{}
-	// 使用的是Decode
 	if err := json.Unmarshal([]byte(jsonStr), &rawMap); err != nil {
 		log.Fatal(err)
 	}
-	// tag: 此时这里的float64已经出现精度丢失了
+	// tag: 此时json数字为float64 int64就会精度丢失
 	// map[string]interface {}{"id":"test", "value":7.044144249855935e+18} float64
 	fmt.Printf("%+#v %T\n", rawMap, rawMap["value"])
-
 
 	// 创建 Decoder 并启用 UseNumber
 	decoder := json.NewDecoder(strings.NewReader(jsonStr))
@@ -317,7 +322,7 @@ func TestDecoder3(t *testing.T) {
 		log.Fatal("Decode解析失败: ", err)
 	}
 
-	// 将 json.Number 转为 int64
+	// tag: 将 json.Number 转为 int64
 	intValue, err := data.Value.Int64()
 	if err != nil {
 		log.Fatal("转换失败: ", err)
@@ -327,9 +332,10 @@ func TestDecoder3(t *testing.T) {
 	fmt.Printf("%+#v %T %d\n", data, data.Value, intValue)
 
 	const jsonStr2 = `{"id": "test","value": 7044144249855934983}` // int64 最大值.
-	// 创建 Decoder 并启用 UseNumber
+	// 创建 Decoder 并启用 UseNumber 启用数字原始解析 本质转为字符串
 	decoder2 := json.NewDecoder(strings.NewReader(jsonStr2))
 	decoder2.UseNumber()
+
 	var data2 Data2 // tag: 此时的结构体字段直接定义int64类型
 	if err := decoder2.Decode(&data2); err != nil {
 		log.Fatal("解析失败: ", err) // 解析失败: EOF
@@ -338,15 +344,15 @@ func TestDecoder3(t *testing.T) {
 	fmt.Printf("%+#v %T", data2, data2.Value)
 }
 
-// 解析到map
+// 解析到map但是启用数字原始解析
 func TestDecoder4(t *testing.T) {
 	jsonStr := `{"value": 9223372036854775807}`
 
 	decoder := json.NewDecoder(strings.NewReader(jsonStr))
 	decoder.UseNumber() // 关键：启用数字原始解析
 
+	// tag: 解析到map 但是开启了数字
 	var raw map[string]interface{}
-	// 使用的是Decode
 	if err := decoder.Decode(&raw); err != nil {
 		log.Fatal(err)
 	}
@@ -382,7 +388,6 @@ func TestDecoder5(t *testing.T) {
 }
 ```
 
-![alt text](image1.png)
 
 # 浮点数计算精度问题
 float32和float64类型的浮点数在进行数学运算时可能会遇到精度问题。这是由于浮点数在计算机中的表示方式决定的，它们无法精确表示所有的小数。当进行浮点数运算时（如乘法），这种精度误差可能会累积，导致结果不如预期那样精确。

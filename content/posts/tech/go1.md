@@ -70,7 +70,7 @@ runtime error: invalid memory address or nil pointer dereference
 
 ## 变量逃逸
  <font color="red">[【有道云笔记】Go语言变量逃逸分析](https://share.note.youdao.com/s/O3AX7pSm)</font>
-
+![alt text](image2.png)
 # 常量
 - 与变量大差不差
 - 常量是指编译期间就已知且不可改变的值，常量只可以是数值类型（包括整型、 浮点型和复数类型）、布尔类型、字符串类型等<font color="red">标量类型</font>
