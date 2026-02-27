@@ -167,7 +167,7 @@ mermaid: true #自己加的是否开启mermaid
 - **缓存双删策略——即在写流程写 db 前后，分别执行一次删除 cache 操作** 就是写流程在 moment4 之后，额外增加一个 moment6，再一次将 cache 中 key:a 对应的数据删除.
  - 依然存在的问题：无法保证，写流程中，第二次删除 cache 的动作一定能执行在读流程写 cache 的操作之后，也就是 moment5 和 moment6 两个时刻的相对次序是不稳定的：
 ![alt text](image7.png)
-## 缓存延时双删策略
+## <font color="red">缓存延时双删策略</font>
 “延时”就体现在，写流程写完 db 后，会等待指定时长，保证此期间可能持有脏数据的读流程都完成写 cache 操作后，再执行第二次的删 cache 操作，以此来实现缓存数据的“最终一致性”语义.
 ![alt text](image8.png)
 
