@@ -519,11 +519,17 @@ func TestFunc(t *testing.T) {
 ## 实现装饰器模式（函数为结果）
 {{< innerlink src="posts/tech/go9.md" >}} 
 
+- 增强函数写法，装饰器模式 中间件
+
 ## 实现适配器模式（函数为参数）
 {{< innerlink src="posts/tech/go30.md" >}}  
 
+- 配合适配器模式: interface里定义方法。额外实现一个适配器(实现了interface)，对函数变量进行转化
+- 增强函数写法 将函数（func）转换为接口（type）优点 注入自定义闭包函数
 ## 实现装选项模式模式
 {{< innerlink src="posts/tech/go23.md" >}} 
+
+- 函数选项模式option 结构体的创建
 
 # 递归函数
 1. 一个问题的解可以被拆分成多个子问题的解

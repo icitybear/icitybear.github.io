@@ -47,7 +47,7 @@ rocksdb 则采用多线程处理模型，并发读写内存数据结构时，需
 # 消息队列
 ## <font color="red">如何基于Redis实现消息队列</font>
   - 文章 https://zhuanlan.zhihu.com/p/651758438
-  - 视频
+  - b站视频 [万字详解如何基于redis实现mq消息队列](https://www.bilibili.com/video/BV19u411A7va)
   - tq企业的g2 tqmq 纯redis
 
 ## go 语言分布式消息队列 nsq （服务端客户端)

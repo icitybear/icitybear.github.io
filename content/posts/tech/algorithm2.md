@@ -30,7 +30,7 @@ cover:
 mermaid: true #自己加的是否开启mermaid
 ---
 
-# [压缩前缀树实现_哔哩哔哩_bilibili](https://b23.tv/s0LrzbR)
+# 压缩前缀树实现_哔哩哔哩_bilibili
 
 {{< bilibili BV1wT4y1x7xm >}} 
 

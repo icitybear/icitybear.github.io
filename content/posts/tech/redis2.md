@@ -30,7 +30,7 @@ cover:
 mermaid: true #自己加的是否开启mermaid
 ---
 # 缓存的过期策略和key的失效策略
-- <font color="red">[b站视频](https://b23.tv/fvdQV2X)</font>
+- <font color="red">b站视频 [分布式缓存的过期策略、key 的失效策略](https://www.bilibili.com/video/BV1PH8GeGEE4)</font>
 - FIFO（先进先出） LRU（时间） LFU（频率） (hash和双向链表实现)
 - 定时任务，过期时间（同步或异步），访问时删除    redis的key失效
 
@@ -96,7 +96,7 @@ mermaid: true #自己加的是否开启mermaid
 {{< innerlink src="posts/tech/redis3.md" >}}
 
 # 多级缓存架构和热点key检测的设计与分析
-- <font color="red">[b站视频](https://b23.tv/pSJjN34)</font>
+- <font color="red">b站视频 [系统设计-多级缓存架构和热点key检测的设计与分析](https://www.bilibili.com/video/BV1iMsJeiEHD)</font>
 - 本地缓存（服务端-单体内存缓存和客户端缓存）
 - 存储介质的缓存
 
