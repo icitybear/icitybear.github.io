@@ -69,9 +69,11 @@ runtime error: invalid memory address or nil pointer dereference
 ![Alt text](image.png)
 
 ## 变量逃逸
- <font color="red">[【有道云笔记】Go语言变量逃逸分析](https://share.note.youdao.com/s/O3AX7pSm)</font>
+<font color="red">[【有道云笔记】Go语言变量逃逸分析](https://share.note.youdao.com/s/O3AX7pSm)</font>
 ![alt text](image2.png)
+
 # 常量
+
 - 与变量大差不差
 - 常量是指编译期间就已知且不可改变的值，常量只可以是数值类型（包括整型、 浮点型和复数类型）、布尔类型、字符串类型等<font color="red">标量类型</font>
 - 关键字 const, 批量
@@ -87,6 +89,7 @@ const (          // 通过一个 const 关键字定义多个常量，和 var 类
 const u, v float32 = 0, 3  // u = 0.0, v = 3.0，常量的多重赋值 
 const a, b, c = 3, 4, "foo" // a = 3, b = 4, c = "foo", 无类型整型和字符串常量
 ``` 
+
 ## 预定义常量
 - Go 语言**预定义了这些常量：true、false 和 iota**
 - iota 比较特殊，可以被认为是一个可被编译器修改的常量，<font color="red">在每一个 const 关键字出现时被重置为 0，然后在下一个 const 出现之前，每出现一次 iota，其所代表的数字会自动增 1。</font>如果两个 const 的赋值语句的表达式是一样的，那么还可以省略后一个赋值表达式(相同的表达式)
@@ -98,8 +101,6 @@ const (
 	Tuesday   = 1 + iota // 1 + 1
 	Wednesday            // 1 + 2
 )
-
-
 const (
 	mutexLocked      = 1 << iota // 1左移0位（1） mutex is locked 上锁 1 state右侧的第一个 bit位标志是否上锁，0-未上锁，1-已上锁；
 	mutexWoken                   // 1左移1位 2 state右侧的第二个bit位标 是否有唤醒的在抢占 是否有 goroutine 从阻塞中被唤醒，0-没有，1-有；

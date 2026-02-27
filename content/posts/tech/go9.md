@@ -37,7 +37,9 @@ mermaid: true #自己加的是否开启mermaid
 - 继承强调的是等级制度和子类种类，这部分架构需要一开始就明确好
 - <font color="red">装饰器模式强调的是“装饰”的过程，而不强调输入与输出，能够动态地为对象增加某种特定的附属能力，相比于继承模式显得更加灵活，且符合开闭原则</font>
 ## 演进
+
 对米饭进行加工
+
 • 比如选用主菜培根搭配上副菜鸡蛋，就形成了一碗鸡蛋培根盖浇饭；
 
 • 比如选用主菜牛肉搭配上副菜青椒，就形成了一碗青椒牛肉盖浇饭；
@@ -45,7 +47,7 @@ mermaid: true #自己加的是否开启mermaid
 • 比如选用主菜鸡排搭配上副菜黑椒汁，就形成了一碗黑椒鸡排盖浇饭.
 ### 继承的方式进行实现
 ![alt text](image1.png)
-继承”的实现思路中，我们需要对子类的等级以及种类进行枚举，包括通过加入主菜后形成的一系列一级子类以及加入主菜和副菜后形成的一系列二级子类
+<font color="red">继承”的实现思路中，我们需要对子类的等级以及种类进行枚举，包括通过加入主菜后形成的一系列一级子类以及加入主菜和副菜后形成的一系列二级子类</font>
 - <font color="red">缺点：</font>
   - 主菜和副菜的结合可以是更加灵活多样的, 后续可能有更多的主菜和副菜类型出现,对配菜的类型进行界定显得过于刻板，主菜和副菜本质上都是菜品而已，可以根据用户的喜好灵活添加，比如用户可以只要副菜或者只要主菜
   - 对配菜的类型进行界定显得过于刻板，主菜和副菜本质上都是菜品而已，可以根据用户的喜好灵活添加，比如用户可以只要副菜或者只要主菜
@@ -53,13 +55,14 @@ mermaid: true #自己加的是否开启mermaid
 ### 装饰器模式
 - <font color="red">不再聚焦于尝试对所有组合种类进行一一枚举，而是把注意力放在“加料”的这个过程行为当中</font>
 ![alt text](image2.png)
-一份鸡蛋培根盖浇饭 = 一份白米饭（核心类）+ 一份鸡蛋（装饰器1）+ 一份培根（装饰器2），<font color="red">其中鸡蛋和培根对应装饰器的使用顺序是不作限制的.</font>于是不管后续有多少种新的“菜品”加入，我们都只需要声明其对应的装饰器类即可
+**<font color="red">一份鸡蛋培根盖浇饭 = 一份白米饭（核心类）+ 一份鸡蛋（装饰器1）+ 一份培根（装饰器2），其中鸡蛋和培根对应装饰器的使用顺序是不作限制的.</font>**于是不管后续有多少种新的“菜品”加入，我们都只需要声明其对应的装饰器类即可
 
 # 代码实现
 主食包括米饭 rice 和面条 noodle 两条，而配菜则包括老干妈 LaoGanMa（老干妈拌饭顶呱呱）、火腿肠 HamSausage 和煎蛋 FriedEgg 三类.
 ![alt text](image3.png)
 ## 主食类
 ``` go
+// tag: 定义接口
 type Food interface {
     // 食用主食
     Eat() string
@@ -95,7 +98,12 @@ func (n *Noodle) Cost() float32 {
     return 1.5
 }
 ```
-## 装饰器
+## <font color="red">装饰器实现</font>
+1. 定义装饰器类型（核心类 此时是接口）
+2. 实现各个装饰类，在装饰类的构造器函数中传入核心类并同时返回
+3. 然后通过重写核心接口的定义方法，实现对应的增强装饰效果.
+4. 调用的时候 各个装饰构造传入各个实现了核心类的实例
+
 ``` go
 // 装饰器部分，我们声明了一个 Decorate interface，它们本身是在强依附于核心类（主食）的基础上产生的，只能起到锦上添花的作用，因此在构造器函数中，需要传入对应的主食 Food.
 type Decorator Food // 装饰器类型 都是依赖要装饰的核心类上
@@ -165,10 +173,9 @@ func Test_decorator(t *testing.T) {
 }
 ``` 
 # <font color="red">增强函数实现装饰器模式(闭包)</font>
-- 拦截前后会执行的核心逻辑执行方法（核心类）type xxx func(xxx)xx
-- 函数的参数和返回值签名都要与要加强的一致
+- 函数的参数和返回值签名都要与要加强的一致, 并使通过函数创建一个闭包（闭包的参数为要执行的函数）
 ``` go
-//  handleFunc 对应的是装饰器模式中的核心类
+//  handleFunc 对应的是装饰器模式中的核心类 最终要执行的函数
 type handleFunc func(ctx context.Context, param map[string]interface{}) error
 
 // Decorate 增强方法对应的则是装饰器类
@@ -192,12 +199,9 @@ func Decorate(fn handleFunc) handleFunc {
 - 通过**高阶函数**实现
 - 核心思路就是在被修饰的功能模块（这里是外部传入的乘法函数 f）**<font color="red">执行前后加上一些额外的业务逻辑，而又不影响原有功能模块的执行.</font>**
 - 在 main 函数中调用乘法函数 multiply 时，如果要应用装饰器，需要通过装饰器 execTime 包裹，装饰器返回的是个匿名函数，所以需要再度调用<font color="red">(延时执行)</font>才能真正执行，
-### 基本功能模块
+
 ``` go
-package main
-
-import "fmt"
-
+// 基本功能模块
 func multiply(a, b int) int {
     return a * b
 }
@@ -211,15 +215,8 @@ func main() {
 ```
 **不修改现有 multiply 函数代码的前提下计算乘法运算的执行时间**
 
-### 装饰器模式增强
 ``` go
-package main
-
-import (
-    "fmt"
-    "time"
-)
-
+// 增强函数实现装饰器模式
 // 为函数类型设置别名提高代码可读性
 type MultiPlyFunc func(int, int) int
 
@@ -245,7 +242,7 @@ func execTime(f MultiPlyFunc) MultiPlyFunc {
 func main() {
     a := 2
     b := 8
-    // 通过修饰器调用乘法函数，返回的是一个匿名函数
+    // 通过修饰器调用乘法函数，返回的是一个闭包
     decorator := execTime(multiply)
     // 执行修饰器返回函数
     c := decorator(a, b)
@@ -256,7 +253,6 @@ func main() {
 // --- 执行耗时: 180ns ---
 // 2 x 8 = 16
 ```
-- **为了实现更加通用的函数执行耗时计算功能，应该将 MultiPlyFunc 函数参数和返回值声明为泛型**
 
 # grpc-go 中对拦截器链(Interceptor) chainUnaryInterceptors 的实现（闭包）
 https://github.com/grpc/grpc-go
@@ -267,16 +263,17 @@ https://github.com/grpc/grpc-go
 
 核心业务处理方法 handler相当于核心类（就是UnaryHandler），每一轮通过拦截器 UnaryServerInterceptor 对 handler 进行增强的过程，对应的就是一次“装饰”的步骤.
 ``` go
-
+// tag: 1.0 对应的是装饰器模式中的核心类 最终要执行的函数
 // 拦截前后 会执行的核心逻辑执行方法（核心类）  入参为 context 和 req，出参为 resp 和 error
 type UnaryHandler func(ctx context.Context, req interface{}) (interface{}, error)
 
+
 // • req：grpc 请求的入参
 // • info：grpc 业务服务 service
-// • handler：核心逻辑执行方法 UnaryHandler
+// • handler：核心逻辑执行方法 UnaryHandler  
 type UnaryServerInterceptor func(ctx context.Context, req interface{}, info *UnaryServerInfo, handler UnaryHandler) (resp interface{}, err error)
 
-// 增强函数模式 （闭包）-装饰器模式-实现拦截器链
+// tag: 拦截器链
 func chainUnaryInterceptors(interceptors []UnaryServerInterceptor) UnaryServerInterceptor {
     return func(ctx context.Context, req interface{}, info *UnaryServerInfo, handler UnaryHandler) (interface{}, error) {
         // 会调用拦截器列表 interceptors 当中的首个拦截器 并(调用getChainUnaryHandler返回的类型UnaryHandler)
@@ -285,8 +282,8 @@ func chainUnaryInterceptors(interceptors []UnaryServerInterceptor) UnaryServerIn
     }
 }
 
-// 增强函数模式 （闭包）实现装饰器模式-生成拦截器
-// 依次使用下一枚拦截器对核心方法 handler 进行装饰包裹，封装形成一个新的“handler”供当前的拦截器使用.
+// tag: 2.0 增强函数模式 （闭包）实现装饰器模式-生成拦截器
+// 依次使用下一枚拦截器对核心方法 handler UnaryHandler 进行装饰包裹，封装形成一个新的“handler”供当前的拦截器使用.
 func getChainUnaryHandler(interceptors []UnaryServerInterceptor, curr int, info *UnaryServerInfo, finalHandler UnaryHandler) UnaryHandler {
     if curr == len(interceptors)-1 {
         return finalHandler
@@ -306,5 +303,13 @@ var myInterceptor = func(ctx context.Context, req interface{}, info *grpc.UnaryS
     return
 }
 // 将myInterceptor拦截器加入拦截器链路里
+
+// 比如流量控制sentinel的接入
+import (
+	sentinelPlugin "github.com/sentinel-group/sentinel-go-adapters/grpc"
+	"google.golang.org/grpc"
+)
+
+// Create with Sentinel interceptor
+s := grpc.NewServer(grpc.UnaryInterceptor(sentinelPlugin.NewUnaryServerInterceptor()))
 ```
-- 比如[流量控制sentinel的接入](https://pkg.go.dev/github.com/alibaba/sentinel-golang/pkg/adapters/grpc)

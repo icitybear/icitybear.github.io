@@ -196,7 +196,7 @@ fmt.Println("slice2:", slice2)
 ## make和new区别 
 - make空切片（先声明再赋值也一样）,<font color="red">发生了内存分配操作,并且初始化默认值</font> [分配的零值]!= nil 有默认值, make返回的是引用类型本身
 - make 即分配内存，也初始化内存。
-- new只是将内存清零，并没有初始化内存。new不能对引用类型的分配内存（new返回的是指向类型的指针）
+- new只是将内存清零，并没有初始化内存。new不能对引用类型的分配内存（new返回的是类型的指针）
 
 {{< innerlink src="posts/tech/go28.md" >}}  
 
