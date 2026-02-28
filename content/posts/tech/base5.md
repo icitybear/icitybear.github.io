@@ -236,3 +236,9 @@ https://share.note.youdao.com/s/2kJM1Aip
 
 【有道云笔记】字体反爬（爬虫）
 https://share.note.youdao.com/s/3m8Dg2z3
+
+用 cdp 做爬虫已经是现在流行的做法了，传统的爬虫现在基本上都被针对死了
+
+cdp 就是官方支持的“操作浏览器”协议，不开启 headless 模式，用ip连接池，反爬虫基本无解了
+
+配合现在的 ai，目前来说，除了那种要求从左往右滑动的验证码外，基本上所有 验证方式都有解
