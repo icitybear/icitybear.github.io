@@ -29,6 +29,8 @@ cover:
 mermaid: true #自己加的是否开启mermaid
 ---
 
+- <font color="red">[文章-Golang map 实现原理](https://mp.weixin.qq.com/s/PT1zpv3bvJiIJweN3mvX7g)</font>
+
 # 声明和初始化
 - 关键字map
 - Go 字典也是个<font color="red">无序集合</font>，底层不会按照元素添加顺序维护元素的存储顺序
