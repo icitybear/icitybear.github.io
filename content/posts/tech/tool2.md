@@ -28,3 +28,5 @@ cover:
 # reward: true # 打赏
 mermaid: true #自己加的是否开启mermaid
 ---
+
+- ai相关的idea

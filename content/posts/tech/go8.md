@@ -512,7 +512,7 @@ func TestFunc(t *testing.T) {
 ```
 
 # 以下函数式编程技术
-
+- [探索Go函数式编程：提升你的代码品质与可维护性](https://tech.qimao.com/functional-programming-in-go/)
 # 高阶函数
 高阶函数，就是接收其他函数作为参数传入，或者把其他函数作为结果返回的函数
 

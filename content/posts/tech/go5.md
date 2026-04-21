@@ -251,6 +251,25 @@ func TestOrderStruct(t *testing.T) {
 ![](map1.png)
 ![](map2.png)
 
+``` go
+	result := make(map[string][]string, 0)
+	for _, v := range list {
+		menuId := strconv.Itoa(v.MenuId)
+		if _, ok := result[v.AgentProjectCode]; ok {
+			result[v.AgentProjectCode] = append(result[v.AgentProjectCode], menuId)
+		} else {
+			result[v.AgentProjectCode] = []string{menuId}
+		}
+	}
+	// 优化 直接使用用append
+	result := make(map[string][]string, 0)
+	for _, v := range list {
+		menuId := strconv.Itoa(v.MenuId)
+		result[v.AgentProjectCode] = append(result[v.AgentProjectCode], menuId)
+	}
+```
+原因：Go 中 map 访问不存在的 key 会返回值类型的零值，对 []string 来说就是 nil，而 append(nil, elem) 会自动创建新切片。所以 if _, ok 的守卫完全多余
+
 # 多键索引
 - [Go语言map的多键索引——多个数值条件可以同时查询](https://note.youdao.com/s/D0OQeLbt)-<font color="red">添加键值对到字典时，实际是将键转化为哈希值进行存储</font>
 - 底层会为 map 的键自动构建哈希值。能够构建哈希值的类型必须是非动态类型、非指针、函数、闭包

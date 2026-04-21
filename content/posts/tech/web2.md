@@ -35,4 +35,8 @@ mermaid: true #自己加的是否开启mermaid
 2. 24年 文章：[万字解析 golang netpoll 底层原理](https://zhuanlan.zhihu.com/p/721422268)
    - 视频：
 
+3. [万字学习笔记：cloudwego/netpoll](https://zhuanlan.zhihu.com/p/1896654310688933137)
+4. [万字学习笔记：cloudwego/kitex](https://zhuanlan.zhihu.com/p/1902680493620700799)
+   kitex 是 go 实现的高性能的 rpc 框架，集成了编解码 codec、通信 transport、服务发现 discovery、负载均衡 loadbalance、链路追踪 trace 等一系列模块，通过预留接口的方式保留了灵活的扩展度.
+   
 万字解析 golang netpoll 底层原理：这是一个力求温故而知新的重置篇章，希望在有了不同语言间横向对比的视角后，能够对 golang 底层 io 模型设计、方案取舍原因有着更加立体的认知. 在本文中，我们将涉及到的如下知识点：io多路复用概念、epoll实现原理、针对 golang 底层 epoll 应用细节以及 netpoll 框架模型进行源码级别的讲解.
