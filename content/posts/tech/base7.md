@@ -321,7 +321,7 @@ func (lcg *linearCongruentialGenerator) nextDouble() float64 {
 // 其中 userinfo.getid 是uuid或者token, levelid 就是实验层id，其他是固定的，levelid 才是seed的概念
 
 func TestHashBucket(t *testing.T) {
-	text := "taqu1username"
+	text := "citybear"
 	bucket1 := hashbucket.GetBucketNum(text, 1000)
 	fmt.Println(bucket1)
 	// 使用一致性哈希算法返回桶编号

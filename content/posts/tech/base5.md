@@ -202,8 +202,6 @@ mermaid: true #自己加的是否开启mermaid
 - [PHP 实现AES,DES算法 CBC ECB模式](https://note.youdao.com/s/B6S1CErY)
   
 # SM国产商密算法
-https://git.internal.taqu.cn/go/g3
-
 
 # 国密算法与国际标准算法的对比
 ![alt text](image1.png)

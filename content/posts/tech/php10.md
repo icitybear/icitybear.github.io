@@ -129,7 +129,7 @@ var_export($arr); // 打印 [0]
 redis 迁移数据需要扫描旧  key
 使用 scan 的时候，因为第一个值必须传递引用 reference
 如果直接使用 r() 方法返回的实例， scan 的时候会报下面这个错误，<font color="red">然后 $it 一直不迭代，导致死循环</font>
-[code-warinng]: [2]Parameter 1 to Redis::scan() expected to be a reference, value given exception发生错误的位置为: /data/html/privilege/vendor/haibao/xy/base/XyRedis.php 中的第124行
+[code-warinng]: [2]Parameter 1 to Redis::scan() expected to be a reference, value given exception发生错误的位置为: /data/html/privilege/vendor/xxx/xy/base/XyRedis.php 中的第124行
 -  解决方案： 通过反射调用非 public 方法
 ![alt text](image.png)
 ## 通过反射调用非 public 方法

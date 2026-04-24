@@ -64,7 +64,7 @@ rocketMQ 延时队列	时间精度和灵活度不足.
 # 理解定时任务cron
 {{< innerlink src="posts/tech/go37.md" >}}
 - tq企业基于kratos框架 
-  - 进一步封装biz-cron-job包  https://git.internal.taqu.cn/go-modules/biz-cron-job
+  - 进一步封装biz-cron-job包  https://git.internal.xxx.cn/go-modules/biz-cron-job
 - https://github.com/shunfei/cronsun 基于cron分布式版本 后端：Go 语言 前端：Vue.js 存储：支持 etcd 或 MongoDB
 
 # 分布式调度

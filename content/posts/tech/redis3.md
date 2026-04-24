@@ -178,7 +178,7 @@ package data
 
 import (
 	"context"
-	"git.internal.taqu.cn/go-modules/kratos-extends/redislock"
+	"git.internal.xxx.cn/go-modules/kratos-extends/redislock"
 	"github.com/go-kratos/kratos/v2/log"
 )
 

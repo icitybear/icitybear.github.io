@@ -84,17 +84,17 @@ function myErrorHandler($errno, $errstr, $errfile, $errline)
 // 不屏蔽warning的情况，自带报错
 $ php ./test.php
 PHP Warning:  file_get_contents(https://xueyuanjun.com/error): Failed to open stream: HTTP request failed! HTTP/1.1 404 Not Found
- in /Users/chenshixiong/Documents/work/haibao/tq-trade/social-trade/test.php on line 6
+ in /Users/chenshixiong/Documents/work/xxx/tq-trade/social-trade/test.php on line 6
 PHP Stack trace:
-PHP   1. {main}() /Users/chenshixiong/Documents/work/haibao/tq-trade/social-trade/test.php:0
-PHP   2. file_get_contents($filename = 'https://xueyuanjun.com/error') /Users/chenshixiong/Documents/work/haibao/tq-trade/social-trade/test.php:6
+PHP   1. {main}() /Users/chenshixiong/Documents/work/xxx/tq-trade/social-trade/test.php:0
+PHP   2. file_get_contents($filename = 'https://xueyuanjun.com/error') /Users/chenshixiong/Documents/work/xxx/tq-trade/social-trade/test.php:6
 xxxx
-/Users/chenshixiong/Documents/work/haibao/tq-trade/social-trade/test.php:7:
+/Users/chenshixiong/Documents/work/xxx/tq-trade/social-trade/test.php:7:
 bool(false)
 
 // 屏蔽自带的报错，无自定义处理器
 $ php ./test.php
-/Users/chenshixiong/Documents/work/haibao/tq-trade/social-trade/test.php:7:
+/Users/chenshixiong/Documents/work/xxx/tq-trade/social-trade/test.php:7:
 bool(false)
 
 // 自定义报错
