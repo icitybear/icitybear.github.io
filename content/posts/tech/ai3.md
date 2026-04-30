@@ -321,6 +321,8 @@ skills 文件位置
   - Kiro ~/.kiro/skills/ 
   - Claude Code  ~/.claude/skills/
 
+- 单个 .md 文件放在.claude/skills/ 下就能生效，但是部分含有其他目录，所以额外一个文件夹比较规范
+
 ## 安装 Skill
 - 手动放置到 agent 的 skills 文件夹位置
   - 适用于开发者，自定义 Skill

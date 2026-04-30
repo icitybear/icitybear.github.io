@@ -127,6 +127,11 @@ $ curl http://127.0.0.1:3000/claude-kiro-oauth/v1/messages \
 - X-API-Key 是配置的 api key，默认为"123456"，可在http://27.0.0.1:3000的“配置管理"->"基础设置"- >'API密钥“进行修改，修改后记得点击最底下的“保存配置"
 ![alt text](image5.png)
 
+## 400 403问题
+- kiro 的 token 现在是1小时过期 强制刷新或者重新导入，主要问题是 kiro 的 token 过期时间缩短了，一直在用的话，这些工具都会在过期前自动续期电脑休眠后就很容易过期了，工具继续走 续期逻辑肯定失败了
+![alt text](image12.png)
+![alt text](image9.png)
+
 # Claude Code Switch ccs 
 - https://github.com/kaitranntt/ccs
 ![alt text](image6.png)
@@ -137,11 +142,65 @@ npm install -g @kaitranntt/ccs
 ccs config 启动管理界面
 ```
 
-## 配置kiro
-![alt text](image7.png)
 
+
+## 一定不要自己安装开源 CLiiProxy
+- 安装了开源会提示api key 无效
+
+根因：你通过 Homebrew 安装了开源版 CLIProxyAPI，并且它被注册为 launchd 服务（homebrew.mxcl.cliproxyapi）自动启动。
+这个开源版读取的是cliproxyapi.conf（里面的 api-keys 是占位符），而不是 CCS 生成的 ~/.ccs/cliproxy/config.yaml。
+
+- CCS 配置了 backend: original  应该使用/opt/homebrew/opt/cliproxyapi/bin/cliproxyapi 
+  - 默认读取  默认读取 cliproxyapi.conf配置  其中的api-keys 是 your-api-key-1 等占位符，
+- CCS 配置了 backend: plus，应该使用 ~/.ccs/cliproxy/bin/plus/cli-proxy-api-plus 这个 Plus 版本，但因为 Homebrew 服务抢先占了 8317 端口，CCS 的 Plus 版本没法启动
+  - 读取  ~/.ccs/cliproxy/config.yaml  其中的api-keys 是ccs-internal-managed
+
+- 建议：为了防止下次重启电脑后 Homebrew 服务又自动启动，建议彻底禁用它：
+```
+  brew services stop cliproxyapi
+  brew untap <tap-name>  # 或者
+  brew uninstall cliproxyapi
+  或者如果你还需要保留开源版，至少确保它不会自动启动：
+  brew services stop cliproxyapi
+  确认不再自动启动
+  launchctl list | grep clip
+  这样每次开机后只需要 ccs cliproxy start 就能正确启动 Plus 版本了。
+```
+
+## 起用CLIProxyAPIPlus
+- 代理方面只有CLIProxyAPIPlus可以代理kiro，CLIProxyAPI（https://help.router-for.me/cn/）不行
+- ./.ccs/config.yaml配置 把 backend: origin改为 backend: plus
+![alt text](image10.png)
+![alt text](image11.png)
+## 配置kiro
+-  如果PLus没安装的话 css会去下载安装 
+-  有ide直接 通过ide导入 
+![alt text](image7.png)
 ![alt text](image8.png)
 
+- 对应的.claude/settings.json
+``` json
+{
+  "env": {
+    "ANTHROPIC_AUTH_TOKEN": "123456",
+    "ANTHROPIC_BASE_URL": "http://127.0.0.1:3000/claude-kiro-oauth",
+    "API_TIMEOUT_MS": "3000000",
+    "CLAUDE_CODE_NEW_INIT": "1",
+    "CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC": "1"
+  },
+  "model": "claude-opus-4-6",
+  
+  // 更换了 操作的时候会自动更换
+  "env": {
+    "ANTHROPIC_BASE_URL": "http://127.0.0.1:8317/api/provider/kiro",
+    "ANTHROPIC_AUTH_TOKEN": "ccs-internal-managed",
+    "ANTHROPIC_MODEL": "kiro-claude-opus-4-6",
+    "ANTHROPIC_DEFAULT_OPUS_MODEL": "kiro-claude-opus-4-6",
+    "ANTHROPIC_DEFAULT_SONNET_MODEL": "kiro-claude-sonnet-4-6",
+    "ANTHROPIC_DEFAULT_HAIKU_MODEL": "kiro-claude-haiku-4-5"
+  },
+}
+``` 
 ## 启动cc
 ccs kiro 启动claude code
 
