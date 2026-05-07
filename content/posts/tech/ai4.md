@@ -103,7 +103,7 @@ $ ls -l ~/.aws/sso/cache
 {
   "accessToken": "auth里的xxx",
   "refreshToken": "auth里的xxx",
-  "expiresAt": "2026-04-02T11:21:10.783Z",
+  "expiresAt": "2026-04-02T11:21:10.783Z", // 过期时间一般1小时
   "clientIdHash": "hash的json文件名7xxxx",
   "authMethod": "IdC",
   "provider": "Enterprise",
@@ -127,11 +127,75 @@ $ curl http://127.0.0.1:3000/claude-kiro-oauth/v1/messages \
 - X-API-Key 是配置的 api key，默认为"123456"，可在http://27.0.0.1:3000的“配置管理"->"基础设置"- >'API密钥“进行修改，修改后记得点击最底下的“保存配置"
 ![alt text](image5.png)
 
+## 对应的.claude/settings.json
+``` json
+{
+  "env": {
+    "ANTHROPIC_AUTH_TOKEN": "123456",
+    "ANTHROPIC_BASE_URL": "http://127.0.0.1:3000/claude-kiro-oauth",
+    "API_TIMEOUT_MS": "3000000",
+    "CLAUDE_CODE_NEW_INIT": "1",
+    "CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC": "1"
+  },
+  "model": "claude-opus-4-6",
+  "hasCompletedOnboarding": true,
+  "language": "chinese",
+  "skipDangerousModePermissionPrompt": true
+}
+```
 ## 400 403问题
 - kiro 的 token 现在是1小时过期 强制刷新或者重新导入，主要问题是 kiro 的 token 过期时间缩短了，一直在用的话，这些工具都会在过期前自动续期电脑休眠后就很容易过期了，工具继续走 续期逻辑肯定失败了
 ![alt text](image12.png)
 ![alt text](image9.png)
 
+由于kiro的token过期时间缩短了，原有配置很容易出现供应商不健康问题，通过以下配置启用token自动刷新机制
+![alt text](image13.jpg)
+
+# <font color="red">使用梯子的情况</font>
+kiro有地区限制 国内没办法使用新模型 需要使用vpn梯子
+
+- ide增加代理 以及不使用vpn的域名配置（访问内网mcp服务）
+![alt text](image14.png)
+## AIClient增加代理配置
+### 运行在本地的：“配置管理”->“代理设置”->"代理地址"填上 http://kiro-proxy.hbmonitor.com:1081，保存后即可。
+
+### aiclient2api运行在 docker
+
+- 创建下面2个脚本，用于在 vpn 连接时自动执行。
+脚本的目的是在连接vpn和断开vpn时，通过 socat 将 kiro-proxy.hbmonitor.com:1081 代理转发到宿主机的 127.0.0.1:2080 上，这样 docker 容器里就能连接上代理。
+
+上面脚本中的 xxx.tblk 路径为 vpn 的配置名，按需替换
+``` bash
+brew install socat
+
+# 1.tag自己目录  --setenv TUNNELBLICK_CONFIG_FOLDER /Library/Application Support/Tunnelblick/Shared/taqu-develop.tblk/Contents/Resources
+# 2. 转成私人配置  /Library/Application\ Support/Tunnelblick/Users/chenshixiong/taqu-develop.tblk/Contents/Resources
+# 3. 使用sudo权限 创建文件sh 然后修改权限 进行保存文件 w !sudo tee % > /dev/null 然后输入密码
+cd ~/Library/Application\ Support/Tunnelblick/Configurations/xxx.tblk/Contents/Resources/
+chmod +x connected.sh post-disconnect.sh # 755 u+w
+
+cd ~/Library/Application\ Support/Tunnelblick/Shared/taqu-develop.tblk/Contents/Resources
+cat > connected.sh <<EOF
+#!/bin/sh
+pkill -f "socat TCP4-LISTEN:2080"
+/opt/homebrew/bin/socat TCP4-LISTEN:2080,bind=127.0.0.1,fork,reuseaddr TCP4:kiro-proxy.hbmonitor.com:1081 &
+EOF
+
+cat > post-disconnect.sh <<EOF
+#!/bin/sh
+pkill -f "socat TCP4-LISTEN:2080"
+EOF
+```
+
+- 使用sudo权限 创建文件sh 然后修改权限 进行保存文件 w !sudo tee % > /dev/null 然后输入密码
+![alt text](image15.png)
+1. 如果此时tunnelblick处于开启状态，退出再打开。
+2. 连接vpn，此时会提示有新的配置啥的，点“安装”，再点“安装”，最后点“保护配置”，然后连接VPN。
+3. 连接后，vpn连接日志最底下应该能看到如下信息
+![alt text](image16.png)
+
+- “配置管理”->“代理设置”->"代理地址"填上 http://host.docker.internal:2080，保存后即可。
+  
 # Claude Code Switch ccs 
 - https://github.com/kaitranntt/ccs
 ![alt text](image6.png)
@@ -141,8 +205,6 @@ $ curl http://127.0.0.1:3000/claude-kiro-oauth/v1/messages \
 npm install -g @kaitranntt/ccs
 ccs config 启动管理界面
 ```
-
-
 
 ## 一定不要自己安装开源 CLiiProxy
 - 安装了开源会提示api key 无效
@@ -189,7 +251,7 @@ ccs config 启动管理界面
     "CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC": "1"
   },
   "model": "claude-opus-4-6",
-  
+
   // 更换了 操作的时候会自动更换
   "env": {
     "ANTHROPIC_BASE_URL": "http://127.0.0.1:8317/api/provider/kiro",
@@ -197,7 +259,8 @@ ccs config 启动管理界面
     "ANTHROPIC_MODEL": "kiro-claude-opus-4-6",
     "ANTHROPIC_DEFAULT_OPUS_MODEL": "kiro-claude-opus-4-6",
     "ANTHROPIC_DEFAULT_SONNET_MODEL": "kiro-claude-sonnet-4-6",
-    "ANTHROPIC_DEFAULT_HAIKU_MODEL": "kiro-claude-haiku-4-5"
+    "ANTHROPIC_DEFAULT_HAIKU_MODEL": "kiro-claude-haiku-4-5",
+    "CLAUDE_CODE_NEW_INIT": "1",
   },
 }
 ``` 

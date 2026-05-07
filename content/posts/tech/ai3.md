@@ -330,7 +330,7 @@ skills 文件位置
 - OpenSkills 同步安装 (适用不同的agent) 支持这种
   - GitHub https://github.com/numman-ali/openskills
   - 适用于直接使用 GitHub 上的开源 Skill 
-```
+``` bash
 npx openskills install anthropics/skills // 加载Anthropic Marketplace  GitHub 仓库 本地文件路径 私人 Git 仓库
 npx openskills sync // 更新 list搜索 read加载 update更新 remove移除 
 
