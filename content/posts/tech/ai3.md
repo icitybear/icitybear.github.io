@@ -412,12 +412,22 @@ description: 计算并列出 Objective-C 文件中的属性实例数量。触发
 # 通过 AI 创建 Skill
 skill-creator是 Anthropics 官方提供的 skill，用于帮助用户快速创建、编辑和打包自定义 Skill。即一个“用 Skill 生成 Skill”的工具
 通过 Anthropics 官方提供的 skill skill-creator创建 skill
-
-- 安装skill-creator[ https://github.com/anthropics/skills/tree/main/skills/skill-creator ]
+- anthropics/skills GitHub 仓库里的 skill
+  - 安装skill-creator[ https://github.com/anthropics/skills/tree/main/skills/skill-creator ]
 ```
 npx openskills install anthropics/skills
-npx openskills read skill-creator
+npx openskills read skill-creator 
 ```
+- Claude Code 官方插件市场：通过anthropics/claude-plugins-official里 直接安装 skill-creator@claude-plugins-official
+
+- anthropics/skills 这个 GitHub 仓库里的 skill和 Claude Code 官方插件市场的 plugin 不是同一套东西
+
+- skill-creator 是 Claude Code 插件（通过 /plugin 安装），不是 openskills 的 skill。 两者是不同的系统：
+  - Claude Code 插件 → 存在 ~/.claude/plugins/cache/ 里，用 /plugin 管理
+    - claude-plugins-official (anthropics/claude-plugins-official) 
+  - openskills → 存在 .claude/skills/ 里，用 npx openskills 管理
+    - 你项目里通过 openskills 安装的只有 git-commit（在 .claude/skills/git-commit/）。 自己写的 删除命令npx openskills remove git-commit
+
 
 # 拓展
 - Claude 官方提供的 Skills **https://github.com/anthropics/skills/tree/main/skills**

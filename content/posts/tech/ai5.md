@@ -99,20 +99,23 @@ claude --resume 02accccd-0ddc-463f-843d-3b68d7aa44d1
 ![alt text](image2.png) 对应的会话hash 可以重新打开继承上下文
 
 # skill
-{{< innerlink src="posts/tech/ai2.md" >}}  
+{{< innerlink src="posts/tech/ai3.md" >}}  
 
-# marketing市场 
-下载对应plugin 配置下mcp浏览器 卸载移除等操作
-- anthropics/skills 
+- skill-creator 是 Claude Code 插件（通过 /plugin 安装），不是 openskills 的 skill。 两者是不同的系统：
+  - Claude Code 插件 → 存在 ~/.claude/plugins/cache/ 里，用 /plugin 管理
+    - claude-plugins-official (anthropics/claude-plugins-official) 
+  - openskills → 存在 .claude/skills/ 里，用 npx openskills 管理
+    - 你项目里通过 openskills 安装的只有 git-commit（在 .claude/skills/git-commit/）。 自己写的 删除命令npx openskills remove git-commit
+  
+## anthropics/skills 
 ``` bash
 npx openskills install anthropics/skills // 加载Anthropic Marketplace  GitHub 仓库 本地文件路径 私人 Git 仓库
 npx openskills sync // 更新 list搜索 read加载 update更新 remove移除 
 
-npx openskills install anthropics/skills
 npx openskills read skill-creator
 ```
-
-## plugin
+## marketing市场的plugin
+Claude Code 官方插件市场：通过anthropics/claude-plugins-official里 直接安装 skill-creator@claude-plugins-official
 - settings.json
 ``` json
 {
@@ -127,12 +130,22 @@ npx openskills read skill-creator
 ```
 - 使用代理时问题： 不是 Kiro "不支持"哪个具体插件，而是所有插件加在一起导致请求体太大（170KB），超出了 Kiro generateAssistantResponse API 的限制。每个插件都会往 system prompt 里注入大量文本（工具定义、使用说明、skill 描述等），累加起来就超限了
 
-- claude-md-management  维护和改进 CLAUDE.md 文件，审计质量、捕获会话学习内容、保持项目记忆更新  
-- skill-creator   创建新 skill、改进现有 skill、运行评估测试和性能基准分析  
-
-1. feature-dev
+1. claude-md-management  维护和改进 CLAUDE.md 文件，审计质量、捕获会话学习内容、保持项目记忆更新  
+2. skill-creator   创建新 skill、改进现有 skill、运行评估测试和性能基准分析  
+3. 计划模式 feature-dev OpenSpec
 ![alt text](image4.png)
-1. context7 — 文档查询
+![alt text](image6.png)
+
+   - 简单/中等任务：直接写或用计划模式，够了
+   - 大功能：feature-dev 比 OpenSpec 更直接——它探索完代码就开始实现，不需要你维护一堆 spec 文件
+   - OpenSpec 更适合：需求不明确需要反复对齐、团队多人协作需要文档留痕、或者你同时用多个 AI 工具
+   如果你只用 Claude Code，feature-dev 更顺手（一体化，不用切工具）。OpenSpec 的价值在于跨工具一致性和文档沉淀，对单人后端开发来说有点重了。
+
+## OpenSpec 轻量级的规范框架
+- [OpenSpec 完全指南：让 AI 编码可预测的规范框架](https://www.tinyash.com/blog/openspec-ai/)
+- [使用 Claude Code 与 OpenSpec：打造可预测的 AI 开发工作流](https://www.tinyash.com/blog/claude-code-openspec-ai/)
+
+4. context7 — 文档查询
 为 AI 编码助手提供最新的库/框架文档
 核心功能：
   - 从官方文档源实时拉取库的 API 文档和使用示例
@@ -141,13 +154,13 @@ npx openskills read skill-creator
 典型使用场景：当你在用一个更新频繁的库（如 Next.js、LangChain 等），Context7 能确保 AI
   参考的是当前版本的文档，而不是训练截止日期之前的旧文档。
 
-1. hookify
+5. hookify
 帮你自动生成和管理 hooks 配置。
    - 根据你的自然语言描述（比如"每次编辑 Go 文件后自动 gofmt"），自动生成对应的 hook 配置写入 settings.json
    - 简化 hook 的创建流程，不需要手动编写 matcher、command、timeout 等字段
    你当前的 settings.local.json 里已经有两个手动配置的 PostToolUse hook（gofmt 和 proto 代码生成）。如果启用 hookify 插件，以后添加类似的 hook 可以用对话方式完成，不用手动编辑 JSON
 
-1. gopls-lsp
+6. gopls-lsp
 编辑器的 gopls 服务于你（人类），Claude Code 的 gopls-lsp 服务于 Claude 自己。它的主要价值是让 Claude 能主动获取诊断信息（编译错误、类型问题等），而不需要你手动复制粘贴错误。
 但实际上：
    - Claude 修改代码后，你可以直接把编辑器里的报错贴过来，效果一样
@@ -155,7 +168,7 @@ npx openskills read skill-creator
    - go build / go vet 的输出比 LSP 诊断更直接可靠
   如果你想精简插件列表，gopls-lsp 是可以优先去掉的那个。它提供的增量价值不大，尤其是你已经有编辑器 + 能跑编译命令的情况下。
 
-1. code-simplifier 
+7. code-simplifier 
 代码简化 agent，在保持功能不变的前提下提升代码清晰度、一致性和可维护性          
 从它的 agent 定义可以看出，这个 skill 明显是为 JS/TS 生态设计的——提到的规则都是 ES modules、arrow functions、React Props 类型、ternary operators 这些前端概念。
 
@@ -165,13 +178,13 @@ Go 本身已经有强制简洁的机制：
    - 语言设计本身就推崇简单直白
 而且你的 CLAUDE.md 里已经有完善的 Go 代码审核规则（函数长度、嵌套层级、命名规范等），Claude 在写代码时已经会遵守这些。需要简化代码时直接让 Claude 做就行，不需要额外的 skill。建议去掉。如果你以后做前端项目可以再启用。
 
-6. frontend-design  前端美化外观
+8. frontend-design  前端美化外观
 
-7. pr-review-toolkit
+9. pr-review-toolkit
  PR 审查工具集，专注于注释、测试、错误处理、类型设计、代码质量和代码简化。 以及设置了CLAUDE.md 里已经有完善的 Go 代码审核规则
 
 
-8. playwright和chrome-devtools-mcp
+10. playwright和chrome-devtools-mcp
 - Playwright = "像用户一样操作浏览器" Microsoft 的浏览器自动化和端到端测试 MCP 服务器，支持网页交互、截图、表单填写等
 - Chrome DevTools = "像前端工程师一样用 F12 调试"  内存泄漏分析、LCP 优化这些能力是给前端性能调优用的
   - chrome-devtools-mcp — 注入内容非常多（多个 skill） 几句是这个有问题 mcp上下文太多了就是这个导致超过170kb
