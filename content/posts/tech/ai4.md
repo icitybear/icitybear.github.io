@@ -264,6 +264,9 @@ ccs config 启动管理界面
   },
 }
 ``` 
+claude-opus-4-6 和 kiro-claude-opus-4-6 之间的主要区别在于模型的调用路径和优化程度。
+简单来说，前者通常是直接调用，而后者是 Kiro 针对其开发环境进行的深度定制版。
+反代的可以claude-opus-4-6 试
 ## 启动cc
 ccs kiro 启动claude code
 
@@ -273,3 +276,26 @@ claude code默认运行命令，需要在终端不断进行授权，使用
 ccs kiro --dangerously-skip-permissions
 ```
 默认就不需要再进行授权，可以让AI把这个命令做成一个alias别名，方便启动
+
+
+# <font color="red">使用梯子的情况</font>
+- 用自己代理的 手动选择节点 不要选自动。尽量选美国节点
+
+## ccs增加代理配置
+- 本地代理端口 如果是公司vpn可以通过socat工具绑定端口
+1. /.ccs/cliproxy/config.yaml 所有配置 （控制面板）
+![alt text](image19.png)
+proxy-url: http://127.0.0.1:2080
+
+2. 单独 Kiro 账号配置 /.ccs/cliproxy/auth/xxx.json配置
+
+enterprise-TsYBc13buDwL1uZ-D2NSzHVzLWVhc3QtMQ 对应账户的文件名
+![alt text](image18.png)
+
+/.ccs/cliproxy/auth/kiro-enterprise-TsYBc13buDwL1uZ-D2NSzHVzLWVhc3QtMQ-json 文件增加 "proxy_url": "http://127.0.0.1:2080"
+
+
+## 改源码（不推荐）
+在新的外网邮箱的kiro如果ccs反代会提示的invalid model id这个报错的话，可以考虑一种可能是因为proxy的设计缺陷导致无法继承本机代理而使用直连aws的情况（实际支持的），而国内ip直连aws是无法查看opus等模型的。这里将源码clone以后做了微调并重新打包，将 ~/.ccs/cliproxy/bin/plus 下的 cli-proxy-api-plus 文件备份，然后替换成这个再试试应该就可以使用了。
+
+![alt text](image17.png)

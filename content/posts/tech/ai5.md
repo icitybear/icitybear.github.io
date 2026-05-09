@@ -141,10 +141,6 @@ Claude Code 官方插件市场：通过anthropics/claude-plugins-official里 直
    - OpenSpec 更适合：需求不明确需要反复对齐、团队多人协作需要文档留痕、或者你同时用多个 AI 工具
    如果你只用 Claude Code，feature-dev 更顺手（一体化，不用切工具）。OpenSpec 的价值在于跨工具一致性和文档沉淀，对单人后端开发来说有点重了。
 
-## OpenSpec 轻量级的规范框架
-- [OpenSpec 完全指南：让 AI 编码可预测的规范框架](https://www.tinyash.com/blog/openspec-ai/)
-- [使用 Claude Code 与 OpenSpec：打造可预测的 AI 开发工作流](https://www.tinyash.com/blog/claude-code-openspec-ai/)
-
 4. context7 — 文档查询
 为 AI 编码助手提供最新的库/框架文档
 核心功能：
@@ -183,14 +179,18 @@ Go 本身已经有强制简洁的机制：
 9. pr-review-toolkit
  PR 审查工具集，专注于注释、测试、错误处理、类型设计、代码质量和代码简化。 以及设置了CLAUDE.md 里已经有完善的 Go 代码审核规则
 
-
 10. playwright和chrome-devtools-mcp
 - Playwright = "像用户一样操作浏览器" Microsoft 的浏览器自动化和端到端测试 MCP 服务器，支持网页交互、截图、表单填写等
 - Chrome DevTools = "像前端工程师一样用 F12 调试"  内存泄漏分析、LCP 优化这些能力是给前端性能调优用的
   - chrome-devtools-mcp — 注入内容非常多（多个 skill） 几句是这个有问题 mcp上下文太多了就是这个导致超过170kb
 
 ![alt text](image5.png)
-#  mcp 
+
+# OpenSpec 轻量级的规范框架
+- [OpenSpec 完全指南：让 AI 编码可预测的规范框架](https://www.tinyash.com/blog/openspec-ai/)
+- [使用 Claude Code 与 OpenSpec：打造可预测的 AI 开发工作流](https://www.tinyash.com/blog/claude-code-openspec-ai/)
+
+# mcp
 mcp配置 playwright
 ![alt text](image3.png)
 
