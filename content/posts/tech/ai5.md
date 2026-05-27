@@ -196,3 +196,5 @@ mcp配置 playwright
 
 chrome-devtools-mcp@claude-plugins-official — 注入内容非常多（多个 skill） 几句是这个有问题 mcp上下文太多了就是这个导致超过170kb
 
+
+# goland插件 CC GUI

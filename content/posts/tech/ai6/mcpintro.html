@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Log Query MCP 使用说明</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #f5f7fa; color: #1a1a2e; line-height: 1.7; }
+    .page { max-width: 960px; margin: 0 auto; padding: 40px 24px 80px; }
+
+    /* 分层架构图 */
+    .arch { background: #fff; border-radius: 10px; padding: 32px; box-shadow: 0 2px 8px rgba(0,0,0,.06); margin: 20px 0; }
+    .arch-layer { display: flex; align-items: stretch; gap: 12px; margin-bottom: 0; }
+    .arch-layer-label { writing-mode: vertical-rl; text-orientation: mixed; font-size: 11px; font-weight: 700; letter-spacing: 2px; color: #9ca3af; text-transform: uppercase; padding: 0 4px; display: flex; align-items: center; justify-content: center; min-width: 24px; }
+    .arch-layer-body { flex: 1; display: flex; gap: 12px; align-items: center; padding: 16px; border-radius: 8px; }
+    .arch-layer-body.layer-user    { background: #eef2ff; border: 1.5px solid #c7d2fe; }
+    .arch-layer-body.layer-ai      { background: #fce7f3; border: 1.5px solid #f9a8d4; }
+    .arch-layer-body.layer-mcp     { background: #d1fae5; border: 1.5px solid #6ee7b7; }
+    .arch-layer-body.layer-db      { background: #fef3c7; border: 1.5px solid #fcd34d; }
+    .arch-box { background: #fff; border-radius: 6px; padding: 10px 14px; font-size: 13px; font-weight: 500; flex: 1; text-align: center; box-shadow: 0 1px 3px rgba(0,0,0,.08); }
+    .arch-box .box-title { font-weight: 700; margin-bottom: 4px; }
+    .arch-box .box-desc  { font-size: 11px; color: #6b7280; line-height: 1.5; }
+    .arch-connector { display: flex; align-items: center; justify-content: center; gap: 24px; margin: 4px 0 4px 36px; }
+    .arch-connector-line { display: flex; flex-direction: column; align-items: center; gap: 0; flex: 1; }
+    .arch-connector-arrow { font-size: 16px; color: #9ca3af; line-height: 1; }
+    .arch-connector-label { font-size: 11px; color: #9ca3af; white-space: nowrap; }
+
+    h1 { font-size: 28px; font-weight: 700; color: #0f3460; margin-bottom: 8px; }
+    .subtitle { color: #666; font-size: 14px; margin-bottom: 48px; }
+
+    h2 { font-size: 20px; font-weight: 600; color: #0f3460; margin: 48px 0 16px; padding-left: 12px; border-left: 4px solid #e94560; }
+    h3 { font-size: 15px; font-weight: 600; color: #333; margin: 24px 0 10px; }
+
+    p { margin-bottom: 12px; color: #444; font-size: 14px; }
+
+    .compare { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 20px 0; }
+    .card { background: #fff; border-radius: 10px; padding: 20px 24px; box-shadow: 0 2px 8px rgba(0,0,0,.06); }
+    .card.tool { border-top: 3px solid #6366f1; }
+    .card.tip  { border-top: 3px solid #16c79a; }
+    .card-title { font-size: 13px; font-weight: 700; letter-spacing: .5px; text-transform: uppercase; margin-bottom: 12px; }
+    .card.tool .card-title { color: #6366f1; }
+    .card.tip  .card-title { color: #16c79a; }
+    .card ul { padding-left: 18px; }
+    .card li { font-size: 13px; color: #555; margin-bottom: 6px; }
+
+    .flow { background: #fff; border-radius: 10px; padding: 32px; box-shadow: 0 2px 8px rgba(0,0,0,.06); margin: 20px 0; overflow-x: auto; }
+    .flow-row { display: flex; align-items: center; gap: 0; flex-wrap: nowrap; margin-bottom: 0; }
+    .flow-row + .flow-row { margin-top: 12px; }
+    .node { background: #eef2ff; border: 1.5px solid #c7d2fe; border-radius: 8px; padding: 10px 16px; font-size: 13px; font-weight: 500; color: #3730a3; white-space: nowrap; text-align: center; min-width: 120px; }
+    .node.nginx   { background: #fef3c7; border-color: #fcd34d; color: #92400e; }
+    .node.service { background: #d1fae5; border-color: #6ee7b7; color: #065f46; }
+    .node.trace   { background: #fce7f3; border-color: #f9a8d4; color: #9d174d; }
+    .node.warn    { background: #fee2e2; border-color: #fca5a5; color: #991b1b; }
+    .arrow      { font-size: 18px; color: #9ca3af; padding: 0 6px; flex-shrink: 0; }
+    .arrow-down { text-align: center; font-size: 18px; color: #9ca3af; margin: 4px 0; }
+
+    .code-block { background: #1e1e2e; border-radius: 8px; padding: 20px 24px; font-family: "JetBrains Mono", "Fira Code", monospace; font-size: 13px; color: #cdd6f4; margin: 16px 0; overflow-x: auto; white-space: pre; }
+    .code-block .comment { color: #6c7086; }
+    .code-block .key     { color: #89b4fa; }
+    .code-block .val     { color: #a6e3a1; }
+    .code-block .str     { color: #f38ba8; }
+
+    .config-table { width: 100%; border-collapse: collapse; margin: 16px 0; font-size: 13px; }
+    .config-table th { background: #0f3460; color: #fff; padding: 10px 14px; text-align: left; font-weight: 600; }
+    .config-table td { padding: 10px 14px; border-bottom: 1px solid #e5e7eb; color: #444; vertical-align: top; }
+    .config-table tr:last-child td { border-bottom: none; }
+    .config-table tr:nth-child(even) td { background: #f9fafb; }
+    .tag { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 600; }
+    .tag.green  { background: #d1fae5; color: #065f46; }
+    .tag.yellow { background: #fef3c7; color: #92400e; }
+    .tag.red    { background: #fee2e2; color: #991b1b; }
+
+    .notice { background: #fffbeb; border: 1px solid #fcd34d; border-radius: 8px; padding: 16px 20px; margin: 16px 0; }
+    .notice-title { font-size: 13px; font-weight: 700; color: #92400e; margin-bottom: 8px; }
+    .notice ul { padding-left: 18px; }
+    .notice li { font-size: 13px; color: #78350f; margin-bottom: 4px; }
+
+    .section-desc { font-size: 14px; color: #555; margin-bottom: 20px; }
+
+    @media (max-width: 640px) {
+      .compare { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+<div class="page">
+
+  <h1>Log Query MCP 使用说明</h1>
+  <div class="subtitle">日志查询工具集成文档 · ClickHouse 日志平台 · 2026-05</div>
+
+  <!-- 概览 -->
+  <h2>工具概览</h2>
+  <p class="section-desc">
+    Log Query MCP 提供对 ClickHouse 日志平台的结构化查询能力，支持 Service 日志、Nginx 日志及全链路追踪三类场景。
+    所有查询结果以 Markdown 表格形式输出，禁止直接输出原始 JSON。
+  </p>
+
+  <div class="compare">
+    <div class="card tool">
+      <div class="card-title">三个核心工具</div>
+      <ul>
+        <li><code>query_service_logs</code> — 查询服务日志（ERROR / WARN / INFO）</li>
+        <li><code>query_nginx_logs</code> — 查询 Nginx 接入层日志</li>
+        <li><code>trace_request</code> — 按 tracerId 同时查询 Service 和 Nginx 两张表，还原完整调用链</li>
+      </ul>
+    </div>
+    <div class="card tip">
+      <div class="card-title">两种查询模式</div>
+      <ul>
+        <li><strong>structured</strong>（默认）：通过结构化参数构建 WHERE 条件，适合常规查询</li>
+        <li><strong>custom</strong>：通过 <code>custom_where</code> 传入自定义 SQL 片段，适合复杂条件</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- 整体架构与调用路径 -->
+  <h2>整体架构与调用路径</h2>
+  <p class="section-desc">
+    Log Query MCP 基于 <strong>MCP（Model Context Protocol）</strong> 协议，将 AI 助手与 ClickHouse 日志平台打通。
+    整个链路分为三层：AI 对话层、MCP 工具层、数据存储层。
+  </p>
+
+  <div class="arch">
+    <h3 style="margin-bottom:24px;color:#0f3460;">完整调用链路（分层架构）</h3>
+
+    <!-- 第一层：用户层 -->
+    <div class="arch-layer">
+      <div class="arch-layer-label" style="color:#6366f1;">用户层</div>
+      <div class="arch-layer-body layer-user">
+        <div class="arch-box">
+          <div class="box-title" style="color:#3730a3;">用户自然语言提问</div>
+          <div class="box-desc">"查一下 mp-admp-data 今天的报错"</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 连接线 1 -->
+    <div class="arch-connector">
+      <div class="arch-connector-line">
+        <div class="arch-connector-arrow">↕</div>
+        <div class="arch-connector-label">对话交互</div>
+      </div>
+    </div>
+
+    <!-- 第二层：AI 层 -->
+    <div class="arch-layer">
+      <div class="arch-layer-label" style="color:#9d174d;">AI 层</div>
+      <div class="arch-layer-body layer-ai">
+        <div class="arch-box">
+          <div class="box-title" style="color:#9d174d;">Kiro / AI 助手</div>
+          <div class="box-desc">① 调用 log-query-format skill 加载输出规范<br/>② 理解意图，选择工具（service / nginx / trace）<br/>③ 自动构造查询参数</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 连接线 2 -->
+    <div class="arch-connector">
+      <div class="arch-connector-line">
+        <div class="arch-connector-arrow">↕</div>
+        <div class="arch-connector-label">Tool Call / Tool Result</div>
+      </div>
+    </div>
+
+    <!-- 第三层：MCP Client 层 -->
+    <div class="arch-layer">
+      <div class="arch-layer-label" style="color:#1e40af;">Client 层</div>
+      <div class="arch-layer-body" style="background:#dbeafe;border:1.5px solid #93c5fd;">
+        <div class="arch-box">
+          <div class="box-title" style="color:#1e40af;">MCP Client（Kiro 内置）</div>
+          <div class="box-desc">管理与 MCP Server 的连接生命周期<br/>将 AI 的工具调用序列化为 JSON-RPC 请求<br/>将 Server 响应反序列化后返回给 AI</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 连接线 3 -->
+    <div class="arch-connector">
+      <div class="arch-connector-line">
+        <div class="arch-connector-arrow">↕</div>
+        <div class="arch-connector-label">MCP 协议（JSON-RPC over stdio）</div>
+      </div>
+    </div>
+
+    <!-- 第三层：MCP Server 层 -->
+    <div class="arch-layer">
+      <div class="arch-layer-label" style="color:#065f46;">MCP 层</div>
+      <div class="arch-layer-body layer-mcp" style="flex-direction:column;align-items:stretch;gap:10px;">
+        <div style="font-size:12px;font-weight:700;color:#065f46;margin-bottom:4px;">log-query MCP Server（本地 Node.js 进程）</div>
+        <div style="display:flex;gap:10px;">
+          <div class="arch-box" style="flex:1;">
+            <div class="box-title" style="color:#065f46;">query_service_logs</div>
+            <div class="box-desc">structured / custom 模式<br/>构建 WHERE 子句</div>
+          </div>
+          <div class="arch-box" style="flex:1;">
+            <div class="box-title" style="color:#065f46;">query_nginx_logs</div>
+            <div class="box-desc">structured / custom 模式<br/>支持 rt_gte 慢请求过滤</div>
+          </div>
+          <div class="arch-box" style="flex:1;">
+            <div class="box-title" style="color:#065f46;">trace_request</div>
+            <div class="box-desc">按 tracerId 同时查询两张表<br/>按时间排序还原调用链</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 连接线 4 -->
+    <div class="arch-connector">
+      <div class="arch-connector-line" style="flex:1;">
+        <div class="arch-connector-arrow">↕</div>
+        <div class="arch-connector-label">ClickHouse HTTP API</div>
+      </div>
+      <div class="arch-connector-line" style="flex:1;">
+        <div class="arch-connector-arrow">↕</div>
+        <div class="arch-connector-label">ClickHouse HTTP API</div>
+      </div>
+      <div class="arch-connector-line" style="flex:1;">
+        <div class="arch-connector-arrow">↕</div>
+        <div class="arch-connector-label">ClickHouse HTTP API</div>
+      </div>
+    </div>
+
+    <!-- 第四层：数据层 -->
+    <div class="arch-layer">
+      <div class="arch-layer-label" style="color:#92400e;">数据层</div>
+      <div class="arch-layer-body layer-db" style="gap:10px;">
+        <div class="arch-box" style="flex:1;">
+          <div class="box-title" style="color:#92400e;">ods_service_log_collection_all</div>
+          <div class="box-desc">服务应用日志<br/>INFO / WARN / ERROR</div>
+        </div>
+        <div class="arch-box" style="flex:1;">
+          <div class="box-title" style="color:#92400e;">ods_nginx_log_collection_all</div>
+          <div class="box-desc">Nginx 接入层日志<br/>请求记录、响应时间</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="flow" style="margin-top:16px;">
+    <h3 style="margin-bottom:20px;color:#0f3460;">MCP 协议原理</h3>
+    <p style="font-size:13px;color:#555;margin-bottom:20px;">
+      MCP 是 Anthropic 提出的开放协议，让 AI 模型能够安全地调用外部工具。AI 不直接访问数据库，
+      而是通过标准化的工具描述（Tool Schema）声明能力，由 MCP Server 负责实际执行，结果再返回给 AI 处理。
+    </p>
+    <div class="flow-row" style="align-items:flex-start;gap:16px;flex-wrap:wrap;">
+      <div style="flex:1;min-width:200px;">
+        <div class="node" style="margin-bottom:8px;min-width:unset;">① 工具注册</div>
+        <p style="font-size:12px;color:#666;text-align:center;">MCP Server 启动时向 AI 声明可用工具及参数 Schema</p>
+      </div>
+      <div class="arrow" style="margin-top:14px;">→</div>
+      <div style="flex:1;min-width:200px;">
+        <div class="node trace" style="margin-bottom:8px;min-width:unset;">② 意图识别</div>
+        <p style="font-size:12px;color:#666;text-align:center;">AI 根据用户问题选择合适工具，自动填充参数</p>
+      </div>
+      <div class="arrow" style="margin-top:14px;">→</div>
+      <div style="flex:1;min-width:200px;">
+        <div class="node service" style="margin-bottom:8px;min-width:unset;">③ 工具执行</div>
+        <p style="font-size:12px;color:#666;text-align:center;">MCP Server 执行查询，AI 无法绕过 Server 直接访问 DB</p>
+      </div>
+      <div class="arrow" style="margin-top:14px;">→</div>
+      <div style="flex:1;min-width:200px;">
+        <div class="node nginx" style="margin-bottom:8px;min-width:unset;">④ 结果处理</div>
+        <p style="font-size:12px;color:#666;text-align:center;">AI 拿到结构化数据，按 skill 规范格式化后呈现给用户</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="flow" style="margin-top:16px;">
+    <h3 style="margin-bottom:20px;color:#0f3460;">两张核心日志表</h3>
+    <div class="compare" style="margin:0;">
+      <div class="card" style="border-top:3px solid #f59e0b;">
+        <div class="card-title" style="color:#92400e;">Nginx 日志表</div>
+        <div style="font-family:monospace;font-size:12px;color:#4f46e5;margin-bottom:8px;">tq_log.ods_nginx_log_collection_all</div>
+        <ul>
+          <li>记录每一次 HTTP 请求的接入层信息</li>
+          <li>包含 uri、token、responseTime、tracerId</li>
+          <li>适合排查：接口是否被调用、响应时间、用户 token</li>
+        </ul>
+      </div>
+      <div class="card" style="border-top:3px solid #10b981;">
+        <div class="card-title" style="color:#065f46;">Service 日志表</div>
+        <div style="font-family:monospace;font-size:12px;color:#4f46e5;margin-bottom:8px;">tq_log.ods_service_log_collection_all</div>
+        <ul>
+          <li>记录服务内部的应用日志（INFO / WARN / ERROR）</li>
+          <li>包含 system、level、message、tracerId、k8s_pod_name</li>
+          <li>适合排查：业务异常、代码报错、调用链路</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- 工具参数 -->
+  <h2>工具参数说明</h2>
+
+  <h3>query_service_logs — Service 日志</h3>
+  <table class="config-table">
+    <thead>
+      <tr><th>参数</th><th>类型</th><th>说明</th><th>备注</th></tr>
+    </thead>
+    <tbody>
+      <tr><td><code>system</code></td><td>String</td><td>服务名称（精确匹配）</td><td><span class="tag green">按服务查必用此字段</span></td></tr>
+      <tr><td><code>level</code></td><td>String</td><td>日志级别：INFO / WARN / ERROR</td><td></td></tr>
+      <tr><td><code>message</code></td><td>String</td><td>日志消息关键词（LIKE 模糊，≥ 3 字符）</td><td></td></tr>
+      <tr><td><code>tracerId</code></td><td>String</td><td>Tracer ID（精确匹配）</td><td></td></tr>
+      <tr><td><code>env</code></td><td>String</td><td>环境，默认 test</td><td></td></tr>
+      <tr><td><code>time_start</code></td><td>String</td><td>开始时间，格式 YYYY-MM-DD HH:mm:ss</td><td>不传默认最近 1 小时</td></tr>
+      <tr><td><code>time_end</code></td><td>String</td><td>结束时间，格式 YYYY-MM-DD HH:mm:ss</td><td>不传默认当前时间</td></tr>
+      <tr><td><code>page / page_size</code></td><td>Number</td><td>分页，page 从 1 开始</td><td></td></tr>
+      <tr><td><code>query_mode</code></td><td>String</td><td>structured（默认）或 custom</td><td></td></tr>
+      <tr><td><code>custom_where</code></td><td>String</td><td>自定义 WHERE 片段，仅 custom 模式生效</td><td><span class="tag yellow">禁止写入操作</span></td></tr>
+      <tr><td><code>appcode</code></td><td>String</td><td>应用码（数字形式，非服务名）</td><td><span class="tag red">不要用来按服务名查</span></td></tr>
+    </tbody>
+  </table>
+
+  <h3>query_nginx_logs — Nginx 日志</h3>
+  <table class="config-table">
+    <thead>
+      <tr><th>参数</th><th>类型</th><th>说明</th><th>备注</th></tr>
+    </thead>
+    <tbody>
+      <tr><td><code>uri</code></td><td>String</td><td>请求 URI（精确匹配）</td><td></td></tr>
+      <tr><td><code>client_uri</code></td><td>String</td><td>客户端 URI（精确匹配）</td><td></td></tr>
+      <tr><td><code>token</code></td><td>String</td><td>Token（精确匹配）</td><td></td></tr>
+      <tr><td><code>system</code></td><td>String</td><td>系统名称（精确匹配）</td><td></td></tr>
+      <tr><td><code>rt_gte</code></td><td>Number</td><td>响应时间下限（毫秒，responseTime ≥ 该值）</td><td></td></tr>
+      <tr><td><code>query</code></td><td>String</td><td>关键词模糊搜索（≥ 3 字符）</td><td></td></tr>
+      <tr><td><code>env</code></td><td>String</td><td>环境，默认 test</td><td></td></tr>
+      <tr><td><code>time_start / time_end</code></td><td>String</td><td>时间范围，格式 YYYY-MM-DD HH:mm:ss</td><td>不传默认最近 1 小时</td></tr>
+      <tr><td><code>tracerId</code></td><td>String</td><td>Tracer ID（精确匹配）</td><td></td></tr>
+    </tbody>
+  </table>
+
+  <!-- 查询流程 -->
+  <h2>典型查询流程</h2>
+  <p class="section-desc">根据不同排查场景选择合适的工具和模式。</p>
+
+  <div class="flow">
+    <h3 style="margin-bottom:20px;color:#0f3460;">场景一：排查某服务报错</h3>
+    <div class="flow-row">
+      <div class="node">确定服务名<br/><span style="font-size:11px;font-weight:400">system = "mp-admp-data"</span></div>
+      <div class="arrow">→</div>
+      <div class="node service">query_service_logs<br/><span style="font-size:11px;font-weight:400">level = ERROR</span></div>
+      <div class="arrow">→</div>
+      <div class="node">获取 tracerId<br/><span style="font-size:11px;font-weight:400">从结果中提取</span></div>
+      <div class="arrow">→</div>
+      <div class="node trace">custom 模式追踪<br/><span style="font-size:11px;font-weight:400">tracerId = 'xxx'</span></div>
+    </div>
+
+    <h3 style="margin:32px 0 20px;color:#0f3460;">场景二：排查接口慢请求</h3>
+    <div class="flow-row">
+      <div class="node nginx">query_nginx_logs<br/><span style="font-size:11px;font-weight:400">uri + rt_gte = 3000</span></div>
+      <div class="arrow">→</div>
+      <div class="node">找到慢请求记录<br/><span style="font-size:11px;font-weight:400">获取 tracerId</span></div>
+      <div class="arrow">→</div>
+      <div class="node service">query_service_logs<br/><span style="font-size:11px;font-weight:400">custom: tracerId = 'xxx'</span></div>
+      <div class="arrow">→</div>
+      <div class="node">定位慢点</div>
+    </div>
+
+    <h3 style="margin:32px 0 20px;color:#0f3460;">场景三：全链路追踪</h3>
+    <div class="flow-row">
+      <div class="node trace">trace_request<br/><span style="font-size:11px;font-weight:400">tracerId = 'xxx'</span></div>
+      <div class="arrow">→</div>
+      <div class="node">Service + Nginx 两表合并<br/><span style="font-size:11px;font-weight:400">按时间排序</span></div>
+      <div class="arrow">→</div>
+      <div class="node service">完整调用链时间线</div>
+    </div>
+  </div>
+
+  <!-- 输出格式 -->
+  <h2>输出格式规范</h2>
+  <p class="section-desc">MCP 工具返回 JSON，必须转换为 Markdown 表格输出，禁止直接输出原始 JSON。</p>
+
+  <h3>摘要行</h3>
+  <div class="code-block"><span class="val">&gt; 共 {total} 条，第 {page}/{pages} 页，耗时 {elapsed_ms}ms</span></div>
+
+  <h3>表格列定义</h3>
+  <table class="config-table">
+    <thead>
+      <tr><th>列名</th><th>内容格式</th><th>说明</th></tr>
+    </thead>
+    <tbody>
+      <tr><td><code>#</code></td><td>行号</td><td>跨页连续编号</td></tr>
+      <tr><td><code>时间</code></td><td><code>YYYY-MM-DD HH:MM:SS</code></td><td>取 time 字段</td></tr>
+      <tr><td><code>uri / client_uri</code></td><td><code>client_uri: {val} / uri: {val}</code></td><td></td></tr>
+      <tr><td><code>设备信息</code></td><td><code>{appcode} | - | {platform} | - | - | {env} / token: {token}</code></td><td></td></tr>
+      <tr><td><code>其他内容</code></td><td><code>{level} | {system} | {logOrigin} | {spanId} / tracerId: {tracerId}</code></td><td></td></tr>
+      <tr><td><code>日志内容</code></td><td><code>{k8s_pod_name} | {env} | {serverIp} | {message 首行截 100 字}</code></td><td>message 只取第一行，超 100 字截断</td></tr>
+    </tbody>
+  </table>
+
+  <h3>输出示例</h3>
+  <div class="code-block"><span class="comment">&gt; 共 2 条，第 1/1 页，耗时 393ms</span>
+
+<span class="val">| # | 时间 | uri / client_uri | 设备信息 | 其他内容 | 日志内容 |</span>
+<span class="val">|---|------|-----------------|----------|----------|----------|</span>
+<span class="str">| 1 | 2026-05-11 09:57:48 | client_uri: - / uri: - | - \| - \| - \| test / token: - | error \| mp-smart-admp \| cli / tracerId: - | mp-smart-admp-test-xxx \| test \| 10.x.x.x \| [gorm] record not found |</span>
+<span class="str">| 2 | 2026-05-11 09:58:01 | client_uri: v1/workOrder/pass / uri: v1/workOrder/pass | 1 \| - \| wap \| test / token: pengjing | error \| mp-smart-admp \| rest / tracerId: w9giv5l68m94 | mp-smart-admp-test-xxx \| test \| 10.x.x.x \| [FeishuNotice]#GetUserPhone#user id cross tenant |</span></div>
+
+
+</div>
+</body>
+</html>

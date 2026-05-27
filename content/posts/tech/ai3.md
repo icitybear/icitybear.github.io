@@ -428,7 +428,10 @@ npx openskills read skill-creator
   - openskills → 存在 .claude/skills/ 里，用 npx openskills 管理
     - 你项目里通过 openskills 安装的只有 git-commit（在 .claude/skills/git-commit/）。 自己写的 删除命令npx openskills remove git-commit
 
-
+# skill使用配置（全局/项目）
+![alt text](image5.png)
+- 全局 /Users/chenshixiong/.claude/skills/xxx技能目录
+- 项目级 /Users/chenshixiong/Documents/work/hbgo/admp-data/skills/xxx技能目录
 # 拓展
 - Claude 官方提供的 Skills **https://github.com/anthropics/skills/tree/main/skills**
 - skills.sh 排行榜：可以直观查看当前最受欢迎的 Skills 仓库和单个 Skill 的使用情况。

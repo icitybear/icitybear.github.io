@@ -39,4 +39,5 @@ mermaid: true #自己加的是否开启mermaid
 4. [万字学习笔记：cloudwego/kitex](https://zhuanlan.zhihu.com/p/1902680493620700799)
    kitex 是 go 实现的高性能的 rpc 框架，集成了编解码 codec、通信 transport、服务发现 discovery、负载均衡 loadbalance、链路追踪 trace 等一系列模块，通过预留接口的方式保留了灵活的扩展度.
    
-万字解析 golang netpoll 底层原理：这是一个力求温故而知新的重置篇章，希望在有了不同语言间横向对比的视角后，能够对 golang 底层 io 模型设计、方案取舍原因有着更加立体的认知. 在本文中，我们将涉及到的如下知识点：io多路复用概念、epoll实现原理、针对 golang 底层 epoll 应用细节以及 netpoll 框架模型进行源码级别的讲解.
+万字解析 golang netpoll 底层原理：将涉及到的如下知识点：io多路复用概念、epoll实现原理、针对 golang 底层 epoll 应用细节以及 netpoll 框架模型进行源码级别的讲解.
+在设计 io 模型时，golang 采用了 linux 系统提供的 epoll 多路复用技术，然而为了因为 epoll_wait 操作而引起 m（thread）粒度的阻塞，golang 专门设计一套 netpoll 机制，使用用户态的 gopark 指令实现阻塞操作，使用非阻塞 epoll_wait 结合用户态的 goready 指令实现唤醒操作，从而将 io 行为也控制在 g 粒度，很好地契合了 gmp 调度体系.
